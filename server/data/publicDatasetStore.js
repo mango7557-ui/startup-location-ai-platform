@@ -1998,10 +1998,13 @@ const INITIAL_SYNC_LOGS = [
   }
 ];
 
+const { FULL_REGIONS_TREE, buildRegionalZoneCandidates } = require('./koreaRegionsFull');
+
 module.exports = {
   DATA_SOURCES,
   INDUSTRY_CODES,
-  REGIONS_TREE,
+  REGIONS_TREE: FULL_REGIONS_TREE,
+  buildRegionalZoneCandidates,
   INDUSTRY_BASE_SURVIVAL_STATS,
   COMMERCIAL_ZONES,
   INITIAL_SYNC_LOGS

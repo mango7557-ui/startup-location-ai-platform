@@ -7,7 +7,7 @@ const {
   runRecommendationAnalysis,
   compareCandidateZones
 } = require('../server/services/recommendationEngine');
-const { INDUSTRY_CODES } = require('../server/data/publicDatasetStore');
+const { INDUSTRY_CODES, REGIONS_TREE } = require('../server/data/publicDatasetStore');
 const {
   OFFICIAL_API_CATALOG,
   getApiKeySecurityStatus,
@@ -68,6 +68,27 @@ async function runTests() {
     assert.ok(r.top_recommendations[0].survival_closure_stats.survival_rate_1yr > 0);
   }
   console.log(`   -> 총 ${INDUSTRY_CODES.length}개 업종 전체 추천 순위 및 생존·폐업 통계 산출 정상 확인 완료.`);
+
+  console.log(`5. [전국 17개 시·도 및 전체 시·군·구·읍·면·동 검색 및 TOP 10 산출 검증]`);
+  assert.strictEqual(REGIONS_TREE.length, 17, '전국 17개 시·도가 모두 등록되어야 합니다.');
+  let totalSigungu = 0;
+  let totalEmd = 0;
+  for (const sido of REGIONS_TREE) {
+    totalSigungu += sido.sigungu_list.length;
+    for (const sg of sido.sigungu_list) {
+      totalEmd += sg.emd_list.length;
+    }
+    const firstSg = sido.sigungu_list[0];
+    const r = runRecommendationAnalysis({
+      industry: 'IND_CAFE',
+      sido: sido.sido_name,
+      sigungu: firstSg.sigungu_name,
+      emd: firstSg.emd_list[0]
+    });
+    assert.strictEqual(r.top_recommendations.length, 10, `${sido.sido_name} ${firstSg.sigungu_name} TOP 10이 반환되어야 합니다.`);
+    assert.strictEqual(r.top_recommendations[0].is_exact_emd_match, true, '선택한 읍·면·동이 1순위로 매칭되어야 합니다.');
+  }
+  console.log(`   -> 전국 ${REGIONS_TREE.length}개 시·도 / ${totalSigungu}개 시·군·구 / ${totalEmd}개 읍·면·동 전체 TOP 10 분석 정상 확인 완료.`);
 
   console.log('\n모든 추천 엔진 및 5대 외부 API 연동 테스트를 통과했습니다.');
 }

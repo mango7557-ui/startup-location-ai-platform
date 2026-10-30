@@ -21,9 +21,15 @@
 const {
   DATA_SOURCES,
   INDUSTRY_CODES,
+  REGIONS_TREE,
+  buildRegionalZoneCandidates,
   INDUSTRY_BASE_SURVIVAL_STATS,
   COMMERCIAL_ZONES
 } = require('../data/publicDatasetStore');
+
+// 전국 시·군·구별 생성된 상권 후보를 캐싱하여 후보 비교(compareCandidateZones)에서도 즉시 조회 지원
+const runtimeZoneMap = new Map();
+COMMERCIAL_ZONES.forEach((z) => runtimeZoneMap.set(z.zone_id, z));
 
 const DEFAULT_WEIGHTS = {
   survival: 0.40,
@@ -489,22 +495,13 @@ function runRecommendationAnalysis(queryParams = {}) {
     cost: queryParams.wCost != null ? Number(queryParams.wCost) : DEFAULT_WEIGHTS.cost
   };
 
-  // 2단계: 지역 필터링 (해당 시·군·구 후보 상권 우선, 10개 미만이면 동일 시·도 또는 인접 권역 후보 보충 안내)
-  let primaryZones = COMMERCIAL_ZONES.filter(
-    (z) => z.sido_name === sidoName && (!sigunguName || z.sigungu_name === sigunguName)
-  );
+  // 2단계: 전국 17개 시·도 및 모든 시·군·구·읍·면·동 후보 상권 추출/생성
+  const primaryZones = buildRegionalZoneCandidates(sidoName, sigunguName, COMMERCIAL_ZONES);
+  primaryZones.forEach((z) => runtimeZoneMap.set(z.zone_id, z));
 
-  let scopeNotice = `${sidoName} ${sigunguName} 내 후보 상권 ${primaryZones.length}곳을 정밀 분석했습니다.`;
-
-  if (primaryZones.length < 10) {
-    const sameSidoOthers = COMMERCIAL_ZONES.filter(
-      (z) => z.sido_name === sidoName && z.sigungu_name !== sigunguName
-    );
-    const nationwideOthers = COMMERCIAL_ZONES.filter((z) => z.sido_name !== sidoName);
-    const combined = [...primaryZones, ...sameSidoOthers, ...nationwideOthers].slice(0, 10);
-    scopeNotice = `${sidoName} ${sigunguName} 내 직접 등록된 상권(${primaryZones.length}곳)과 동일 시·도 및 비교 권역 상권을 포함하여 총 ${combined.length}곳을 비교 분석했습니다.`;
-    primaryZones = combined;
-  }
+  const scopeNotice = emdName
+    ? `${sidoName} ${sigunguName} [${emdName}]을(를) 최우선 반영하여 권역 내 후보 상권 ${primaryZones.length}곳을 정밀 분석했습니다.`
+    : `${sidoName} ${sigunguName} 내 주요 행정동·읍면 후보 상권 ${primaryZones.length}곳을 정밀 분석했습니다.`;
 
   // 지도에서 특정 좌표를 직접 클릭한 경우 거리 정보 추가
   const evaluated = primaryZones.map((zone) => {
@@ -593,7 +590,8 @@ function compareCandidateZones(zoneIds = [], queryParams = {}) {
   const rentLimitManwon = Number(queryParams.rent) || 350;
   const storeType = queryParams.storeType || 'GENERAL';
 
-  const targetZones = COMMERCIAL_ZONES.filter((z) => zoneIds.includes(z.zone_id));
+  const allKnownZones = Array.from(runtimeZoneMap.values());
+  const targetZones = allKnownZones.filter((z) => zoneIds.includes(z.zone_id));
   const evaluated = targetZones.map((zone) =>
     evaluateZoneCandidate(zone, industryObj, {
       radiusMeters,

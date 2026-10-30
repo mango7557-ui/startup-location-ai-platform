@@ -153,14 +153,24 @@ async function initApp() {
 
   const sidoSelect = document.getElementById('sidoSelect');
   sidoSelect.innerHTML = state.meta.regions
-    .map((r) => `<option value="${r.sido_name}">${r.sido_name}</option>`)
+    .map((r) => `<option value="${r.sido_name}">${r.sido_name} (${r.sigungu_list.length}개 시·군·구)</option>`)
     .join('');
 
-  sidoSelect.addEventListener('change', () => populateSigunguSelect(sidoSelect.value));
+  sidoSelect.addEventListener('change', () => {
+    populateSigunguSelect(sidoSelect.value);
+    state.compareZoneIds.clear();
+    runSearchAnalysis();
+  });
   populateSigunguSelect(sidoSelect.value);
 
   document.getElementById('sigunguSelect').addEventListener('change', () => {
     populateEmdSelect(sidoSelect.value, document.getElementById('sigunguSelect').value);
+    state.compareZoneIds.clear();
+    runSearchAnalysis();
+  });
+
+  document.getElementById('emdSelect').addEventListener('change', () => {
+    runSearchAnalysis();
   });
 
   // 예산 입력 힌트 실시간 업데이트
@@ -273,9 +283,15 @@ async function initApp() {
   document.getElementById('btnIncludePartialZone').addEventListener('click', () => {
     if (!state.analysisResult) return;
     state.compareZoneIds.clear();
-    const top1 = state.analysisResult.top_recommendations[0];
+    const list = state.analysisResult.top_recommendations || [];
+    const top1 = list[0];
+    const partialInList = list.find((z) => z.reliability && z.reliability.missing_metrics.length > 0);
     if (top1) state.compareZoneIds.add(top1.zone_id);
-    state.compareZoneIds.add('ZONE_GN_12'); // 세곡동 일부 통계 결측 검증용 상권
+    if (partialInList && partialInList.zone_id !== top1.zone_id) {
+      state.compareZoneIds.add(partialInList.zone_id);
+    } else {
+      state.compareZoneIds.add('ZONE_GN_12');
+    }
     updateCompareBadges();
     renderRankingList();
     loadAndRenderComparison();
