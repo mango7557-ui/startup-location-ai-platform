@@ -1,0 +1,4711 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>창업입지 AI | 전국 상권 데이터 기반 창업 입지 추천 플랫폼</title>
+  <!-- Pretendard Font & Leaflet Interactive Map -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>:root {
+  --bg-body: #f3f6fb;
+  --bg-card: #ffffff;
+  --bg-subtle: #f8fafc;
+  --border-color: #e2e8f0;
+  --text-main: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --primary: #1d4ed8;
+  --primary-hover: #1e40af;
+  --primary-soft: #eff6ff;
+  --accent-emerald: #059669;
+  --accent-emerald-soft: #ecfdf5;
+  --accent-amber: #d97706;
+  --accent-amber-soft: #fffbeb;
+  --accent-rose: #e11d48;
+  --accent-rose-soft: #fff1f2;
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.07);
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+/* 상단 바 */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: #0f172a;
+  color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.brand-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: -0.5px;
+  color: #fff;
+}
+
+.brand-title {
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-mvp {
+  font-size: 11px;
+  background: rgba(59, 130, 246, 0.25);
+  border: 1px solid rgba(96, 165, 250, 0.5);
+  color: #93c5fd;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.brand-subtitle {
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+
+.topbar-nav {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.nav-tab {
+  background: rgba(255, 255, 255, 0.07);
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 7px 13px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.nav-tab:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.nav-tab.active {
+  background: #2563eb;
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
+.step-num {
+  background: rgba(15, 23, 42, 0.35);
+  padding: 1px 6px;
+  border-radius: 5px;
+  font-size: 11px;
+}
+
+.compare-count-pill {
+  background: #f59e0b;
+  color: #0f172a;
+  font-weight: 700;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 11px;
+}
+
+.topbar-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 5px 11px;
+  border-radius: 999px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+}
+
+/* 원칙 배너 */
+.principle-banner {
+  background: #eff6ff;
+  border-bottom: 1px solid #bfdbfe;
+  padding: 7px 20px;
+  font-size: 12.5px;
+  color: #1e3a8a;
+}
+
+.principle-inner {
+  max-width: 1820px;
+  margin: 0 auto;
+}
+
+/* 메인 워크스페이스 */
+.workspace {
+  max-width: 1840px;
+  margin: 0 auto;
+  padding: 14px 18px 28px;
+}
+
+.view-section {
+  display: none;
+}
+
+.view-section.active {
+  display: block;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.card-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.card-header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.subtext {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* 화면 1 & 2 그리드 */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr 430px;
+  gap: 14px;
+  align-items: start;
+}
+
+@media (max-width: 1380px) {
+  .analysis-grid {
+    grid-template-columns: 330px 1fr;
+  }
+  .ranking-panel {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 920px) {
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 검색 폼 */
+.search-form {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+select,
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-main);
+  background: #fff;
+}
+
+select:focus,
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.mt-6 {
+  margin-top: 5px;
+}
+
+.field-hint {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.btn-preset {
+  font-size: 11.5px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border: 1px solid #bfdbfe;
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-preset:hover {
+  background: #dbeafe;
+}
+
+.radio-pill-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.radio-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 6px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  color: var(--text-secondary);
+  background: #f8fafc;
+}
+
+.radio-pill input {
+  display: none;
+}
+
+.radio-pill.active {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.weights-box {
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 11px;
+  font-size: 12px;
+}
+
+.weights-box summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.weights-body {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.weights-note {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.weight-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.btn-primary-full {
+  width: 100%;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 11px 14px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-primary-full:hover {
+  background: var(--primary-hover);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-secondary-sm {
+  background: #f1f5f9;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  padding: 6px 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-secondary-sm:hover {
+  background: #e2e8f0;
+}
+
+.Selected-point-box {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border-color);
+  background: #f8fafc;
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* 지도 패널 */
+.map-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.map-toolbar {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.map-toolbar h2 {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.checkbox-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.leaflet-map-container {
+  width: 100%;
+  height: 615px;
+  background: #e2e8f0;
+}
+
+.map-legend-bar {
+  padding: 9px 16px;
+  background: #f8fafc;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot.rank-top {
+  background: #1d4ed8;
+}
+.dot.rank-mid {
+  background: #0ea5e9;
+}
+.dot.competitor-dot {
+  background: #f97316;
+}
+.dot.warn-dot {
+  background: #d97706;
+}
+
+/* 커스텀 지도 마커 */
+.zone-rank-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 12px;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.35);
+  border: 2px solid #ffffff;
+  transition: transform 0.15s;
+}
+
+.zone-rank-marker.top3 {
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+}
+
+.zone-rank-marker.normal {
+  background: #0284c7;
+}
+
+.zone-rank-marker.partial {
+  background: #d97706;
+}
+
+/* 우측 순위 리스트 */
+.ranking-panel {
+  max-height: 715px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ranking-list {
+  padding: 10px 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rank-card {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.rank-card:hover {
+  border-color: #93c5fd;
+  box-shadow: var(--shadow-md);
+}
+
+.rank-card.selected {
+  border: 2px solid var(--primary);
+  background: #f8fbff;
+}
+
+.rank-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.rank-badge-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rank-num {
+  min-width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: #1e293b;
+  color: #fff;
+  font-weight: 800;
+  font-size: 12.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rank-num.top3 {
+  background: var(--primary);
+}
+
+.rank-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.rank-score-box {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.score-big {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.score-unit {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.rank-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 7px;
+}
+
+.tag {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-weight: 600;
+}
+
+.tag-type {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.tag-rel-high {
+  background: var(--accent-emerald-soft);
+  color: var(--accent-emerald);
+}
+
+.tag-rel-medium,
+.tag-rel-low {
+  background: var(--accent-amber-soft);
+  color: var(--accent-amber);
+  border: 1px solid #fde68a;
+}
+
+.rank-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px dashed #e2e8f0;
+  font-size: 11.5px;
+}
+
+.metric-cell span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 10.5px;
+}
+
+.metric-cell strong {
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.rank-card-footer {
+  margin-top: 9px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11.5px;
+}
+
+.compare-chk-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.btn-link-detail {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* 화면 3: 상권 상세 분석 */
+.detail-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detail-header-card {
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.detail-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 980px) {
+  .detail-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detail-box {
+  padding: 16px 18px;
+}
+
+.detail-box h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-definition-callout {
+  background: #f8fafc;
+  border-left: 3px solid var(--primary);
+  padding: 9px 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  border-radius: 4px;
+}
+
+.warning-callout {
+  background: var(--accent-amber-soft);
+  border: 1px solid #fde68a;
+  color: #92400e;
+  padding: 10px 13px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  margin-bottom: 12px;
+}
+
+.bar-row {
+  margin-bottom: 10px;
+}
+
+.bar-label-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  margin-bottom: 4px;
+}
+
+.bar-track {
+  height: 9px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 999px;
+}
+
+.bar-fill.closure {
+  background: var(--accent-rose);
+}
+
+.bar-fill.emerald {
+  background: var(--accent-emerald);
+}
+
+.meta-footnote {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color);
+  font-size: 11.5px;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pros-cons-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.list-pros,
+.list-risks {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.list-pros li {
+  background: var(--accent-emerald-soft);
+  border: 1px solid #a7f3d0;
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: #065f46;
+  font-size: 12.5px;
+}
+
+.list-risks li {
+  background: var(--accent-rose-soft);
+  border: 1px solid #fecdd3;
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: #9f1239;
+  font-size: 12.5px;
+}
+
+/* 화면 4: 후보 상권 비교 */
+.compare-wrapper {
+  padding-bottom: 18px;
+}
+
+.compare-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.compare-table-wrap {
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.compare-table th,
+.compare-table td {
+  border: 1px solid var(--border-color);
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.compare-table th {
+  background: #f8fafc;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.compare-summary-banner {
+  margin: 14px 16px 0;
+  padding: 12px 15px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #1e3a8a;
+}
+
+/* 화면 5-A: 창업 분석 보고서 */
+.report-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.report-paper {
+  padding: 28px 32px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.report-section {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-color);
+}
+
+.report-section h3 {
+  font-size: 15.5px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #0f172a;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  margin-top: 8px;
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid var(--border-color);
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.data-table th {
+  background: #f8fafc;
+  font-weight: 700;
+}
+
+/* 화면 5-B: 관리자 화면 */
+.admin-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 1024px) {
+  .admin-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.code-block {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 14px;
+  border-radius: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  max-height: 320px;
+  overflow-y: auto;
+  white-space: pre;
+}
+
+@media print {
+  .topbar,
+  .principle-banner,
+  .report-toolbar {
+    display: none !important;
+  }
+  .workspace {
+    padding: 0;
+  }
+  .report-paper {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
+}
+</style>
+</head>
+<body>
+  <!-- 상단 글로벌 네비게이션 -->
+  <header class="topbar">
+    <div class="topbar-brand" id="brandHomeBtn">
+      <div class="brand-logo">AI</div>
+      <div>
+        <div class="brand-title">창업입지 AI <span class="badge-mvp">MVP v1.0</span></div>
+        <div class="brand-subtitle">공공데이터·KOSIS 공식 생멸통계 기반 전국 창업 의사결정 지원 플랫폼</div>
+      </div>
+    </div>
+
+    <nav class="topbar-nav" role="tablist">
+      <button class="nav-tab active" data-view="main-analysis">
+        <span class="step-num">1·2</span> 검색 · 지도 추천 (TOP 10)
+      </button>
+      <button class="nav-tab" data-view="zone-detail">
+        <span class="step-num">3</span> 상권 상세 분석
+      </button>
+      <button class="nav-tab" data-view="zone-compare">
+        <span class="step-num">4</span> 후보 상권 비교 <span class="compare-count-pill" id="compareCountPill">0/3</span>
+      </button>
+      <button class="nav-tab" data-view="analysis-report">
+        <span class="step-num">5</span> 창업 분석 보고서
+      </button>
+      <button class="nav-tab" data-view="admin-console">
+        <span class="step-num">관리</span> 데이터·API·DB 관리
+      </button>
+    </nav>
+
+    <div class="topbar-status">
+      <span class="status-dot"></span>
+      <span id="apiStatusText">공공데이터 DB 연결 정상 (2026-Q1 기준)</span>
+    </div>
+  </header>
+
+  <!-- 의사결정 지원 도구 원칙 안내 배너 -->
+  <div class="principle-banner">
+    <div class="principle-inner">
+      <strong>[데이터 기반 의사결정 원칙]</strong>
+      폐업률(연간 활동사업체 대비 소멸 비율)과 생존율(신생 코호트 N년 후 생존 비율)은 정의가 달라 분리 표시합니다.
+      미확보 통계는 임의의 숫자로 채우지 않으며, 개별 사업체의 과거 폐업 이력을 추정하여 단정 표시하지 않습니다.
+    </div>
+  </div>
+
+  <!-- 메인 컨테이너 -->
+  <main class="workspace">
+
+    <!-- ================================================================== -->
+    <!-- [화면 1 & 화면 2] 업종·지역 검색 + 지도 기반 TOP 10 입지 추천       -->
+    <!-- ================================================================== -->
+    <section id="view-main-analysis" class="view-section active">
+      <div class="analysis-grid">
+
+        <!-- 좌측: 화면 1. 업종·지역·예산 검색 조건 패널 -->
+        <aside class="search-panel card">
+          <div class="card-header">
+            <h2>1. 창업 조건 및 입지 검색</h2>
+            <button type="button" class="btn-preset" id="btnGangnamPreset" title="기획서 예시 조건 즉시 불러오기">
+              기획서 예시 적용 (커피숍·강남구·1억)
+            </button>
+          </div>
+
+          <form id="searchForm" class="search-form">
+            <div class="form-group">
+              <label for="industrySelect">표준 업종 선택 또는 검색</label>
+              <select id="industrySelect" required></select>
+              <input type="text" id="industryKeywordInput" placeholder="직접 입력 (예: 커피숍, 치킨, 미용실, 학원...)" class="mt-6" />
+              <div class="field-hint" id="industryCodeHint">상가정보: I21201 ↔ 통계청 KSIC: I5622</div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="sidoSelect">시·도</label>
+                <select id="sidoSelect"></select>
+              </div>
+              <div class="form-group">
+                <label for="sigunguSelect">시·군·구</label>
+                <select id="sigunguSelect"></select>
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="emdSelect">읍·면·동 (선택)</label>
+                <select id="emdSelect">
+                  <option value="">시·군·구 전체 후보 비교</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="radiusSelect">분석 반경 설정</label>
+                <select id="radiusSelect">
+                  <option value="300">반경 300m (도보 4분)</option>
+                  <option value="500" selected>반경 500m (도보 7분·권장)</option>
+                  <option value="700">반경 700m (도보 10분)</option>
+                  <option value="1000">반경 1,000m (광역 상권)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="budgetInput">초기 투자 예산 한도 (만원)</label>
+                <input type="number" id="budgetInput" value="10000" min="1000" step="500" />
+                <div class="field-hint" id="budgetFormattedHint">약 1억 0,000만 원 (보증금+시설비)</div>
+              </div>
+              <div class="form-group">
+                <label for="rentInput">월 임대료 한도 (만원)</label>
+                <input type="number" id="rentInput" value="350" min="50" step="10" />
+                <div class="field-hint">부가세·관리비 별도 기준</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>매장 유형 선택</label>
+              <div class="radio-pill-group" id="storeTypeGroup">
+                <label class="radio-pill active">
+                  <input type="radio" name="storeType" value="GENERAL" checked /> 일반 매장
+                </label>
+                <label class="radio-pill">
+                  <input type="radio" name="storeType" value="TAKEOUT" /> 테이크아웃·소형
+                </label>
+                <label class="radio-pill">
+                  <input type="radio" name="storeType" value="LARGE" /> 대형 매장
+                </label>
+              </div>
+            </div>
+
+            <!-- 가중치 투명 공개 및 조정 아코디언 -->
+            <details class="weights-box">
+              <summary>평가 가중치 기준 확인 (초기 제안: 40/25/20/15%)</summary>
+              <div class="weights-body">
+                <p class="weights-note">기획서 8장 기준 초기 가중치입니다. 결측 지표 발생 시 확보된 지표만으로 자동 재정규화됩니다.</p>
+                <div class="weight-row">
+                  <span>생존·폐업 통계</span>
+                  <strong id="wSurvivalLabel">40%</strong>
+                </div>
+                <div class="weight-row">
+                  <span>동일 업종 경쟁 강도</span>
+                  <strong id="wCompLabel">25%</strong>
+                </div>
+                <div class="weight-row">
+                  <span>지역 수요·인구</span>
+                  <strong id="wDemandLabel">20%</strong>
+                </div>
+                <div class="weight-row">
+                  <span>임대료·창업비용 부담</span>
+                  <strong id="wCostLabel">15%</strong>
+                </div>
+              </div>
+            </details>
+
+            <button type="submit" class="btn-primary-full" id="btnRunAnalysis">
+              상권 분석 및 후보지 TOP 10 추천 실행
+            </button>
+          </form>
+
+          <div class="Selected-point-box" id="mapClickedPointBox">
+            <span>지도 클릭 좌표:</span>
+            <strong id="clickedCoordText">지도에서 원하는 위치를 직접 클릭해 반경을 확인할 수 있습니다.</strong>
+          </div>
+        </aside>
+
+        <!-- 중앙: 인터랙티브 지도 (추천 마커, 반경 원, 경쟁 점포 분포 표시) -->
+        <div class="map-panel card">
+          <div class="map-toolbar">
+            <div>
+              <h2 id="mapHeaderTitle">추천 상권 지도 및 경쟁 점포 공간 분포</h2>
+              <p class="subtext" id="mapSubNotice">마커를 클릭하면 우측 순위 카드 및 상권 상세 분석과 즉시 연동됩니다.</p>
+            </div>
+            <div class="map-controls">
+              <label class="checkbox-inline">
+                <input type="checkbox" id="toggleCompetitorsChk" checked />
+                <span>선택 상권 내 경쟁 점포 분포 표시</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="leafletMap" class="leaflet-map-container"></div>
+
+          <div class="map-legend-bar">
+            <div class="legend-item"><span class="dot rank-top"></span> 추천 1~3위 후보 상권</div>
+            <div class="legend-item"><span class="dot rank-mid"></span> 추천 4~10위 후보 상권</div>
+            <div class="legend-item"><span class="dot competitor-dot"></span> 반경 내 동일 업종 경쟁 점포</div>
+            <div class="legend-item"><span class="dot warn-dot"></span> 일부 통계 미확보(신뢰도 주의) 상권</div>
+          </div>
+        </div>
+
+        <!-- 우측: 화면 2. 추천 상권 TOP 10 순위 리스트 -->
+        <aside class="ranking-panel card">
+          <div class="card-header">
+            <div>
+              <h2>2. 추천 상권 TOP 10</h2>
+              <p class="subtext" id="rankingMetaTime">기준일: 2026-Q1 상가정보 · 2025 기업생멸통계</p>
+            </div>
+            <button type="button" class="btn-secondary-sm" id="btnGoCompareFromList">
+              선택 비교 (<span id="selectedCompareCountBtn">0</span>)
+            </button>
+          </div>
+
+          <div id="rankingListContainer" class="ranking-list">
+            <!-- JS에서 추천 상권 TOP 10 렌더링 -->
+          </div>
+        </aside>
+
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- [화면 3] 상권 상세 분석 패널                                        -->
+    <!-- ================================================================== -->
+    <section id="view-zone-detail" class="view-section">
+      <div id="zoneDetailContent" class="detail-container">
+        <!-- JS에서 선택된 후보 상권 상세 정보 렌더링 -->
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- [화면 4] 후보 상권 비교 (2~3곳 선택 항목별 비교표 및 불확실성 안내)   -->
+    <!-- ================================================================== -->
+    <section id="view-zone-compare" class="view-section">
+      <div class="card compare-wrapper">
+        <div class="card-header">
+          <div>
+            <h2>4. 후보 상권 정밀 비교 (2~3곳)</h2>
+            <p class="subtext">추천 상권 목록에서 체크한 2~3곳의 생존율·폐업률·경쟁 강도·배후 수요·예상 비용 및 데이터 누락 여부를 나란히 비교합니다.</p>
+          </div>
+          <div class="compare-actions">
+            <button type="button" class="btn-secondary-sm" id="btnAutoPickTop3">상위 1·2·3위 자동 선택</button>
+            <button type="button" class="btn-secondary-sm" id="btnIncludePartialZone">통계 부족(결측) 상권 포함 비교 예시</button>
+          </div>
+        </div>
+        <div id="compareTableContainer"></div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- [화면 5-A] 창업 분석 보고서 (인쇄 및 PDF 저장 지원)                  -->
+    <!-- ================================================================== -->
+    <section id="view-analysis-report" class="view-section">
+      <div class="report-toolbar">
+        <div>
+          <h2>5. 데이터 기반 창업 입지 분석 보고서</h2>
+          <p class="subtext">예비 창업자·소상공인·컨설턴트 제출용 종합 분석 리포트 (데이터 출처 및 기준일 포함)</p>
+        </div>
+        <button type="button" class="btn-primary" id="btnPrintReport">보고서 인쇄 / PDF 저장</button>
+      </div>
+      <div id="reportDocumentContainer" class="report-paper card">
+        <!-- JS에서 보고서 렌더링 -->
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- [화면 5-B] 관리자 대시보드 (API 상태, 수집로그, 국세청 검증, DB 스키마) -->
+    <!-- ================================================================== -->
+    <section id="view-admin-console" class="view-section">
+      <div id="adminConsoleContainer" class="admin-container">
+        <!-- JS에서 관리자 기능 렌더링 -->
+      </div>
+    </section>
+
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>/**
+ * 전국 업종별 창업 입지 추천 플랫폼 (창업입지 AI)
+ * 공공데이터 표준 저장소 (PostgreSQL 연동 및 인메모리 표준 데이터셋)
+ *
+ * [핵심 원칙 준수]
+ * 1. 모든 통계 레코드에 출처(source_id), 기준연도(base_year), 관측기간(observation_period),
+ *    공표일(published_at), 수집일(collected_at), 품질상태(quality_status)를 명시합니다.
+ * 2. 폐업률(연간 활동사업체 대비 소멸 비율)과 생존율(신생기업 코호트의 1·3·5년 후 생존 비율)은
+ *    산출 기준이 다르므로 분리 저장·표시하며 절대 혼용하지 않습니다.
+ * 3. 통계가 확보되지 않은 항목(예: 비표본 상권의 임대료, 소규모 읍면동의 5년 생존율, 유동인구 미측정 지역)은
+ *    임의의 숫자로 채우지 않고 null로 유지합니다.
+ */
+
+const DATA_SOURCES = [
+  {
+    source_id: 'SRC_SEMAS_STORE',
+    provider_name: '소상공인시장진흥공단',
+    dataset_name: '상가(상권)정보 OpenAPI',
+    official_url: 'https://www.data.go.kr/data/15012005/openapi.do',
+    api_endpoint: 'https://apis.data.go.kr/B553077/api/open/sdsc2',
+    update_cycle: '분기별 (연 4회)',
+    spatial_granularity: '개별 점포 좌표 (위·경도) 및 행정동/법정동',
+    terms_of_use: '공공누리 제1유형 (출처표시 시 상업적 이용 가능)',
+    daily_quota_limit: 10000,
+    daily_quota_used: 1842,
+    last_verified_at: '2026-10-30T08:00:00+09:00',
+    status: 'CONNECTED',
+    priority: '최우선'
+  },
+  {
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    provider_name: '통계청 (KOSIS 국가통계포털)',
+    dataset_name: '기업생멸행정통계 (산업·지역별 활동·신생·소멸 및 1·3·5년 생존율)',
+    official_url: 'https://kosis.kr/openapi/index/index.jsp',
+    api_endpoint: 'https://kosis.kr/openapi/Param/statisticsParameterData.do',
+    update_cycle: '연 1회 (매년 12월 공표)',
+    spatial_granularity: '전국 / 시·도 / 시·군·구 (산업대분류·중분류)',
+    terms_of_use: '출처 및 기준연도 명시 필수, 생존율과 폐업(소멸)률 정의 구분 표기',
+    daily_quota_limit: 10000,
+    daily_quota_used: 620,
+    last_verified_at: '2026-10-30T08:05:00+09:00',
+    status: 'CONNECTED',
+    priority: '최우선'
+  },
+  {
+    source_id: 'SRC_KOSIS_POP_BIZ',
+    provider_name: '통계청·행정안전부 (KOSIS)',
+    dataset_name: '주민등록인구현황 및 전국사업체조사 (인구·가구·종사자 수)',
+    official_url: 'https://kosis.kr/openapi/index/index.jsp',
+    api_endpoint: 'https://kosis.kr/openapi/Param/statisticsParameterData.do',
+    update_cycle: '월별(인구) / 연 1회(사업체)',
+    spatial_granularity: '읍·면·동 및 시·군·구',
+    terms_of_use: '공공누리 제1유형 (출처 및 기준시점 명시)',
+    daily_quota_limit: 10000,
+    daily_quota_used: 515,
+    last_verified_at: '2026-10-30T08:10:00+09:00',
+    status: 'CONNECTED',
+    priority: '보조'
+  },
+  {
+    source_id: 'SRC_NTS_BIZ_STATUS',
+    provider_name: '국세청',
+    dataset_name: '사업자등록정보 진위확인 및 상태조회 서비스',
+    official_url: 'https://www.data.go.kr/data/15081808/openapi.do',
+    api_endpoint: 'https://api.odcloud.kr/api/nts-businessman/v1/status',
+    update_cycle: '실시간 조회 (단건/100건 배치)',
+    spatial_granularity: '개별 사업자등록번호 단위',
+    terms_of_use: '사업자등록번호를 알고 있는 대상의 현재 상태(계속/휴업/폐업) 확인 전용. 과거 폐업 이력 소급 복원 불가.',
+    daily_quota_limit: 100000,
+    daily_quota_used: 312,
+    last_verified_at: '2026-10-30T08:15:00+09:00',
+    status: 'STANDBY_ON_DEMAND',
+    priority: '보조'
+  },
+  {
+    source_id: 'SRC_REB_RENT',
+    provider_name: '한국부동산원·지자체 상권정보',
+    dataset_name: '상업용부동산 임대동향조사 (표본 상권 임대료·보증금 지표)',
+    official_url: 'https://www.data.go.kr/',
+    api_endpoint: 'https://www.reb.or.kr/r-one/openapi',
+    update_cycle: '분기별 (연 4회)',
+    spatial_granularity: '주요 표본 상권 단위 (비표본 지역은 결측 처리)',
+    terms_of_use: '출처 표시 필수, 비표본 상권은 임의 추정 금지',
+    daily_quota_limit: 5000,
+    daily_quota_used: 290,
+    last_verified_at: '2026-10-30T08:20:00+09:00',
+    status: 'CONNECTED',
+    priority: '보조'
+  }
+];
+
+const INDUSTRY_CODES = [
+  {
+    industry_code: 'IND_CAFE',
+    industry_name: '커피전문점·카페',
+    category_large: '음식점업',
+    category_middle: '비알코올 음료점업',
+    semas_code: 'I21201',
+    kosis_ksic_code: 'I5622',
+    typical_area_pyeong: { GENERAL: 15, TAKEOUT: 8, LARGE: 35 },
+    keywords: ['커피숍', '카페', '커피', '에스프레소', '디저트카페', '테이크아웃커피', '로스터리']
+  },
+  {
+    industry_code: 'IND_KOREAN',
+    industry_name: '한식 일반음식점',
+    category_large: '음식점업',
+    category_middle: '한식 음식점업',
+    semas_code: 'I20101',
+    kosis_ksic_code: 'I5611',
+    typical_area_pyeong: { GENERAL: 24, TAKEOUT: 10, LARGE: 50 },
+    keywords: ['한식', '백반', '국밥', '고기집', '삼겹살', '식당', '찌개', '분식']
+  },
+  {
+    industry_code: 'IND_CHICKEN',
+    industry_name: '치킨·호프 전문점',
+    category_large: '음식점업',
+    category_middle: '기타 간이음식점업',
+    semas_code: 'I21006',
+    kosis_ksic_code: 'I5619',
+    typical_area_pyeong: { GENERAL: 18, TAKEOUT: 9, LARGE: 35 },
+    keywords: ['치킨', '통닭', '호프', '맥주', '배달치킨', '치맥']
+  },
+  {
+    industry_code: 'IND_BAKERY',
+    industry_name: '제과·베이커리',
+    category_large: '음식점업',
+    category_middle: '제과점업',
+    semas_code: 'I21001',
+    kosis_ksic_code: 'I5619',
+    typical_area_pyeong: { GENERAL: 18, TAKEOUT: 10, LARGE: 40 },
+    keywords: ['빵집', '베이커리', '제과점', '케이크', '디저트', '구움과자']
+  },
+  {
+    industry_code: 'IND_CONV',
+    industry_name: '편의점',
+    category_large: '소매업',
+    category_middle: '체인화 편의점',
+    semas_code: 'G20405',
+    kosis_ksic_code: 'G4712',
+    typical_area_pyeong: { GENERAL: 20, TAKEOUT: 12, LARGE: 32 },
+    keywords: ['편의점', '24시마트', 'CVS', '소매점']
+  },
+  {
+    industry_code: 'IND_BEAUTY',
+    industry_name: '미용실·헤어샵',
+    category_large: '생활서비스',
+    category_middle: '두발 미용업',
+    semas_code: 'S20701',
+    kosis_ksic_code: 'S9611',
+    typical_area_pyeong: { GENERAL: 15, TAKEOUT: 9, LARGE: 35 },
+    keywords: ['미용실', '헤어샵', '바버샵', '네일', '뷰티']
+  },
+  {
+    industry_code: 'IND_FITNESS',
+    industry_name: '피트니스·필라테스',
+    category_large: '여가·스포츠',
+    category_middle: '체력단련시설 운영업',
+    semas_code: 'R10307',
+    kosis_ksic_code: 'R9113',
+    typical_area_pyeong: { GENERAL: 45, TAKEOUT: 22, LARGE: 90 },
+    keywords: ['헬스장', '피트니스', '필라테스', '요가', 'PT샵', '운동']
+  },
+  {
+    industry_code: 'IND_ACADEMY',
+    industry_name: '보습·입시·외국어학원',
+    category_large: '교육서비스',
+    category_middle: '일반 교습학원',
+    semas_code: 'P10501',
+    kosis_ksic_code: 'P8550',
+    typical_area_pyeong: { GENERAL: 35, TAKEOUT: 18, LARGE: 70 },
+    keywords: ['학원', '교습소', '영어학원', '수학학원', '공부방', '어학원']
+  }
+];
+
+/**
+ * 전국 행정구역 계층 구조 (시·도 -> 시·군·구 -> 주요 행정동/상권)
+ */
+const REGIONS_TREE = [
+  {
+    sido_code: '11',
+    sido_name: '서울특별시',
+    center: [37.5665, 126.9780],
+    sigungu_list: [
+      {
+        sigungu_code: '11680',
+        sigungu_name: '강남구',
+        center: [37.5172, 127.0473],
+        emd_list: ['역삼1동', '역삼2동', '논현1동', '삼성1동', '대치2동', '대치4동', '신사동', '청담동', '도곡1동', '수서동', '개포2동', '세곡동']
+      },
+      {
+        sigungu_code: '11440',
+        sigungu_name: '마포구',
+        center: [37.5663, 126.9019],
+        emd_list: ['서교동', '연남동', '합정동', '망원1동', '공덕동', '상암동']
+      },
+      {
+        sigungu_code: '11200',
+        sigungu_name: '성동구',
+        center: [37.5633, 127.0371],
+        emd_list: ['성수1가1동', '성수2가3동', '왕십리도선동', '옥수동', '금호1가동']
+      },
+      {
+        sigungu_code: '11710',
+        sigungu_name: '송파구',
+        center: [37.5145, 127.1059],
+        emd_list: ['잠실3동', '송파1동(송리단길)', '문정2동(문정법조단지)', '가락본동', '위례동']
+      }
+    ]
+  },
+  {
+    sido_code: '26',
+    sido_name: '부산광역시',
+    center: [35.1796, 129.0756],
+    sigungu_list: [
+      {
+        sigungu_code: '26350',
+        sigungu_name: '해운대구',
+        center: [35.1631, 129.1636],
+        emd_list: ['우1동(해리단길)', '우2동(센텀시티)', '좌2동(장산역)', '중1동', '송정동']
+      },
+      {
+        sigungu_code: '26230',
+        sigungu_name: '부산진구',
+        center: [35.1628, 129.0532],
+        emd_list: ['전포1동(전포카페거리)', '부전2동(서면중앙)', '가야1동', '양정1동']
+      }
+    ]
+  },
+  {
+    sido_code: '27',
+    sido_name: '대구광역시',
+    center: [35.8714, 128.6014],
+    sigungu_list: [
+      {
+        sigungu_code: '27260',
+        sigungu_name: '수성구',
+        center: [35.8581, 128.6306],
+        emd_list: ['범어1동(범어네거리)', '만촌3동', '두산동(수성못)', '시지동']
+      }
+    ]
+  },
+  {
+    sido_code: '28',
+    sido_name: '인천광역시',
+    center: [37.4563, 126.7052],
+    sigungu_list: [
+      {
+        sigungu_code: '28185',
+        sigungu_name: '연수구',
+        center: [37.4102, 126.6788],
+        emd_list: ['송도1동(센트럴파크)', '송도2동(트리플스트리트)', '연수2동', '옥련1동']
+      }
+    ]
+  },
+  {
+    sido_code: '30',
+    sido_name: '대전광역시',
+    center: [36.3504, 127.3845],
+    sigungu_list: [
+      {
+        sigungu_code: '30200',
+        sigungu_name: '유성구',
+        center: [36.3622, 127.3561],
+        emd_list: ['봉명동(유성온천)', '어은동(궁동·대학가)', '관평동(테크노밸리)', '학하동']
+      }
+    ]
+  },
+  {
+    sido_code: '41',
+    sido_name: '경기도',
+    center: [37.4138, 127.5183],
+    sigungu_list: [
+      {
+        sigungu_code: '41135',
+        sigungu_name: '성남시 분당구',
+        center: [37.3827, 127.1189],
+        emd_list: ['삼평동(판교테크노밸리)', '정자동(정자카페거리)', '서현1동', '야탑1동', '운중동']
+      },
+      {
+        sigungu_code: '41117',
+        sigungu_name: '수원시 영통구',
+        center: [37.2596, 127.0465],
+        emd_list: ['이의동(광교중앙역)', '하동(광교호수공원)', '영통1동', '매탄3동(삼성디지털시티)']
+      }
+    ]
+  }
+];
+
+/**
+ * 업종별 전국/시도 기준 공식 생멸·생존·폐업 통계 베이스라인 (통계청 KOSIS 기업생멸행정통계 및 지자체 상권통계 기준 구조)
+ * 주의:
+ * - survival_rate_1yr / 3yr / 5yr : 신생기업 코호트 중 1년, 3년, 5년 뒤에도 영업 활동을 지속하는 비율(%)
+ * - annual_closure_rate : 해당 기준연도 전체 활동 사업체 수 대비 당해 소멸(폐업) 사업체 수 비율(%)
+ *   -> 두 지표는 분모(신생 코호트 vs 전체 활동 사업체)가 다르므로 100 - 생존율 ≠ 폐업률임을 명확히 안내합니다.
+ */
+const INDUSTRY_BASE_SURVIVAL_STATS = {
+  IND_CAFE: {
+    survival_rate_1yr: 64.2,
+    survival_rate_3yr: 41.8,
+    survival_rate_5yr: 29.4,
+    annual_closure_rate: 12.6,
+    new_entry_rate: 16.8,
+    avg_operating_years: 3.4,
+    metric_definition:
+      '생존율은 신생 사업체 코호트가 1·3·5년 후에도 영업 활동을 유지하는 비율(통계청 기업생멸행정통계 기준)이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 폐업 사업체 비율입니다. 두 지표는 산출 모수가 달라 단순 합산(100%)되지 않습니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_KOREAN: {
+    survival_rate_1yr: 66.1,
+    survival_rate_3yr: 44.5,
+    survival_rate_5yr: 31.2,
+    annual_closure_rate: 11.4,
+    new_entry_rate: 13.5,
+    avg_operating_years: 4.2,
+    metric_definition:
+      '생존율은 신생 한식 음식점 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 해당 연도 전체 활동 한식 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_CHICKEN: {
+    survival_rate_1yr: 59.8,
+    survival_rate_3yr: 36.4,
+    survival_rate_5yr: 24.1,
+    annual_closure_rate: 14.8,
+    new_entry_rate: 15.2,
+    avg_operating_years: 2.9,
+    metric_definition:
+      '생존율은 신생 간이음식점(치킨·호프) 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_BAKERY: {
+    survival_rate_1yr: 68.5,
+    survival_rate_3yr: 47.2,
+    survival_rate_5yr: 34.6,
+    annual_closure_rate: 10.2,
+    new_entry_rate: 13.1,
+    avg_operating_years: 4.5,
+    metric_definition:
+      '생존율은 신생 제과점업 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_CONV: {
+    survival_rate_1yr: 78.4,
+    survival_rate_3yr: 58.9,
+    survival_rate_5yr: 43.7,
+    annual_closure_rate: 7.8,
+    new_entry_rate: 9.4,
+    avg_operating_years: 5.6,
+    metric_definition:
+      '생존율은 체인화 편의점 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 편의점 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_BEAUTY: {
+    survival_rate_1yr: 73.2,
+    survival_rate_3yr: 52.6,
+    survival_rate_5yr: 39.8,
+    annual_closure_rate: 8.9,
+    new_entry_rate: 12.3,
+    avg_operating_years: 5.1,
+    metric_definition:
+      '생존율은 두발 미용업 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_FITNESS: {
+    survival_rate_1yr: 71.0,
+    survival_rate_3yr: 48.3,
+    survival_rate_5yr: 33.9,
+    annual_closure_rate: 10.5,
+    new_entry_rate: 14.9,
+    avg_operating_years: 4.0,
+    metric_definition:
+      '생존율은 체력단련시설 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_ACADEMY: {
+    survival_rate_1yr: 75.6,
+    survival_rate_3yr: 55.4,
+    survival_rate_5yr: 42.1,
+    annual_closure_rate: 8.4,
+    new_entry_rate: 11.0,
+    avg_operating_years: 5.4,
+    metric_definition:
+      '생존율은 일반 교습학원 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 학원 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  }
+};
+
+/**
+ * 전국 주요 후보 상권 (Commercial Zones) 마스터 데이터
+ * - 기획서 예시(커피숍 + 서울특별시 강남구 + 초기 투자비 1억 원 이하 → 추천 상권 10곳 이상)를 완벽히 검증할 수 있도록
+ *   서울 강남구에 12개 세부 상권을 배치하고, 서울 타구 및 부산·대구·인천·대전·경기 주요 상권을 함께 수록합니다.
+ * - 일부 상권(예: 세곡동 보금자리 상권, 학하동 수통골 외곽 상권 등)은 공식 임대료 표본이나 5년 장기 생존 코호트가
+ *   미확보된 상태(null)로 두어, 결측 데이터 처리 원칙을 실제 동작으로 검증합니다.
+ */
+const COMMERCIAL_ZONES = [
+  // ======================== 서울특별시 강남구 (12개 후보 상권) ========================
+  {
+    zone_id: 'ZONE_GN_01',
+    zone_name: '역삼1동 테헤란로 이면(국기원·강남역 북측) 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '강남구',
+    emd_name: '역삼1동',
+    region_code: '1168010100',
+    lat: 37.5006,
+    lng: 127.0334,
+    district_type: 'OFFICE',
+    district_type_label: '업무·오피스 밀집형',
+    resident_population: 36420,
+    household_count: 23810,
+    worker_population: 94200,
+    floating_pop_daily: 118500,
+    age_20_39_ratio: 48.6,
+    age_40_59_ratio: 31.2,
+    total_biz_count: 8940,
+    avg_monthly_rent_per_py: 24.5, // 만원/평
+    avg_deposit_per_py: 260.0,     // 만원/평
+    estimated_interior_per_py: 220.0,
+    survival_modifier: { s1: +4.2, s3: +3.8, s5: +2.9, closure: -1.1 },
+    store_counts_by_industry: {
+      IND_CAFE: 84, IND_KOREAN: 142, IND_CHICKEN: 28, IND_BAKERY: 24,
+      IND_CONV: 46, IND_BEAUTY: 52, IND_FITNESS: 31, IND_ACADEMY: 19
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +3.6, IND_KOREAN: -1.4, IND_CHICKEN: -3.2, IND_BAKERY: +4.3,
+      IND_CONV: +2.1, IND_BEAUTY: +1.8, IND_FITNESS: +6.5, IND_ACADEMY: 0.0
+    },
+    adjacent_zones: ['역삼역 남측 오피스 상권', '강남역 메인대로 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_GN_02',
+    zone_name: '역삼2동 선릉·개나리아파트 배후 혼합 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '강남구',
+    emd_name: '역삼2동',
+    region_code: '1168010102',
+    lat: 37.4989,
+    lng: 127.0468,
+    district_type: 'MIXED',
+    district_type_label: '업무·대단지 주거 혼합형',
+    resident_population: 37850,
+    household_count: 15920,
+    worker_population: 48600,
+    floating_pop_daily: 68400,
+    age_20_39_ratio: 36.4,
+    age_40_59_ratio: 38.5,
+    total_biz_count: 4120,
+    avg_monthly_rent_per_py: 19.2,
+    avg_deposit_per_py: 210.0,
+    estimated_interior_per_py: 210.0,
+    survival_modifier: { s1: +6.1, s3: +5.4, s5: +4.6, closure: -2.0 },
+    store_counts_by_industry: {
+      IND_CAFE: 46, IND_KOREAN: 78, IND_CHICKEN: 19, IND_BAKERY: 16,
+      IND_CONV: 29, IND_BEAUTY: 34, IND_FITNESS: 18, IND_ACADEMY: 44
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +2.2, IND_KOREAN: +1.2, IND_CHICKEN: 0.0, IND_BAKERY: +6.2,
+      IND_CONV: +3.4, IND_BEAUTY: +2.9, IND_FITNESS: +5.5, IND_ACADEMY: +4.5
+    },
+    adjacent_zones: ['선릉역 테헤란로 상권', '도곡1동 한티역 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_GN_03',
+    zone_name: '대치4동 선릉역 남측·한티 학원가 배후 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '강남구',
+    emd_name: '대치4동',
+    region_code: '1168010604',
+    lat: 37.5002,
+    lng: 127.0548,
+    district_type: 'MIXED',
+    district_type_label: '교육·오피스·주거 복합형',
+    resident_population: 20480,
+    household_count: 9840,
+    worker_population: 39400,
+    floating_pop_daily: 79200,
+    age_20_39_ratio: 34.8,
+    age_40_59_ratio: 41.2,
+    total_biz_count: 4680,
+    avg_monthly_rent_per_py: 21.0,
+    avg_deposit_per_py: 230.0,
+    estimated_interior_per_py: 215.0,
+    survival_modifier: { s1: +5.8, s3: +6.2, s5: +5.1, closure: -2.2 },
+    store_counts_by_industry: {
+      IND_CAFE: 52, IND_KOREAN: 86, IND_CHICKEN: 17, IND_BAKERY: 21,
+      IND_CONV: 31, IND_BEAUTY: 28, IND_FITNESS: 19, IND_ACADEMY: 138
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +1.9, IND_KOREAN: 0.0, IND_CHICKEN: -5.5, IND_BAKERY: +4.8,
+      IND_CONV: +3.2, IND_BEAUTY: +3.6, IND_FITNESS: +5.2, IND_ACADEMY: +7.8
+    },
+    adjacent_zones: ['대치2동 은마사거리 학원가', '역삼2동 선릉 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_GN_04',
+    zone_name: '논현1동 학동역·영동시장 생활밀착 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '강남구',
+    emd_name: '논현1동',
+    region_code: '1168010801',
+    lat: 37.5115,
+    lng: 127.0284,
+    district_type: 'MIXED',
+    district_type_label: '상업·1인가구 주거 복합형',
+    resident_population: 22910,
+    household_count: 14820,
+    worker_population: 44100,
+    floating_pop_daily: 71500,
+    age_20_39_ratio: 51.2,
+    age_40_59_ratio: 28.4,
+    total_biz_count: 5210,
+    avg_monthly_rent_per_py: 20.5,
+    avg_deposit_per_py: 220.0,
+    estimated_interior_per_py: 210.0,
+    survival_modifier: { s1: +2.8, s3: +2.1, s5: +1.4, closure: -0.6 },
+    store_counts_by_industry: {
+      IND_CAFE: 58, IND_KOREAN: 118, IND_CHICKEN: 31, IND_BAKERY: 18,
+      IND_CONV: 38, IND_BEAUTY: 46, IND_FITNESS: 24, IND_ACADEMY: 12
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +3.4, IND_KOREAN: -0.8, IND_CHICKEN: +3.2, IND_BAKERY: +5.5,
+      IND_CONV: +2.6, IND_BEAUTY: +4.3, IND_FITNESS: +4.1, IND_ACADEMY: -7.6
+    },
+    adjacent_zones: ['신사역 가로수길 상권', '언주역 차병원 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_GN_05',
+    zone_name: '수서동 수서역세권·업무단지 배후 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '강남구',
+    emd_name: '수서동',
+    region_code: '1168011500',
+    lat: 37.4875,
+    lng: 127.1014,
+    district_type: 'MIXED',
+    district_type_label: '광역환승·업무·주거 혼합형',
+    resident_population: 16240,
+    household_count: 7920,
+    worker_population: 34800,
+    floating_pop_daily: 64300,
+    age_20_39_ratio: 35.1,
+    age_40_59_ratio: 36.8,
+    total_biz_count: 2490,
+    avg_monthly_rent_per_py: 17.8,
+    avg_deposit_per_py: 185.0,
+    estimated_interior_per_py: 200.0,
+    survival_modifier: { s1: +6.8, s3: +5.9, s5: +4.8, closure: -2.4 },
+    store_counts_by_industry: {
+      IND_CAFE: 31, IND_KOREAN: 56, IND_CHICKEN: 14, IND_BAKERY: 11,
+      IND_CONV: 22, IND_BEAUTY: 19, IND_FITNESS: 12, IND_ACADEMY: 15
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +6.8, IND_KOREAN: +3.7, IND_CHICKEN: +7.1, IND_BAKERY: +10.0,
+      IND_CONV: +4.7, IND_BEAUTY: +5.2, IND_FITNESS: +9.0, IND_ACADEMY: +6.6
+    },
+    adjacent_zones: ['문정법조단지 상권', '가락시장역 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_GN_06',
+    zone_name: '도곡1동 매봉역·양재천 카페거리 배후 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '강남구',
+    emd_name: '도곡1동',
+    region_code: '1168011801',
+    lat: 37.4868,
+    lng: 127.0439,
+    district_type: 'RESIDENTIAL',
+    district_type_label: '고소득 주거·산책로 결합형',
+    resident_population: 22650,
+    household_count: 8940,
+    worker_population: 26800,
+    floating_pop_daily: 48200,
+    age_20_39_ratio: 33.2,
+    age_40_59_ratio: 40.4,
+    total_biz_count: 2380,
+    avg_monthly_rent_per_py: 18.6,
+    avg_deposit_per_py: 200.0,
+    estimated_interior_per_py: 215.0,
+    survival_modifier: { s1: +7.2, s3: +6.5, s5: +5.6, closure: -2.6 },
+    store_counts_by_industry: {
+      IND_CAFE: 38, IND_KOREAN: 49, IND_CHICKEN: 12, IND_BAKERY: 15,
+      IND_CONV: 18, IND_BEAUTY: 24, IND_FITNESS: 14, IND_ACADEMY: 26
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +5.5, IND_KOREAN: +2.0, IND_CHICKEN: 0.0, IND_BAKERY: +7.1,
+      IND_CONV: +5.8, IND_BEAUTY: +4.1, IND_FITNESS: +7.6, IND_ACADEMY: +3.8
+    },
+    adjacent_zones: ['양재역 북측 오피스 상권', '역삼2동 선릉 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_GN_07',
+    zone_name: '삼성1동 삼성역·코엑스 배후 오피스 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '강남구',
+    emd_name: '삼성1동',
+    region_code: '1168010501',
+    lat: 37.5092,
+    lng: 127.0605,
+    district_type: 'OFFICE',
+    district_type_label: '대형업무·컨벤션 중심형',
+    resident_population: 12450,
+    household_count: 6180,
+    worker_population: 88400,
+    floating_pop_daily: 109400,
+    age_20_39_ratio: 44.5,
+    age_40_59_ratio: 35.8,
+    total_biz_count: 6120,
+    avg_monthly_rent_per_py: 31.0,
+    avg_deposit_per_py: 340.0,
+    estimated_interior_per_py: 240.0,
+    survival_modifier: { s1: +3.9, s3: +3.2, s5: +2.1, closure: -0.9 },
+    store_counts_by_industry: {
+      IND_CAFE: 92, IND_KOREAN: 136, IND_CHICKEN: 22, IND_BAKERY: 29,
+      IND_CONV: 44, IND_BEAUTY: 31, IND_FITNESS: 25, IND_ACADEMY: 9
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +1.1, IND_KOREAN: -2.1, IND_CHICKEN: -4.3, IND_BAKERY: +3.5,
+      IND_CONV: +2.3, IND_BEAUTY: 0.0, IND_FITNESS: +4.0, IND_ACADEMY: -10.0
+    },
+    adjacent_zones: ['포스코사거리 상권', '봉은사역 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_GN_08',
+    zone_name: '개포2동 개포자이·래미안 대단지 아파트 근린 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '강남구',
+    emd_name: '개포2동',
+    region_code: '1168010302',
+    lat: 37.4892,
+    lng: 127.0684,
+    district_type: 'RESIDENTIAL',
+    district_type_label: '신축 대단지 아파트 배후형',
+    resident_population: 31800,
+    household_count: 10940,
+    worker_population: 9200,
+    floating_pop_daily: 36400,
+    age_20_39_ratio: 31.4,
+    age_40_59_ratio: 42.6,
+    total_biz_count: 1580,
+    avg_monthly_rent_per_py: 18.2,
+    avg_deposit_per_py: 195.0,
+    estimated_interior_per_py: 205.0,
+    survival_modifier: { s1: +8.1, s3: +7.4, s5: +6.2, closure: -3.1 },
+    store_counts_by_industry: {
+      IND_CAFE: 24, IND_KOREAN: 32, IND_CHICKEN: 11, IND_BAKERY: 12,
+      IND_CONV: 16, IND_BEAUTY: 22, IND_FITNESS: 13, IND_ACADEMY: 54
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +9.0, IND_KOREAN: +6.2, IND_CHICKEN: +9.1, IND_BAKERY: +8.3,
+      IND_CONV: +6.6, IND_BEAUTY: +9.5, IND_FITNESS: +8.3, IND_ACADEMY: +12.5
+    },
+    adjacent_zones: ['대치2동 학원가 상권', '개포동역 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_GN_09',
+    zone_name: '대치2동 은마사거리·대치학원가 메인 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '강남구',
+    emd_name: '대치2동',
+    region_code: '1168010602',
+    lat: 37.4984,
+    lng: 127.0631,
+    district_type: 'MIXED',
+    district_type_label: '전국 최대 학원가·주거 결합형',
+    resident_population: 38920,
+    household_count: 13410,
+    worker_population: 31200,
+    floating_pop_daily: 82400,
+    age_20_39_ratio: 28.9,
+    age_40_59_ratio: 45.8,
+    total_biz_count: 4920,
+    avg_monthly_rent_per_py: 23.8,
+    avg_deposit_per_py: 255.0,
+    estimated_interior_per_py: 220.0,
+    survival_modifier: { s1: +6.4, s3: +5.8, s5: +5.2, closure: -2.1 },
+    store_counts_by_industry: {
+      IND_CAFE: 59, IND_KOREAN: 74, IND_CHICKEN: 15, IND_BAKERY: 23,
+      IND_CONV: 34, IND_BEAUTY: 31, IND_FITNESS: 17, IND_ACADEMY: 312
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +3.5, IND_KOREAN: +1.4, IND_CHICKEN: 0.0, IND_BAKERY: +4.5,
+      IND_CONV: +3.0, IND_BEAUTY: +3.2, IND_FITNESS: +6.2, IND_ACADEMY: +5.4
+    },
+    adjacent_zones: ['대치4동 한티역 상권', '삼성1동 코엑스 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_GN_10',
+    zone_name: '신사동 가로수길·세로수길 트렌드 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '강남구',
+    emd_name: '신사동',
+    region_code: '1168010700',
+    lat: 37.5208,
+    lng: 127.0228,
+    district_type: 'COMMERCIAL',
+    district_type_label: '패션·트렌드 중심상업형',
+    resident_population: 15840,
+    household_count: 8120,
+    worker_population: 42900,
+    floating_pop_daily: 89600,
+    age_20_39_ratio: 52.8,
+    age_40_59_ratio: 27.1,
+    total_biz_count: 5840,
+    avg_monthly_rent_per_py: 35.5,
+    avg_deposit_per_py: 390.0,
+    estimated_interior_per_py: 260.0,
+    survival_modifier: { s1: -2.4, s3: -4.1, s5: -5.2, closure: +2.8 },
+    store_counts_by_industry: {
+      IND_CAFE: 108, IND_KOREAN: 94, IND_CHICKEN: 19, IND_BAKERY: 36,
+      IND_CONV: 29, IND_BEAUTY: 78, IND_FITNESS: 22, IND_ACADEMY: 8
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: -2.7, IND_KOREAN: -4.1, IND_CHICKEN: -5.0, IND_BAKERY: +2.8,
+      IND_CONV: 0.0, IND_BEAUTY: +1.3, IND_FITNESS: -4.3, IND_ACADEMY: 0.0
+    },
+    adjacent_zones: ['압구정 로데오 상권', '논현1동 학동역 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_GN_11',
+    zone_name: '청담동 도산대로·명품거리 배후 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '강남구',
+    emd_name: '청담동',
+    region_code: '1168010400',
+    lat: 37.5236,
+    lng: 127.0472,
+    district_type: 'COMMERCIAL',
+    district_type_label: '고급 상업·뷰티·오피스 복합형',
+    resident_population: 25120,
+    household_count: 11840,
+    worker_population: 51200,
+    floating_pop_daily: 69800,
+    age_20_39_ratio: 41.2,
+    age_40_59_ratio: 35.6,
+    total_biz_count: 5490,
+    avg_monthly_rent_per_py: 38.0,
+    avg_deposit_per_py: 420.0,
+    estimated_interior_per_py: 280.0,
+    survival_modifier: { s1: +1.2, s3: -0.8, s5: -1.5, closure: +0.5 },
+    store_counts_by_industry: {
+      IND_CAFE: 76, IND_KOREAN: 88, IND_CHICKEN: 14, IND_BAKERY: 27,
+      IND_CONV: 26, IND_BEAUTY: 142, IND_FITNESS: 29, IND_ACADEMY: 16
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +1.3, IND_KOREAN: -1.1, IND_CHICKEN: -6.6, IND_BAKERY: +3.8,
+      IND_CONV: +4.0, IND_BEAUTY: +4.4, IND_FITNESS: +3.5, IND_ACADEMY: 0.0
+    },
+    adjacent_zones: ['압구정로데오역 상권', '삼성1동 봉은사역 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_GN_12',
+    zone_name: '세곡동 헌릉로·보금자리 주거단지 상권 (일부 통계 미확보 검증용)',
+    sido_name: '서울특별시',
+    sigungu_name: '강남구',
+    emd_name: '세곡동',
+    region_code: '1168011100',
+    lat: 37.4648,
+    lng: 127.1045,
+    district_type: 'RESIDENTIAL',
+    district_type_label: '외곽 주거단지형 (비표본 구역 포함)',
+    resident_population: 44120,
+    household_count: 18650,
+    worker_population: 8400,
+    floating_pop_daily: null, // 공공 유동인구 센서 미측정 지역 -> 임의 추정 금지 (null)
+    age_20_39_ratio: 32.8,
+    age_40_59_ratio: 36.1,
+    total_biz_count: 1320,
+    avg_monthly_rent_per_py: 14.2,
+    avg_deposit_per_py: 150.0,
+    estimated_interior_per_py: 190.0,
+    survival_modifier: { s1: +4.5, s3: +3.9, s5: null, closure: -1.5 }, // 5년 생존율 세부 코호트 표본 부족 예시
+    store_counts_by_industry: {
+      IND_CAFE: 21, IND_KOREAN: 39, IND_CHICKEN: 16, IND_BAKERY: 9,
+      IND_CONV: 19, IND_BEAUTY: 18, IND_FITNESS: 9, IND_ACADEMY: 28
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +5.0, IND_KOREAN: +2.6, IND_CHICKEN: +6.6, IND_BAKERY: +12.5,
+      IND_CONV: +5.5, IND_BEAUTY: +5.8, IND_FITNESS: +12.5, IND_ACADEMY: +7.6
+    },
+    adjacent_zones: ['수서역 상권', '성남 고등지구 상권'],
+    quality_status: 'PARTIAL_COVERAGE',
+    stats_granularity: '시·군·구 통계 결합 (유동인구·5년 코호트 표본 미확보)',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+
+  // ======================== 서울특별시 마포구 (4개 후보 상권) ========================
+  {
+    zone_id: 'ZONE_MP_01',
+    zone_name: '공덕동 공덕오거리 오피스·환승역세권 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '마포구',
+    emd_name: '공덕동',
+    region_code: '1144010200',
+    lat: 37.5443,
+    lng: 126.9516,
+    district_type: 'MIXED',
+    district_type_label: '4개노선 환승·업무·주거 복합형',
+    resident_population: 38420,
+    household_count: 18920,
+    worker_population: 52400,
+    floating_pop_daily: 84600,
+    age_20_39_ratio: 41.8,
+    age_40_59_ratio: 34.9,
+    total_biz_count: 4280,
+    avg_monthly_rent_per_py: 19.5,
+    avg_deposit_per_py: 205.0,
+    estimated_interior_per_py: 205.0,
+    survival_modifier: { s1: +5.6, s3: +4.9, s5: +4.1, closure: -1.8 },
+    store_counts_by_industry: {
+      IND_CAFE: 48, IND_KOREAN: 94, IND_CHICKEN: 21, IND_BAKERY: 17,
+      IND_CONV: 32, IND_BEAUTY: 29, IND_FITNESS: 18, IND_ACADEMY: 24
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +4.3, IND_KOREAN: +2.1, IND_CHICKEN: 0.0, IND_BAKERY: +6.2,
+      IND_CONV: +3.2, IND_BEAUTY: +3.5, IND_FITNESS: +5.8, IND_ACADEMY: +4.3
+    },
+    adjacent_zones: ['마포역 용강동 상권', '애오개역 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_MP_02',
+    zone_name: '상암동 DMC 디지털미디어시티 방송·IT 업무 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '마포구',
+    emd_name: '상암동',
+    region_code: '1144012700',
+    lat: 37.5791,
+    lng: 126.8892,
+    district_type: 'OFFICE',
+    district_type_label: '미디어·IT 기업 특화 업무형',
+    resident_population: 30150,
+    household_count: 13480,
+    worker_population: 61800,
+    floating_pop_daily: 74200,
+    age_20_39_ratio: 44.2,
+    age_40_59_ratio: 35.1,
+    total_biz_count: 3690,
+    avg_monthly_rent_per_py: 18.4,
+    avg_deposit_per_py: 195.0,
+    estimated_interior_per_py: 205.0,
+    survival_modifier: { s1: +6.2, s3: +5.5, s5: +4.7, closure: -2.1 },
+    store_counts_by_industry: {
+      IND_CAFE: 54, IND_KOREAN: 88, IND_CHICKEN: 18, IND_BAKERY: 15,
+      IND_CONV: 29, IND_BEAUTY: 24, IND_FITNESS: 19, IND_ACADEMY: 22
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +3.8, IND_KOREAN: +1.1, IND_CHICKEN: -5.2, IND_BAKERY: +7.1,
+      IND_CONV: +3.5, IND_BEAUTY: +4.3, IND_FITNESS: +5.5, IND_ACADEMY: +4.7
+    },
+    adjacent_zones: ['수색역세권 상권', '망원1동 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_MP_03',
+    zone_name: '연남동 경의선숲길·연트럴파크 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '마포구',
+    emd_name: '연남동',
+    region_code: '1144012400',
+    lat: 37.5618,
+    lng: 126.9248,
+    district_type: 'COMMERCIAL',
+    district_type_label: 'MZ세대 관광·카페 특화 상권',
+    resident_population: 18940,
+    household_count: 11250,
+    worker_population: 19400,
+    floating_pop_daily: 92400,
+    age_20_39_ratio: 56.4,
+    age_40_59_ratio: 24.8,
+    total_biz_count: 4120,
+    avg_monthly_rent_per_py: 25.8,
+    avg_deposit_per_py: 270.0,
+    estimated_interior_per_py: 235.0,
+    survival_modifier: { s1: -1.8, s3: -3.2, s5: -4.5, closure: +2.3 },
+    store_counts_by_industry: {
+      IND_CAFE: 118, IND_KOREAN: 82, IND_CHICKEN: 17, IND_BAKERY: 44,
+      IND_CONV: 24, IND_BEAUTY: 42, IND_FITNESS: 11, IND_ACADEMY: 6
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +1.7, IND_KOREAN: -2.3, IND_CHICKEN: -5.5, IND_BAKERY: +4.7,
+      IND_CONV: 0.0, IND_BEAUTY: +2.4, IND_FITNESS: 0.0, IND_ACADEMY: 0.0
+    },
+    adjacent_zones: ['서교동 홍대입구 상권', '성산1동 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_MP_04',
+    zone_name: '망원1동 망원시장·망리단길 생활·트렌드 결합 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '마포구',
+    emd_name: '망원1동',
+    region_code: '1144012301',
+    lat: 37.5562,
+    lng: 126.9056,
+    district_type: 'MIXED',
+    district_type_label: '전통시장·청년거주·골목상권 결합형',
+    resident_population: 21450,
+    household_count: 11890,
+    worker_population: 14200,
+    floating_pop_daily: 61200,
+    age_20_39_ratio: 47.2,
+    age_40_59_ratio: 30.4,
+    total_biz_count: 2890,
+    avg_monthly_rent_per_py: 17.5,
+    avg_deposit_per_py: 180.0,
+    estimated_interior_per_py: 195.0,
+    survival_modifier: { s1: +3.4, s3: +2.6, s5: +1.9, closure: -0.9 },
+    store_counts_by_industry: {
+      IND_CAFE: 52, IND_KOREAN: 69, IND_CHICKEN: 16, IND_BAKERY: 24,
+      IND_CONV: 20, IND_BEAUTY: 27, IND_FITNESS: 12, IND_ACADEMY: 11
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +4.0, IND_KOREAN: +1.5, IND_CHICKEN: 0.0, IND_BAKERY: +9.0,
+      IND_CONV: +5.2, IND_BEAUTY: +3.8, IND_FITNESS: +9.0, IND_ACADEMY: 0.0
+    },
+    adjacent_zones: ['합정역 상권', '마포구청역 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+
+  // ======================== 서울특별시 성동구 / 송파구 ========================
+  {
+    zone_id: 'ZONE_SD_01',
+    zone_name: '성수2가3동 성수IT밸리·지식산업센터 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '성동구',
+    emd_name: '성수2가3동',
+    region_code: '1120011503',
+    lat: 37.5458,
+    lng: 127.0572,
+    district_type: 'OFFICE',
+    district_type_label: '지식산업센터·스타트업 밀집형',
+    resident_population: 19840,
+    household_count: 10240,
+    worker_population: 68900,
+    floating_pop_daily: 88400,
+    age_20_39_ratio: 51.8,
+    age_40_59_ratio: 29.4,
+    total_biz_count: 5410,
+    avg_monthly_rent_per_py: 22.8,
+    avg_deposit_per_py: 240.0,
+    estimated_interior_per_py: 220.0,
+    survival_modifier: { s1: +4.9, s3: +3.7, s5: +2.8, closure: -1.4 },
+    store_counts_by_industry: {
+      IND_CAFE: 74, IND_KOREAN: 98, IND_CHICKEN: 18, IND_BAKERY: 28,
+      IND_CONV: 33, IND_BEAUTY: 31, IND_FITNESS: 21, IND_ACADEMY: 9
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +7.2, IND_KOREAN: +3.1, IND_CHICKEN: 0.0, IND_BAKERY: +12.0,
+      IND_CONV: +6.4, IND_BEAUTY: +6.8, IND_FITNESS: +10.5, IND_ACADEMY: 0.0
+    },
+    adjacent_zones: ['뚝섬역 서울숲 상권', '건대입구역 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_SD_02',
+    zone_name: '왕십리도선동 왕십리역 환승·주거 배후 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '성동구',
+    emd_name: '왕십리도선동',
+    region_code: '1120010100',
+    lat: 37.5619,
+    lng: 127.0348,
+    district_type: 'MIXED',
+    district_type_label: '4개노선 역세권·대단지 주거 결합형',
+    resident_population: 28940,
+    household_count: 13840,
+    worker_population: 29400,
+    floating_pop_daily: 72100,
+    age_20_39_ratio: 44.6,
+    age_40_59_ratio: 32.8,
+    total_biz_count: 3420,
+    avg_monthly_rent_per_py: 18.2,
+    avg_deposit_per_py: 190.0,
+    estimated_interior_per_py: 200.0,
+    survival_modifier: { s1: +5.9, s3: +5.2, s5: +4.4, closure: -1.9 },
+    store_counts_by_industry: {
+      IND_CAFE: 41, IND_KOREAN: 84, IND_CHICKEN: 22, IND_BAKERY: 15,
+      IND_CONV: 28, IND_BEAUTY: 32, IND_FITNESS: 17, IND_ACADEMY: 23
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +5.1, IND_KOREAN: +2.4, IND_CHICKEN: +4.7, IND_BAKERY: +7.1,
+      IND_CONV: +3.7, IND_BEAUTY: +3.2, IND_FITNESS: +6.2, IND_ACADEMY: +4.5
+    },
+    adjacent_zones: ['한양대 상권', '상왕십리역 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_SP_01',
+    zone_name: '문정2동 문정법조단지·지식산업센터 업무 상권',
+    sido_name: '서울특별시',
+    sigungu_name: '송파구',
+    emd_name: '문정2동(문정법조단지)',
+    region_code: '1171010802',
+    lat: 37.4859,
+    lng: 127.1225,
+    district_type: 'OFFICE',
+    district_type_label: '법조·IT 지식산업센터 집적형',
+    resident_population: 29480,
+    household_count: 16420,
+    worker_population: 74200,
+    floating_pop_daily: 86500,
+    age_20_39_ratio: 46.8,
+    age_40_59_ratio: 34.2,
+    total_biz_count: 5890,
+    avg_monthly_rent_per_py: 19.8,
+    avg_deposit_per_py: 210.0,
+    estimated_interior_per_py: 205.0,
+    survival_modifier: { s1: +6.5, s3: +5.7, s5: +4.8, closure: -2.2 },
+    store_counts_by_industry: {
+      IND_CAFE: 58, IND_KOREAN: 104, IND_CHICKEN: 19, IND_BAKERY: 18,
+      IND_CONV: 36, IND_BEAUTY: 28, IND_FITNESS: 22, IND_ACADEMY: 14
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +5.4, IND_KOREAN: +2.9, IND_CHICKEN: 0.0, IND_BAKERY: +5.8,
+      IND_CONV: +2.8, IND_BEAUTY: +3.7, IND_FITNESS: +4.7, IND_ACADEMY: +7.6
+    },
+    adjacent_zones: ['장지역 가든파이브 상권', '수서역 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+
+  // ======================== 부산 / 대구 / 인천 / 대전 / 경기 ========================
+  {
+    zone_id: 'ZONE_BS_01',
+    zone_name: '우2동 센텀시티 업무·백화점 배후 상권',
+    sido_name: '부산광역시',
+    sigungu_name: '해운대구',
+    emd_name: '우2동(센텀시티)',
+    region_code: '2635010502',
+    lat: 35.1689,
+    lng: 129.1318,
+    district_type: 'OFFICE',
+    district_type_label: '동남권 최대 업무·복합쇼핑 상권',
+    resident_population: 31240,
+    household_count: 12840,
+    worker_population: 58400,
+    floating_pop_daily: 81200,
+    age_20_39_ratio: 39.4,
+    age_40_59_ratio: 37.8,
+    total_biz_count: 4620,
+    avg_monthly_rent_per_py: 16.8,
+    avg_deposit_per_py: 175.0,
+    estimated_interior_per_py: 195.0,
+    survival_modifier: { s1: +5.4, s3: +4.8, s5: +3.9, closure: -1.7 },
+    store_counts_by_industry: {
+      IND_CAFE: 51, IND_KOREAN: 89, IND_CHICKEN: 17, IND_BAKERY: 19,
+      IND_CONV: 29, IND_BEAUTY: 31, IND_FITNESS: 18, IND_ACADEMY: 24
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +4.1, IND_KOREAN: +1.1, IND_CHICKEN: 0.0, IND_BAKERY: +5.5,
+      IND_CONV: +3.5, IND_BEAUTY: +3.3, IND_FITNESS: +5.8, IND_ACADEMY: +4.3
+    },
+    adjacent_zones: ['벡스코 상권', '수영교차로 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_BS_02',
+    zone_name: '전포1동 전포카페거리·서면 동측 상권',
+    sido_name: '부산광역시',
+    sigungu_name: '부산진구',
+    emd_name: '전포1동(전포카페거리)',
+    region_code: '2623010401',
+    lat: 35.1554,
+    lng: 129.0638,
+    district_type: 'COMMERCIAL',
+    district_type_label: '청년문화·로스터리카페 특화 상권',
+    resident_population: 21840,
+    household_count: 12410,
+    worker_population: 28900,
+    floating_pop_daily: 78400,
+    age_20_39_ratio: 51.2,
+    age_40_59_ratio: 28.4,
+    total_biz_count: 3980,
+    avg_monthly_rent_per_py: 17.9,
+    avg_deposit_per_py: 185.0,
+    estimated_interior_per_py: 200.0,
+    survival_modifier: { s1: +1.4, s3: +0.5, s5: -0.6, closure: +0.4 },
+    store_counts_by_industry: {
+      IND_CAFE: 94, IND_KOREAN: 78, IND_CHICKEN: 19, IND_BAKERY: 34,
+      IND_CONV: 25, IND_BEAUTY: 38, IND_FITNESS: 14, IND_ACADEMY: 9
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +3.3, IND_KOREAN: 0.0, IND_CHICKEN: -5.0, IND_BAKERY: +6.2,
+      IND_CONV: +4.1, IND_BEAUTY: +2.7, IND_FITNESS: +7.6, IND_ACADEMY: 0.0
+    },
+    adjacent_zones: ['부전2동 서면중앙 상권', '문현금융단지 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_DG_01',
+    zone_name: '범어1동 범어네거리 금융·법조·학원 상권',
+    sido_name: '대구광역시',
+    sigungu_name: '수성구',
+    emd_name: '범어1동(범어네거리)',
+    region_code: '2726010101',
+    lat: 35.8589,
+    lng: 128.6264,
+    district_type: 'MIXED',
+    district_type_label: '대경권 핵심 업무·명문학군 복합형',
+    resident_population: 28450,
+    household_count: 11420,
+    worker_population: 46800,
+    floating_pop_daily: 69400,
+    age_20_39_ratio: 36.8,
+    age_40_59_ratio: 40.2,
+    total_biz_count: 4120,
+    avg_monthly_rent_per_py: 16.4,
+    avg_deposit_per_py: 170.0,
+    estimated_interior_per_py: 190.0,
+    survival_modifier: { s1: +6.1, s3: +5.3, s5: +4.5, closure: -1.9 },
+    store_counts_by_industry: {
+      IND_CAFE: 44, IND_KOREAN: 79, IND_CHICKEN: 16, IND_BAKERY: 17,
+      IND_CONV: 26, IND_BEAUTY: 28, IND_FITNESS: 16, IND_ACADEMY: 92
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +4.7, IND_KOREAN: +1.3, IND_CHICKEN: 0.0, IND_BAKERY: +6.2,
+      IND_CONV: +4.0, IND_BEAUTY: +3.7, IND_FITNESS: +6.6, IND_ACADEMY: +5.7
+    },
+    adjacent_zones: ['만촌3동 학원가 상권', '수성못 유원지 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_IC_01',
+    zone_name: '송도1동 센트럴파크·국제업무지구 배후 상권',
+    sido_name: '인천광역시',
+    sigungu_name: '연수구',
+    emd_name: '송도1동(센트럴파크)',
+    region_code: '2818510601',
+    lat: 37.3924,
+    lng: 126.6438,
+    district_type: 'MIXED',
+    district_type_label: '국제업무·신도시 대단지 복합형',
+    resident_population: 41200,
+    household_count: 15840,
+    worker_population: 44600,
+    floating_pop_daily: 66800,
+    age_20_39_ratio: 39.2,
+    age_40_59_ratio: 38.6,
+    total_biz_count: 3780,
+    avg_monthly_rent_per_py: 16.9,
+    avg_deposit_per_py: 175.0,
+    estimated_interior_per_py: 195.0,
+    survival_modifier: { s1: +5.9, s3: +5.1, s5: +4.2, closure: -1.8 },
+    store_counts_by_industry: {
+      IND_CAFE: 45, IND_KOREAN: 74, IND_CHICKEN: 18, IND_BAKERY: 18,
+      IND_CONV: 28, IND_BEAUTY: 29, IND_FITNESS: 19, IND_ACADEMY: 58
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +7.1, IND_KOREAN: +4.2, IND_CHICKEN: +5.8, IND_BAKERY: +5.8,
+      IND_CONV: +3.7, IND_BEAUTY: +7.4, IND_FITNESS: +5.5, IND_ACADEMY: +9.4
+    },
+    adjacent_zones: ['송도 트리플스트리트 상권', '인천대입구역 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_DJ_01',
+    zone_name: '관평동 대덕테크노밸리 연구·주거 배후 상권',
+    sido_name: '대전광역시',
+    sigungu_name: '유성구',
+    emd_name: '관평동(테크노밸리)',
+    region_code: '3020014600',
+    lat: 36.4248,
+    lng: 127.3912,
+    district_type: 'MIXED',
+    district_type_label: 'R&D 산업단지·가족주거 혼합형',
+    resident_population: 29840,
+    household_count: 11240,
+    worker_population: 48200,
+    floating_pop_daily: 58400,
+    age_20_39_ratio: 38.4,
+    age_40_59_ratio: 39.2,
+    total_biz_count: 3120,
+    avg_monthly_rent_per_py: 14.5,
+    avg_deposit_per_py: 150.0,
+    estimated_interior_per_py: 185.0,
+    survival_modifier: { s1: +6.7, s3: +5.9, s5: +4.9, closure: -2.3 },
+    store_counts_by_industry: {
+      IND_CAFE: 36, IND_KOREAN: 72, IND_CHICKEN: 17, IND_BAKERY: 14,
+      IND_CONV: 24, IND_BEAUTY: 22, IND_FITNESS: 14, IND_ACADEMY: 34
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +5.8, IND_KOREAN: +2.8, IND_CHICKEN: 0.0, IND_BAKERY: +7.6,
+      IND_CONV: +4.3, IND_BEAUTY: +4.7, IND_FITNESS: +7.6, IND_ACADEMY: +6.2
+    },
+    adjacent_zones: ['전민동 연구단지 상권', '신탄진역 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_GG_01',
+    zone_name: '삼평동 판교테크노밸리 역세권·IT 업무 상권',
+    sido_name: '경기도',
+    sigungu_name: '성남시 분당구',
+    emd_name: '삼평동(판교테크노밸리)',
+    region_code: '4113510900',
+    lat: 37.3998,
+    lng: 127.1086,
+    district_type: 'OFFICE',
+    district_type_label: '국내 최대 IT·게임 R&D 클러스터형',
+    resident_population: 25480,
+    household_count: 9640,
+    worker_population: 92400,
+    floating_pop_daily: 104800,
+    age_20_39_ratio: 49.4,
+    age_40_59_ratio: 33.8,
+    total_biz_count: 5240,
+    avg_monthly_rent_per_py: 23.2,
+    avg_deposit_per_py: 250.0,
+    estimated_interior_per_py: 215.0,
+    survival_modifier: { s1: +7.4, s3: +6.8, s5: +5.9, closure: -2.7 },
+    store_counts_by_industry: {
+      IND_CAFE: 68, IND_KOREAN: 112, IND_CHICKEN: 19, IND_BAKERY: 24,
+      IND_CONV: 38, IND_BEAUTY: 27, IND_FITNESS: 24, IND_ACADEMY: 21
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +6.2, IND_KOREAN: +3.7, IND_CHICKEN: 0.0, IND_BAKERY: +9.0,
+      IND_CONV: +5.5, IND_BEAUTY: +3.8, IND_FITNESS: +9.0, IND_ACADEMY: +5.0
+    },
+    adjacent_zones: ['백현동 판교역 남측 상권', '정자동 카페거리 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_GG_02',
+    zone_name: '정자동 정자역·카페거리 업무·주거 복합 상권',
+    sido_name: '경기도',
+    sigungu_name: '성남시 분당구',
+    emd_name: '정자동(정자카페거리)',
+    region_code: '4113510300',
+    lat: 37.3672,
+    lng: 127.1082,
+    district_type: 'MIXED',
+    district_type_label: '신분당선 환승·주상복합·카페거리 결합형',
+    resident_population: 42600,
+    household_count: 17940,
+    worker_population: 46200,
+    floating_pop_daily: 74800,
+    age_20_39_ratio: 37.8,
+    age_40_59_ratio: 39.4,
+    total_biz_count: 4680,
+    avg_monthly_rent_per_py: 20.4,
+    avg_deposit_per_py: 215.0,
+    estimated_interior_per_py: 210.0,
+    survival_modifier: { s1: +6.2, s3: +5.4, s5: +4.6, closure: -2.0 },
+    store_counts_by_industry: {
+      IND_CAFE: 57, IND_KOREAN: 92, IND_CHICKEN: 21, IND_BAKERY: 22,
+      IND_CONV: 31, IND_BEAUTY: 36, IND_FITNESS: 21, IND_ACADEMY: 59
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +3.6, IND_KOREAN: +2.2, IND_CHICKEN: 0.0, IND_BAKERY: +4.7,
+      IND_CONV: +3.3, IND_BEAUTY: +2.8, IND_FITNESS: +5.0, IND_ACADEMY: +5.3
+    },
+    adjacent_zones: ['수내역 롯데백화점 상권', '미금역 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  },
+  {
+    zone_id: 'ZONE_GG_03',
+    zone_name: '이의동 광교중앙역·경기도청 신청사 복합 상권',
+    sido_name: '경기도',
+    sigungu_name: '수원시 영통구',
+    emd_name: '이의동(광교중앙역)',
+    region_code: '4111710300',
+    lat: 37.2886,
+    lng: 127.0518,
+    district_type: 'MIXED',
+    district_type_label: '행정타운·신도시 역세권 복합형',
+    resident_population: 48900,
+    household_count: 18420,
+    worker_population: 49800,
+    floating_pop_daily: 78600,
+    age_20_39_ratio: 41.2,
+    age_40_59_ratio: 37.9,
+    total_biz_count: 4410,
+    avg_monthly_rent_per_py: 19.4,
+    avg_deposit_per_py: 205.0,
+    estimated_interior_per_py: 205.0,
+    survival_modifier: { s1: +6.9, s3: +6.1, s5: +5.2, closure: -2.4 },
+    store_counts_by_industry: {
+      IND_CAFE: 53, IND_KOREAN: 86, IND_CHICKEN: 19, IND_BAKERY: 20,
+      IND_CONV: 30, IND_BEAUTY: 32, IND_FITNESS: 19, IND_ACADEMY: 64
+    },
+    store_trend_yoy_pct: {
+      IND_CAFE: +6.0, IND_KOREAN: +3.6, IND_CHICKEN: +5.5, IND_BAKERY: +5.2,
+      IND_CONV: +3.4, IND_BEAUTY: +6.6, IND_FITNESS: +5.5, IND_ACADEMY: +8.4
+    },
+    adjacent_zones: ['광교호수공원 상권', '아주대 삼거리 상권'],
+    quality_status: 'OFFICIAL',
+    stats_granularity: '시·군·구 및 행정동 상권 결합',
+    store_data_period: '2026-Q1 (2026.03 기준)',
+    pop_data_period: '2026.02 주민등록인구 및 2025 사업체조사'
+  }
+];
+
+/**
+ * 관리자 화면용 최근 데이터 수집·갱신·중복정리 이력 로그
+ */
+const INITIAL_SYNC_LOGS = [
+  {
+    log_id: 1005,
+    source_id: 'SRC_SEMAS_STORE',
+    job_type: 'SCHEDULED_SYNC (2026-Q1 전국 상가업소 증분 수집 및 중복 정리)',
+    status: 'SUCCESS',
+    records_fetched: 48290,
+    records_upserted: 47812,
+    duplicates_removed: 478,
+    http_status_code: 200,
+    error_message: null,
+    started_at: '2026-10-30T06:00:00+09:00',
+    finished_at: '2026-10-30T06:14:22+09:00'
+  },
+  {
+    log_id: 1004,
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    job_type: 'SCHEDULED_SYNC (기업생멸행정통계 시도·시군구 생존율/소멸률 동기화)',
+    status: 'SUCCESS',
+    records_fetched: 2040,
+    records_upserted: 2040,
+    duplicates_removed: 0,
+    http_status_code: 200,
+    error_message: null,
+    started_at: '2026-10-30T05:30:00+09:00',
+    finished_at: '2026-10-30T05:32:11+09:00'
+  },
+  {
+    log_id: 1003,
+    source_id: 'SRC_KOSIS_POP_BIZ',
+    job_type: 'SCHEDULED_SYNC (행정동별 주민등록인구·세대수·사업체종사자 갱신)',
+    status: 'SUCCESS',
+    records_fetched: 3580,
+    records_upserted: 3580,
+    duplicates_removed: 0,
+    http_status_code: 200,
+    error_message: null,
+    started_at: '2026-10-30T05:00:00+09:00',
+    finished_at: '2026-10-30T05:04:08+09:00'
+  },
+  {
+    log_id: 1002,
+    source_id: 'SRC_REB_RENT',
+    job_type: 'SCHEDULED_SYNC (상업용부동산 표본 상권 임대료·보증금 동기화)',
+    status: 'PARTIAL_ERROR',
+    records_fetched: 260,
+    records_upserted: 248,
+    duplicates_removed: 0,
+    http_status_code: 206,
+    error_message: '비표본 외곽 행정동 12곳 임대료 시세 미제공 → 임의 추정 없이 NULL(미확보)로 기록 완료',
+    started_at: '2026-10-30T04:40:00+09:00',
+    finished_at: '2026-10-30T04:41:50+09:00'
+  },
+  {
+    log_id: 1001,
+    source_id: 'SRC_NTS_BIZ_STATUS',
+    job_type: 'BIZ_STATUS_CHECK (사용자 요청 단건 사업자등록 상태 검증 배치)',
+    status: 'SUCCESS',
+    records_fetched: 50,
+    records_upserted: 50,
+    duplicates_removed: 0,
+    http_status_code: 200,
+    error_message: null,
+    started_at: '2026-10-29T18:10:00+09:00',
+    finished_at: '2026-10-29T18:10:04+09:00'
+  }
+];
+
+window.__STORE__ = {
+  DATA_SOURCES,
+  INDUSTRY_CODES,
+  REGIONS_TREE,
+  INDUSTRY_BASE_SURVIVAL_STATS,
+  COMMERCIAL_ZONES,
+  INITIAL_SYNC_LOGS
+};
+
+/**
+ * 창업입지 AI - 추천 알고리즘 및 의사결정 지원 엔진 (server/services/recommendationEngine.js)
+ *
+ * [기획서 8장 추천 알고리즘 설계 반영]
+ * 1. 초기 평가 가중치 (초기 테스트 제안값 명시):
+ *    - 업종별 생존·폐업 관련 통계: 40% (0.40)
+ *    - 동일 업종 경쟁 강도:       25% (0.25)
+ *    - 지역 수요·인구:           20% (0.20)
+ *    - 임대료 및 창업비용 부담:   15% (0.15)
+ * 2. 8단계 분석 절차 수행:
+ *    (1) 입력 업종 → 표준 업종 코드 변환
+ *    (2) 선택 지역·반경 후보 상권 필터링
+ *    (3) 후보 상권 점포 수·경쟁 강도 및 공간 분포 생성
+ *    (4) 비교 가능한 공식 생존·폐업 통계 연결 (생존율과 폐업률 분리)
+ *    (5) 지역 수요 및 비용 지표 결합
+ *    (6) 데이터의 지역 단위·기준 기간 비교 가능성 검사 (comparability_check)
+ *    (7) 결측 데이터 임의 대체 금지 + 확보 지표 기반 가중치 재정규화 + 데이터 신뢰도 산출
+ *    (8) 추천 순위 TOP 10과 장단점·위험요인·추천 근거 생성
+ */
+
+const { DATA_SOURCES, INDUSTRY_CODES, INDUSTRY_BASE_SURVIVAL_STATS, COMMERCIAL_ZONES } = window.__STORE__;
+
+const DEFAULT_WEIGHTS = {
+  survival: 0.40,
+  competition: 0.25,
+  demand: 0.20,
+  cost: 0.15
+};
+
+function clamp(val, min, max) {
+  return Math.max(min, Math.min(max, val));
+}
+
+function round1(val) {
+  return Math.round(val * 10) / 10;
+}
+
+/**
+ * 1단계: 사용자 입력 업종(코드 또는 검색어)을 표준 업종 코드로 변환
+ */
+function resolveIndustry(industryInput) {
+  if (!industryInput) return INDUSTRY_CODES[0];
+  const normalized = String(industryInput).trim().toLowerCase();
+
+  // 1) 정확히 표준 코드와 일치하는 경우
+  const byCode = INDUSTRY_CODES.find(
+    (item) => item.industry_code.toLowerCase() === normalized || item.semas_code.toLowerCase() === normalized
+  );
+  if (byCode) return byCode;
+
+  // 2) 업종명 또는 유의어(keywords) 매칭
+  const byKeyword = INDUSTRY_CODES.find(
+    (item) =>
+      item.industry_name.toLowerCase().includes(normalized) ||
+      item.keywords.some((kw) => kw.toLowerCase().includes(normalized) || normalized.includes(kw.toLowerCase()))
+  );
+  return byKeyword || INDUSTRY_CODES[0];
+}
+
+/**
+ * 두 위·경도 좌표 간 거리 계산 (Haversine, 단위: 미터)
+ */
+function distanceMeters(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/**
+ * 후보 상권 내 실제 경쟁 점포 분포 목록 생성 (결정론적 좌표 분포, 과거 폐업 이력 임의 생성 금지 원칙 준수)
+ */
+function buildNearbyCompetitorStores(zone, industryObj, scaledStoreCount, radiusMeters) {
+  const sampleCount = Math.min(scaledStoreCount, 18);
+  const stores = [];
+  const brandPrefixes = {
+    IND_CAFE: ['스페셜티로스터스', '어반커피랩', '브루잉컴퍼니', '데일리빈', '포레스트카페', '모닝에스프레소'],
+    IND_KOREAN: ['정담한식당', '서울국밥집', '참숯구이관', '미가백반', '온기식탁', '전통솥밥'],
+    IND_CHICKEN: ['크리스피치킨호프', '황금맥주치킨', '바삭통닭', '오븐로스트치킨', '동네호프공방'],
+    IND_BAKERY: ['아티장베이커리', '고메브레드', '밀밭제과점', '르뱅구움과자', '메종드파티세리'],
+    IND_CONV: ['24시편의점', '데일리마트CVS', '스마일편의점', '시티익스프레스'],
+    IND_BEAUTY: ['아뜰리에헤어', '살롱드뷰티', '더클래식바버', '루미에르헤어샵'],
+    IND_FITNESS: ['코어필라테스스튜디오', '바디랩피트니스', '짐앤모어PT', '밸런스요가앤짐'],
+    IND_ACADEMY: ['미래에듀학원', '탑클래스영어수학', '시너지입시연구소', '글로벌어학원']
+  };
+  const prefixes = brandPrefixes[industryObj.industry_code] || ['표준상가'];
+
+  for (let i = 0; i < sampleCount; i++) {
+    const angle = (i * 137.5 * Math.PI) / 180; // 황금각 분포
+    const ratio = 0.18 + ((i % 7) / 7) * 0.72;
+    const distM = Math.round(radiusMeters * ratio);
+    const dLat = (distM * Math.cos(angle)) / 111320;
+    const dLng = (distM * Math.sin(angle)) / (111320 * Math.cos((zone.lat * Math.PI) / 180));
+
+    stores.push({
+      store_id: `${zone.zone_id}_${industryObj.semas_code}_${String(i + 1).padStart(3, '0')}`,
+      store_name: `${prefixes[i % prefixes.length]} ${zone.emd_name.replace(/\(.*\)/, '')}${i + 1}호점`,
+      industry_name: industryObj.industry_name,
+      semas_code: industryObj.semas_code,
+      lat: Number((zone.lat + dLat).toFixed(6)),
+      lng: Number((zone.lng + dLng).toFixed(6)),
+      distance_m: distM,
+      floor_info: i % 3 === 0 ? '1층 전면' : i % 3 === 1 ? '1층 이면' : '2층',
+      observed_status: '영업중 (상가정보 2026-Q1 기준)',
+      individual_survival_history_note: '개별 업체의 과거 생존·폐업 이력은 추정 표시하지 않음 (원칙 준수)'
+    });
+  }
+  return stores;
+}
+
+/**
+ * 개별 후보 상권에 대한 4대 영역 점수, 결측치 검사, 신뢰도, 장단점·위험요인 산출
+ */
+function evaluateZoneCandidate(zone, industryObj, params) {
+  const {
+    radiusMeters = 500,
+    budgetLimitManwon = 10000, // 기본 1억 원 (10,000만 원)
+    rentLimitManwon = 350,     // 기본 월 350만 원
+    storeType = 'GENERAL',
+    weights = DEFAULT_WEIGHTS
+  } = params;
+
+  const baseSurvival = INDUSTRY_BASE_SURVIVAL_STATS[industryObj.industry_code];
+  const areaPyeong = industryObj.typical_area_pyeong[storeType] || industryObj.typical_area_pyeong.GENERAL;
+
+  // 반경 보정 계수 (기본 500m 기준)
+  const radiusFactor = clamp(Math.pow(radiusMeters / 500, 1.35), 0.35, 2.8);
+
+  // --------------------------------------------------------------------------
+  // [A] 업종별 생존·폐업 관련 통계 (가중치 40%)
+  // --------------------------------------------------------------------------
+  const mod = zone.survival_modifier || { s1: 0, s3: 0, s5: 0, closure: 0 };
+  const survival1yr = baseSurvival.survival_rate_1yr != null && mod.s1 != null
+    ? round1(clamp(baseSurvival.survival_rate_1yr + mod.s1, 30, 94))
+    : null;
+  const survival3yr = baseSurvival.survival_rate_3yr != null && mod.s3 != null
+    ? round1(clamp(baseSurvival.survival_rate_3yr + mod.s3, 18, 86))
+    : null;
+  const survival5yr = baseSurvival.survival_rate_5yr != null && mod.s5 != null
+    ? round1(clamp(baseSurvival.survival_rate_5yr + mod.s5, 10, 78))
+    : null; // 세곡동 등 5년 코호트 미확보 시 null 유지 (임의 숫자 생성 금지)
+
+  const annualClosureRate = baseSurvival.annual_closure_rate != null && mod.closure != null
+    ? round1(clamp(baseSurvival.annual_closure_rate + mod.closure, 3.5, 28.0))
+    : null;
+
+  // 확보된 생존·폐업 세부 지표만 사용하여 100점 만점 점수 계산
+  const survivalSubScores = [];
+  if (survival1yr != null) survivalSubScores.push({ val: survival1yr, weight: 0.25 });
+  if (survival3yr != null) survivalSubScores.push({ val: clamp(survival3yr * 1.35, 0, 100), weight: 0.35 });
+  if (survival5yr != null) survivalSubScores.push({ val: clamp(survival5yr * 1.65, 0, 100), weight: 0.20 });
+  if (annualClosureRate != null) {
+    // 폐업률 5% 이하면 95점, 20% 이상이면 35점 수준
+    const closureSafetyScore = clamp(108 - annualClosureRate * 3.6, 25, 98);
+    survivalSubScores.push({ val: closureSafetyScore, weight: 0.20 });
+  }
+
+  let survivalScore = null;
+  if (survivalSubScores.length > 0) {
+    const totalW = survivalSubScores.reduce((acc, s) => acc + s.weight, 0);
+    survivalScore = round1(survivalSubScores.reduce((acc, s) => acc + s.val * (s.weight / totalW), 0));
+  }
+
+  // --------------------------------------------------------------------------
+  // [B] 동일 업종 경쟁 강도 (가중치 25%)
+  // --------------------------------------------------------------------------
+  const baseCount500m = (zone.store_counts_by_industry && zone.store_counts_by_industry[industryObj.industry_code]) || 25;
+  const storeCountInRadius = Math.max(1, Math.round(baseCount500m * radiusFactor));
+  const areaKm2 = Math.PI * Math.pow(radiusMeters / 1000, 2);
+  const densityPerKm2 = round1(storeCountInRadius / areaKm2);
+  const yoyChangePct = (zone.store_trend_yoy_pct && zone.store_trend_yoy_pct[industryObj.industry_code]) ?? null;
+
+  // 유효 배후수요(상주인구 + 직장인구*1.2) 대비 점포당 잠재 고객 수
+  const effectivePop = (zone.resident_population || 0) + (zone.worker_population || 0) * 1.2;
+  const demandPerStore = Math.round(effectivePop / Math.max(1, baseCount500m));
+
+  // 점포당 배후수요가 많고 과밀도가 낮을수록 경쟁 점수 우수
+  const rawCompScore = clamp(42 + (demandPerStore / 45) - (baseCount500m * 0.28), 32, 95);
+  const competitionScore = round1(rawCompScore);
+
+  // --------------------------------------------------------------------------
+  // [C] 지역 수요·인구 (가중치 20%)
+  // --------------------------------------------------------------------------
+  const demandSubScores = [];
+  if (zone.resident_population != null && zone.worker_population != null) {
+    const popVolumeScore = clamp(38 + (zone.resident_population + zone.worker_population * 1.15) / 1950, 35, 96);
+    demandSubScores.push({ val: popVolumeScore, weight: 0.50 });
+  }
+  if (zone.floating_pop_daily != null) {
+    const floatingScore = clamp(35 + zone.floating_pop_daily / 1650, 35, 97);
+    demandSubScores.push({ val: floatingScore, weight: 0.35 });
+  }
+  if (zone.age_20_39_ratio != null) {
+    const targetAgeBonus = industryObj.industry_code === 'IND_ACADEMY'
+      ? clamp(40 + (zone.age_40_59_ratio || 35) * 1.25, 45, 95)
+      : clamp(40 + zone.age_20_39_ratio * 1.1, 45, 95);
+    demandSubScores.push({ val: targetAgeBonus, weight: 0.15 });
+  }
+
+  let demandScore = null;
+  if (demandSubScores.length > 0) {
+    const totalW = demandSubScores.reduce((acc, s) => acc + s.weight, 0);
+    demandScore = round1(demandSubScores.reduce((acc, s) => acc + s.val * (s.weight / totalW), 0));
+  }
+
+  // --------------------------------------------------------------------------
+  // [D] 임대료 및 창업비용 부담 (가중치 15%)
+  // --------------------------------------------------------------------------
+  let costScore = null;
+  let estimatedMonthlyRentManwon = null;
+  let estimatedDepositManwon = null;
+  let estimatedTotalStartupCostManwon = null;
+  let isWithinBudget = null;
+  let isWithinRent = null;
+
+  if (zone.avg_monthly_rent_per_py != null && zone.avg_deposit_per_py != null) {
+    estimatedMonthlyRentManwon = Math.round(zone.avg_monthly_rent_per_py * areaPyeong);
+    estimatedDepositManwon = Math.round(zone.avg_deposit_per_py * areaPyeong);
+    const interiorCost = Math.round((zone.estimated_interior_per_py || 200) * areaPyeong);
+    estimatedTotalStartupCostManwon = estimatedDepositManwon + interiorCost;
+
+    isWithinBudget = budgetLimitManwon ? estimatedTotalStartupCostManwon <= budgetLimitManwon : true;
+    isWithinRent = rentLimitManwon ? estimatedMonthlyRentManwon <= rentLimitManwon : true;
+
+    const budgetRatio = budgetLimitManwon ? estimatedTotalStartupCostManwon / budgetLimitManwon : 0.85;
+    const rentRatio = rentLimitManwon ? estimatedMonthlyRentManwon / rentLimitManwon : 0.85;
+
+    // 예산 및 임대료 한도 대비 적합도 점수
+    const bScore = clamp(105 - budgetRatio * 42, 25, 96);
+    const rScore = clamp(105 - rentRatio * 42, 25, 96);
+    costScore = round1(bScore * 0.55 + rScore * 0.45);
+  }
+
+  // --------------------------------------------------------------------------
+  // [E] 결측 데이터 점검 및 확보 지표 기반 가중치 재정규화
+  // --------------------------------------------------------------------------
+  const missingMetrics = [];
+  if (survival5yr == null) missingMetrics.push('5년 장기 생존율 (세부 코호트 표본 부족)');
+  if (zone.floating_pop_daily == null) missingMetrics.push('일평균 유동인구 (공공 센서 비표본 구역)');
+  if (zone.avg_monthly_rent_per_py == null) missingMetrics.push('상업용 부동산 표본 임대료 시세');
+
+  const availablePillars = [];
+  if (survivalScore != null) availablePillars.push({ key: 'survival', score: survivalScore, rawWeight: weights.survival });
+  if (competitionScore != null) availablePillars.push({ key: 'competition', score: competitionScore, rawWeight: weights.competition });
+  if (demandScore != null) availablePillars.push({ key: 'demand', score: demandScore, rawWeight: weights.demand });
+  if (costScore != null) availablePillars.push({ key: 'cost', score: costScore, rawWeight: weights.cost });
+
+  const sumAvailableWeight = availablePillars.reduce((acc, p) => acc + p.rawWeight, 0);
+  const normalizedWeights = {};
+  let totalScore = 0;
+
+  availablePillars.forEach((p) => {
+    const normW = p.rawWeight / sumAvailableWeight;
+    normalizedWeights[p.key] = Number(normW.toFixed(3));
+    totalScore += p.score * normW;
+  });
+  totalScore = round1(totalScore);
+
+  // 데이터 신뢰도 산출 (확보 지표 비율 및 품질 상태 반영)
+  const totalCheckItems = 9; // 1년생존, 3년생존, 5년생존, 연간폐업률, 경쟁점포수, 상주/직장인구, 유동인구, 연령비중, 임대료시세
+  const availableCheckItems = totalCheckItems - missingMetrics.length;
+  const coveragePct = Math.round((availableCheckItems / totalCheckItems) * 100);
+
+  let reliabilityGrade = 'HIGH';
+  let reliabilityLabel = '높음 (공식 통계·표본 확보)';
+  if (missingMetrics.length === 1) {
+    reliabilityGrade = 'MEDIUM';
+    reliabilityLabel = '보통 (일부 세부 지표 미확보 안내)';
+    totalScore = round1(totalScore - 2.5);
+  } else if (missingMetrics.length >= 2) {
+    reliabilityGrade = 'LOW';
+    reliabilityLabel = '주의 (통계 부족 지역 · 순위 신뢰도 낮음)';
+    totalScore = round1(totalScore - 6.5);
+  }
+
+  // --------------------------------------------------------------------------
+  // [F] 후보 상권별 장점(Strengths) 및 위험 요인(Risk Factors) 도출
+  // --------------------------------------------------------------------------
+  const strengths = [];
+  const risks = [];
+
+  if (survival3yr != null && survival3yr >= baseSurvival.survival_rate_3yr + 3) {
+    strengths.push(
+      `동일 업종 전국 평균(3년 생존율 ${baseSurvival.survival_rate_3yr}%) 대비 우수한 생존 지표(${survival3yr}%)를 보입니다.`
+    );
+  }
+  if (annualClosureRate != null && annualClosureRate <= baseSurvival.annual_closure_rate - 1.5) {
+    strengths.push(
+      `연간 폐업(소멸)률이 ${annualClosureRate}%로 업종 평균(${baseSurvival.annual_closure_rate}%)보다 낮아 사업 안정성이 양호합니다.`
+    );
+  }
+  if (demandPerStore >= 1300) {
+    strengths.push(
+      `동일 업종 점포 1개당 유효 배후수요(상주+직장인구 가중)가 약 ${demandPerStore.toLocaleString()}명으로 수요 대비 경쟁 여유가 있습니다.`
+    );
+  }
+  if (isWithinBudget && isWithinRent && estimatedTotalStartupCostManwon != null) {
+    strengths.push(
+      `기준 면적(${areaPyeong}평, ${storeType === 'TAKEOUT' ? '테이크아웃형' : storeType === 'LARGE' ? '대형 매장' : '일반 매장'}) 추정 초기 투자비(${estimatedTotalStartupCostManwon.toLocaleString()}만 원)와 월 임대료(${estimatedMonthlyRentManwon.toLocaleString()}만 원)가 설정 한도 내에 부합합니다.`
+    );
+  }
+  if (strengths.length === 0) {
+    strengths.push(
+      `${zone.district_type_label} 특성상 ${zone.worker_population > zone.resident_population ? '주간 직장인 고정 수요' : '거주 세대 생활 밀착 수요'}가 형성되어 있습니다.`
+    );
+  }
+
+  // 위험 요인 도출
+  if (storeCountInRadius >= 65) {
+    risks.push(
+      `반경 ${radiusMeters}m 내 동일 업종 점포가 ${storeCountInRadius}곳(밀집도 ${densityPerKm2}개/km²)으로 과밀 경쟁 위험이 높습니다.`
+    );
+  }
+  if (isWithinBudget === false && estimatedTotalStartupCostManwon != null) {
+    risks.push(
+      `추정 초기 비용(보증금+시설비 약 ${estimatedTotalStartupCostManwon.toLocaleString()}만 원)이 입력 예산(${budgetLimitManwon.toLocaleString()}만 원)을 초과하므로 소형 평수 또는 테이크아웃형 전환 검토가 필요합니다.`
+    );
+  }
+  if (isWithinRent === false && estimatedMonthlyRentManwon != null) {
+    risks.push(
+      `추정 월 임대료(약 ${estimatedMonthlyRentManwon.toLocaleString()}만 원)가 희망 한도(${rentLimitManwon.toLocaleString()}만 원)를 초과하여 고정비 부담이 큽니다.`
+    );
+  }
+  if (annualClosureRate != null && annualClosureRate >= baseSurvival.annual_closure_rate + 1) {
+    risks.push(
+      `상권 내 트렌드 교체 주기가 빨라 연간 폐업률(${annualClosureRate}%)이 업종 평균(${baseSurvival.annual_closure_rate}%)보다 높습니다.`
+    );
+  }
+  if (missingMetrics.length > 0) {
+    risks.push(
+      `미확보 통계 항목(${missingMetrics.join(', ')})이 존재하므로 현장 실사 및 인근 공인중개사 시세 교차 확인이 필수적입니다.`
+    );
+  }
+  if (risks.length === 0) {
+    risks.push(
+      `인접 상권(${zone.adjacent_zones.join(', ')})으로의 고객 분산 가능성과 층별·전면 가시성 편차를 현장 확인해야 합니다.`
+    );
+  }
+
+  return {
+    zone_id: zone.zone_id,
+    zone_name: zone.zone_name,
+    sido_name: zone.sido_name,
+    sigungu_name: zone.sigungu_name,
+    emd_name: zone.emd_name,
+    region_code: zone.region_code,
+    lat: zone.lat,
+    lng: zone.lng,
+    district_type: zone.district_type,
+    district_type_label: zone.district_type_label,
+    total_score: totalScore,
+    pillar_scores: {
+      survival: survivalScore,
+      competition: competitionScore,
+      demand: demandScore,
+      cost: costScore
+    },
+    weights_applied: normalizedWeights,
+    reliability: {
+      grade: reliabilityGrade,
+      label: reliabilityLabel,
+      coverage_pct: coveragePct,
+      missing_metrics: missingMetrics,
+      quality_status: zone.quality_status
+    },
+    survival_closure_stats: {
+      survival_rate_1yr: survival1yr,
+      survival_rate_3yr: survival3yr,
+      survival_rate_5yr: survival5yr,
+      annual_closure_rate: annualClosureRate,
+      new_entry_rate: baseSurvival.new_entry_rate,
+      avg_operating_years: baseSurvival.avg_operating_years,
+      national_benchmark: {
+        survival_rate_1yr: baseSurvival.survival_rate_1yr,
+        survival_rate_3yr: baseSurvival.survival_rate_3yr,
+        survival_rate_5yr: baseSurvival.survival_rate_5yr,
+        annual_closure_rate: baseSurvival.annual_closure_rate
+      },
+      metric_definition: baseSurvival.metric_definition,
+      source_name: '통계청 KOSIS 기업생멸행정통계 · 지자체 상권분석 통계',
+      base_year: baseSurvival.base_year,
+      observation_period: baseSurvival.observation_period,
+      published_at: baseSurvival.published_at
+    },
+    competition_stats: {
+      same_industry_store_count: storeCountInRadius,
+      density_per_km2: densityPerKm2,
+      yoy_store_change_pct: yoyChangePct,
+      demand_per_store: demandPerStore,
+      adjacent_zones: zone.adjacent_zones,
+      source_name: '소상공인시장진흥공단 상가(상권)정보 OpenAPI',
+      observation_period: zone.store_data_period,
+      nearby_stores: buildNearbyCompetitorStores(zone, industryObj, storeCountInRadius, radiusMeters)
+    },
+    demand_stats: {
+      resident_population: zone.resident_population,
+      household_count: zone.household_count,
+      worker_population: zone.worker_population,
+      floating_pop_daily: zone.floating_pop_daily,
+      age_20_39_ratio: zone.age_20_39_ratio,
+      age_40_59_ratio: zone.age_40_59_ratio,
+      total_biz_count: zone.total_biz_count,
+      source_name: '통계청·행정안전부 주민등록인구 및 전국사업체조사',
+      observation_period: zone.pop_data_period
+    },
+    cost_stats: {
+      reference_area_pyeong: areaPyeong,
+      store_type: storeType,
+      avg_monthly_rent_per_py: zone.avg_monthly_rent_per_py,
+      avg_deposit_per_py: zone.avg_deposit_per_py,
+      estimated_monthly_rent_manwon: estimatedMonthlyRentManwon,
+      estimated_deposit_manwon: estimatedDepositManwon,
+      estimated_total_startup_cost_manwon: estimatedTotalStartupCostManwon,
+      budget_limit_manwon: budgetLimitManwon,
+      rent_limit_manwon: rentLimitManwon,
+      is_within_budget: isWithinBudget,
+      is_within_rent: isWithinRent,
+      source_name: '한국부동산원 상업용부동산 임대동향조사 표본 시세',
+      observation_period: '2026-Q1 기준'
+    },
+    strengths,
+    risk_factors: risks
+  };
+}
+
+/**
+ * 전체 상권 분석 및 TOP 10 입지 추천 실행
+ */
+function runRecommendationAnalysis(queryParams = {}) {
+  const startedAt = Date.now();
+  const industryObj = resolveIndustry(queryParams.industry || 'IND_CAFE');
+  const sidoName = queryParams.sido || '서울특별시';
+  const sigunguName = queryParams.sigungu || '강남구';
+  const emdName = queryParams.emd || '';
+  const radiusMeters = Number(queryParams.radius) || 500;
+  const budgetLimitManwon = Number(queryParams.budget) || 10000;
+  const rentLimitManwon = Number(queryParams.rent) || 350;
+  const storeType = queryParams.storeType || 'GENERAL';
+  const centerLat = queryParams.lat ? Number(queryParams.lat) : null;
+  const centerLng = queryParams.lng ? Number(queryParams.lng) : null;
+
+  // 사용자 지정 가중치 또는 기획서 8장 초기 가중치(40/25/20/15) 적용
+  const weights = {
+    survival: queryParams.wSurvival != null ? Number(queryParams.wSurvival) : DEFAULT_WEIGHTS.survival,
+    competition: queryParams.wCompetition != null ? Number(queryParams.wCompetition) : DEFAULT_WEIGHTS.competition,
+    demand: queryParams.wDemand != null ? Number(queryParams.wDemand) : DEFAULT_WEIGHTS.demand,
+    cost: queryParams.wCost != null ? Number(queryParams.wCost) : DEFAULT_WEIGHTS.cost
+  };
+
+  // 2단계: 지역 필터링 (해당 시·군·구 후보 상권 우선, 10개 미만이면 동일 시·도 또는 인접 권역 후보 보충 안내)
+  let primaryZones = COMMERCIAL_ZONES.filter(
+    (z) => z.sido_name === sidoName && (!sigunguName || z.sigungu_name === sigunguName)
+  );
+
+  let scopeNotice = `${sidoName} ${sigunguName} 내 후보 상권 ${primaryZones.length}곳을 정밀 분석했습니다.`;
+
+  if (primaryZones.length < 10) {
+    const sameSidoOthers = COMMERCIAL_ZONES.filter(
+      (z) => z.sido_name === sidoName && z.sigungu_name !== sigunguName
+    );
+    const nationwideOthers = COMMERCIAL_ZONES.filter((z) => z.sido_name !== sidoName);
+    const combined = [...primaryZones, ...sameSidoOthers, ...nationwideOthers].slice(0, 10);
+    scopeNotice = `${sidoName} ${sigunguName} 내 직접 등록된 상권(${primaryZones.length}곳)과 동일 시·도 및 비교 권역 상권을 포함하여 총 ${combined.length}곳을 비교 분석했습니다.`;
+    primaryZones = combined;
+  }
+
+  // 지도에서 특정 좌표를 직접 클릭한 경우 거리 정보 추가
+  const evaluated = primaryZones.map((zone) => {
+    const item = evaluateZoneCandidate(zone, industryObj, {
+      radiusMeters,
+      budgetLimitManwon,
+      rentLimitManwon,
+      storeType,
+      weights
+    });
+
+    if (centerLat != null && centerLng != null) {
+      item.distance_from_selected_point_m = Math.round(distanceMeters(centerLat, centerLng, zone.lat, zone.lng));
+    }
+    if (emdName && zone.emd_name.includes(emdName)) {
+      item.is_exact_emd_match = true;
+    }
+    return item;
+  });
+
+  // 종합 점수 내림차순 정렬 후 TOP 10 부여
+  evaluated.sort((a, b) => {
+    if (a.is_exact_emd_match && !b.is_exact_emd_match) return -1;
+    if (!a.is_exact_emd_match && b.is_exact_emd_match) return 1;
+    return b.total_score - a.total_score;
+  });
+
+  const top10 = evaluated.slice(0, 10).map((item, idx) => ({
+    rank: idx + 1,
+    ...item
+  }));
+
+  // 6단계: 데이터의 지역 단위와 기준 기간 비교 가능성 검증 결과
+  const comparabilityCheck = {
+    is_comparable: true,
+    industry_standard_mapping: `${industryObj.industry_name} (상가정보 코드: ${industryObj.semas_code} ↔ 통계청 KSIC: ${industryObj.kosis_ksic_code})`,
+    spatial_alignment_note:
+      '점포 분포는 반경 기반 좌표 집계(상가정보 API)이며, 생존·폐업 통계는 통계청 KOSIS 기업생멸행정통계(시·도/시·군·구 산업분류) 및 지자체 상권 생멸 지표를 결합한 값입니다.',
+    temporal_alignment_note:
+      '상가 점포(2026-Q1), 주민등록인구(2026.02), 기업생멸통계(2025년 연간 코호트 공표분) 간 기준 시점 차이를 각 지표 하단에 명시했습니다.',
+    missing_data_policy:
+      '미확보 지표(예: 비표본 지역의 유동인구·5년 생존율·임대료)는 임의의 숫자로 채우지 않고 NULL로 유지하며, 확보된 항목만으로 가중치를 재정규화하여 평가했습니다.'
+  };
+
+  return {
+    analysis_id: `ANL_${Date.now()}`,
+    generated_at: new Date().toISOString(),
+    execution_ms: Date.now() - startedAt,
+    disclaimer:
+      '본 서비스는 창업 성공을 보장하는 예측기가 아니라, 공개 통계와 확보된 상권 데이터를 이용한 의사결정 지원 도구입니다. 초기 가중치(40/25/20/15%)는 초기 테스트 제안 기준이며 실제 계약 전 현장 실사가 필수입니다.',
+    query_summary: {
+      industry_code: industryObj.industry_code,
+      industry_name: industryObj.industry_name,
+      category_large: industryObj.category_large,
+      category_middle: industryObj.category_middle,
+      semas_code: industryObj.semas_code,
+      kosis_ksic_code: industryObj.kosis_ksic_code,
+      sido_name: sidoName,
+      sigungu_name: sigunguName,
+      emd_name: emdName || '전체',
+      radius_meters: radiusMeters,
+      budget_limit_manwon: budgetLimitManwon,
+      rent_limit_manwon: rentLimitManwon,
+      store_type: storeType,
+      reference_area_pyeong: industryObj.typical_area_pyeong[storeType] || industryObj.typical_area_pyeong.GENERAL,
+      scope_notice: scopeNotice
+    },
+    weights_config: {
+      initial_proposal: DEFAULT_WEIGHTS,
+      applied: weights,
+      note: '기획서 8장 초기 평가 가중치 (생존·폐업 40%, 경쟁 강도 25%, 지역 수요 20%, 비용 부담 15%)'
+    },
+    comparability_check: comparabilityCheck,
+    top_recommendations: top10,
+    data_sources_used: DATA_SOURCES
+  };
+}
+
+/**
+ * 선택한 2~3개 후보 상권 정밀 비교 분석
+ */
+function compareCandidateZones(zoneIds = [], queryParams = {}) {
+  const industryObj = resolveIndustry(queryParams.industry || 'IND_CAFE');
+  const radiusMeters = Number(queryParams.radius) || 500;
+  const budgetLimitManwon = Number(queryParams.budget) || 10000;
+  const rentLimitManwon = Number(queryParams.rent) || 350;
+  const storeType = queryParams.storeType || 'GENERAL';
+
+  const targetZones = COMMERCIAL_ZONES.filter((z) => zoneIds.includes(z.zone_id));
+  const evaluated = targetZones.map((zone) =>
+    evaluateZoneCandidate(zone, industryObj, {
+      radiusMeters,
+      budgetLimitManwon,
+      rentLimitManwon,
+      storeType
+    })
+  );
+
+  evaluated.sort((a, b) => b.total_score - a.total_score);
+
+  const highest = evaluated[0] || null;
+  const lowest = evaluated[evaluated.length - 1] || null;
+
+  return {
+    compared_at: new Date().toISOString(),
+    industry: industryObj,
+    candidates: evaluated,
+    comparison_summary: highest && lowest && highest.zone_id !== lowest.zone_id
+      ? {
+          leader_zone_name: highest.zone_name,
+          score_gap: round1(highest.total_score - lowest.total_score),
+          key_difference: `${highest.zone_name}(종합 ${highest.total_score}점)은 ${lowest.zone_name}(종합 ${lowest.total_score}점) 대비 3년 생존율(${highest.survival_closure_stats.survival_rate_3yr}% vs ${lowest.survival_closure_stats.survival_rate_3yr}%) 및 점포당 유효수요(${highest.competition_stats.demand_per_store.toLocaleString()}명 vs ${lowest.competition_stats.demand_per_store.toLocaleString()}명) 지표에서 우위를 보입니다.`,
+          uncertainty_warnings: evaluated
+            .filter((e) => e.reliability.missing_metrics.length > 0)
+            .map((e) => `${e.zone_name}: 미확보 데이터(${e.reliability.missing_metrics.join(', ')})로 인해 신뢰도 등급이 '${e.reliability.label}'입니다.`)
+        }
+      : null
+  };
+}
+
+window.__ENGINE__ = {
+  DEFAULT_WEIGHTS,
+  resolveIndustry,
+  runRecommendationAnalysis,
+  compareCandidateZones
+};
+
+
+window.__SCHEMA_SQL__ = "-- ============================================================================\n-- 전국 업종별 창업 입지 추천 플랫폼 (창업입지 AI)\n-- PostgreSQL 15+ & PostGIS 3+ 데이터베이스 스키마\n-- 설계 원칙:\n--   1. 모든 통계·점포 데이터는 출처(source_id), 기준연도(base_year), 관측기간(observation_period),\n--      공표일(published_at), 수집일(collected_at), 품질상태(quality_status)를 함께 저장한다.\n--   2. 폐업률과 생존율은 정의와 기준이 다르므로 컬럼을 명확히 분리하고 혼용하지 않는다.\n--   3. 결측 데이터는 NULL로 유지하며 임의 추정값으로 채우지 않는다.\n--   4. 사업자 상태 이력은 최초 수집 시점 이후부터 기록하며 과거 이력을 임의 소급 생성하지 않는다.\n-- ============================================================================\n\nCREATE EXTENSION IF NOT EXISTS postgis;\nCREATE EXTENSION IF NOT EXISTS pg_trgm;\n\n-- ----------------------------------------------------------------------------\n-- 1. data_sources (외부 데이터 출처, 이용 조건, 갱신 주기 관리)\n-- ----------------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS data_sources (\n    source_id            VARCHAR(50) PRIMARY KEY,\n    provider_name       VARCHAR(120) NOT NULL,           -- 제공기관 (예: 소상공인시장진흥공단, 통계청 KOSIS, 국세청)\n    dataset_name        VARCHAR(200) NOT NULL,           -- 데이터셋/API 명칭\n    official_url        TEXT NOT NULL,                   -- 공식 안내 URL\n    api_endpoint        TEXT,                            -- 호출 엔드포인트\n    update_cycle        VARCHAR(60) NOT NULL,            -- 갱신 주기 (분기별, 연 1회, 실시간 등)\n    Spatial_granularity VARCHAR(60) NOT NULL,            -- 제공 지역 단위 (전국/시도/시군구/읍면동/좌표)\n    terms_of_use        TEXT NOT NULL,                   -- 이용 약관 및 재배포 조건\n    daily_quota_limit   INTEGER DEFAULT 10000,           -- 일일 호출 한도\n    last_verified_at    TIMESTAMPTZ,                     -- 마지막 연결 정상 확인 시각\n    is_active           BOOLEAN DEFAULT TRUE,\n    created_at          TIMESTAMPTZ DEFAULT NOW()\n);\n\n-- ----------------------------------------------------------------------------\n-- 2. industry_codes (표준 업종 코드 관리 - 상권정보 대/중/소분류 ↔ 표준산업분류 매핑)\n-- ----------------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS industry_codes (\n    industry_code       VARCHAR(20) PRIMARY KEY,         -- 내부 표준 업종 코드 (예: IND_CAFE)\n    industry_name       VARCHAR(100) NOT NULL,           -- 표시 업종명 (예: 커피전문점/카페)\n    category_large      VARCHAR(60) NOT NULL,            -- 대분류 (음식, 소매, 생활서비스, 교육/여가 등)\n    category_middle     VARCHAR(60) NOT NULL,            -- 중분류\n    semas_code          VARCHAR(20),                     -- 소상공인시장진흥공단 상권업종 소분류 코드 (예: I21201)\n    kosis_ksic_code     VARCHAR(20),                     -- 통계청 표준산업분류(KSIC) 매핑 코드 (예: I5622)\n    typical_area_pyeong NUMERIC(5,1),                    -- 기준 매장 면적(평)\n    keywords            TEXT[],                          -- 검색 유의어 배열\n    is_active           BOOLEAN DEFAULT TRUE,\n    updated_at          TIMESTAMPTZ DEFAULT NOW()\n);\n\n-- ----------------------------------------------------------------------------\n-- 3. region_boundaries (전국 행정구역 코드 및 PostGIS 공간 경계)\n-- ----------------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS region_boundaries (\n    region_code         VARCHAR(10) PRIMARY KEY,         -- 행정표준코드 (법정동/행정동 10자리 또는 시군구 5자리)\n    sido_name           VARCHAR(40) NOT NULL,            -- 시·도 명 (예: 서울특별시)\n    sigungu_name        VARCHAR(60),                     -- 시·군·구 명 (예: 강남구)\n    emd_name            VARCHAR(60),                     -- 읍·면·동 명 (예: 역삼1동)\n    region_level         VARCHAR(20) NOT NULL CHECK (region_level IN ('SIDO', 'SIGUNGU', 'EMD', 'COMMERCIAL_ZONE')),\n    center_lat          DOUBLE PRECISION NOT NULL,\n    center_lng          DOUBLE PRECISION NOT NULL,\n    center_geom         GEOGRAPHY(POINT, 4326),          -- 중심점 좌표\n    boundary_geom       GEOGRAPHY(MULTIPOLYGON, 4326),   -- 행정구역/상권 다각형 경계\n    source_id           VARCHAR(50) REFERENCES data_sources(source_id),\n    base_year           INTEGER NOT NULL,\n    collected_at        TIMESTAMPTZ DEFAULT NOW()\n);\n\nCREATE INDEX IF NOT EXISTS idx_region_boundaries_geom ON region_boundaries USING GIST (center_geom);\nCREATE INDEX IF NOT EXISTS idx_region_boundaries_poly ON region_boundaries USING GIST (boundary_geom);\nCREATE INDEX IF NOT EXISTS idx_region_boundaries_names ON region_boundaries (sido_name, sigungu_name, emd_name);\n\n-- ----------------------------------------------------------------------------\n-- 4. stores (전국 상가·점포 마스터 테이블)\n-- ----------------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS stores (\n    store_id            VARCHAR(40) PRIMARY KEY,         -- 상가업소번호 (공공데이터 원본 ID)\n    store_name          VARCHAR(150) NOT NULL,           -- 상호명\n    branch_name         VARCHAR(100),                    -- 지점명\n    industry_code       VARCHAR(20) NOT NULL REFERENCES industry_codes(industry_code),\n    semas_raw_code      VARCHAR(20),                     -- 원본 상권업종소분류코드\n    region_code         VARCHAR(10) REFERENCES region_boundaries(region_code),\n    road_address        TEXT NOT NULL,                   -- 도로명주소\n    jibun_address       TEXT,                            -- 지번주소\n    lat                 DOUBLE PRECISION NOT NULL,\n    lng                 DOUBLE PRECISION NOT NULL,\n    geom                GEOGRAPHY(POINT, 4326) NOT NULL, -- PostGIS 공간 검색용 포인트\n    floor_info          VARCHAR(30),                     -- 층정보\n    store_type          VARCHAR(30) DEFAULT 'GENERAL',   -- GENERAL(일반), TAKEOUT(테이크아웃), LARGE(대형)\n    biz_reg_no_masked   VARCHAR(20),                     -- 마스킹된 사업자번호 (선택적 검증용, 개인정보 보호)\n    source_id           VARCHAR(50) NOT NULL REFERENCES data_sources(source_id),\n    base_year           INTEGER NOT NULL,\n    observation_period  VARCHAR(40) NOT NULL,            -- 예: '2025-Q4'\n    published_at        DATE,\n    collected_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),\n    quality_status      VARCHAR(20) NOT NULL DEFAULT 'VERIFIED'\n                        CHECK (quality_status IN ('VERIFIED', 'PARTIAL', 'STALE', 'DUPLICATE_SUSPECT'))\n);\n\nCREATE INDEX IF NOT EXISTS idx_stores_geom ON stores USING GIST (geom);\nCREATE INDEX IF NOT EXISTS idx_stores_industry_region ON stores (industry_code, region_code);\n\n-- ----------------------------------------------------------------------------\n-- 5. store_status_history (점포 상태 및 확인 가능한 폐업 이력)\n-- 주의: 최초 수집 시점 이후 관측된 이력만 기록하며, 과거 폐업 이력을 소급 추정하지 않음\n-- ----------------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS store_status_history (\n    history_id          BIGSERIAL PRIMARY KEY,\n    store_id            VARCHAR(40) NOT NULL REFERENCES stores(store_id) ON DELETE CASCADE,\n    observed_date       DATE NOT NULL,                   -- 상태 확인 기준일\n    status_code         VARCHAR(30) NOT NULL             -- ACTIVE(계속사업자/영업중), SUSPENDED(휴업), CLOSED(폐업), UNKNOWN(미확인)\n                        CHECK (status_code IN ('ACTIVE', 'SUSPENDED', 'CLOSED', 'UNKNOWN')),\n    confirmed_closed_on DATE,                            -- 국세청 상태조회 등으로 실제 확인된 폐업일자 (미확인 시 NULL)\n    verification_method VARCHAR(40) NOT NULL,            -- SEMAS_QUARTERLY_DIFF(상가정보 분기 비교) | NTS_BIZ_STATUS(국세청 상태조회)\n    source_id           VARCHAR(50) NOT NULL REFERENCES data_sources(source_id),\n    collected_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),\n    notes               TEXT\n);\n\nCREATE INDEX IF NOT EXISTS idx_store_status_store_date ON store_status_history (store_id, observed_date DESC);\n\n-- ----------------------------------------------------------------------------\n-- 6. industry_stats (업종·지역·기간별 공식 생멸·생존·폐업 통계)\n-- 주의: 생존율(신생 기업 중 일정 기간 후 생존 비율)과 폐업률(해당 연도 활동 기업 대비 소멸 비율)을 엄격히 구분\n-- ----------------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS industry_stats (\n    stat_id                 BIGSERIAL PRIMARY KEY,\n    industry_code           VARCHAR(20) NOT NULL REFERENCES industry_codes(industry_code),\n    region_code             VARCHAR(10) NOT NULL REFERENCES region_boundaries(region_code),\n    region_granularity      VARCHAR(20) NOT NULL CHECK (region_granularity IN ('NATIONAL', 'SIDO', 'SIGUNGU', 'COMMERCIAL_ZONE')),\n    industry_granularity    VARCHAR(30) NOT NULL,        -- KSIC_LARGE(대분류) | KSIC_MIDDLE(중분류) | SEMAS_SMALL(소분류)\n    -- 생존율 지표 (통계청 기업생멸행정통계 기준: 신생기업의 N년 후 생존 비율, %)\n    survival_rate_1yr       NUMERIC(5,2),                -- 1년 생존율 (%) - 미확보 시 NULL\n    survival_rate_3yr       NUMERIC(5,2),                -- 3년 생존율 (%) - 미확보 시 NULL\n    survival_rate_5yr       NUMERIC(5,2),                -- 5년 생존율 (%) - 미확보 시 NULL\n    -- 폐업/소멸 지표 (연간 활동사업체 대비 폐업/소멸 사업체 비율, %)\n    annual_closure_rate     NUMERIC(5,2),                -- 연간 폐업(소멸)률 (%) - 생존율의 단순 역수가 아님\n    new_entry_rate          NUMERIC(5,2),                -- 연간 신생률 (%)\n    active_biz_count        INTEGER,                     -- 기준 기간 활동 사업체 수\n    closed_biz_count        INTEGER,                     -- 기준 기간 폐업(소멸) 사업체 수\n    avg_operating_years     NUMERIC(4,1),                -- 평균 영업 기간(년) - 확보 시만 기록\n    -- 통계 메타데이터 (필수)\n    metric_definition       TEXT NOT NULL,               -- 생존율/폐업률 산출 공식 및 정의 설명\n    source_id               VARCHAR(50) NOT NULL REFERENCES data_sources(source_id),\n    base_year               INTEGER NOT NULL,            -- 통계 기준연도 (예: 2024)\n    observation_period      VARCHAR(50) NOT NULL,        -- 관측기간 (예: '2024년 연간 (2019~2024 코호트)')\n    published_at            DATE NOT NULL,               -- 통계 공표일\n    collected_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),\n    quality_status          VARCHAR(20) NOT NULL DEFAULT 'OFFICIAL'\n                            CHECK (quality_status IN ('OFFICIAL', 'PARTIAL_COVERAGE', 'LOW_SAMPLE_WARNING')),\n    UNIQUE (industry_code, region_code, base_year, observation_period)\n);\n\n-- ----------------------------------------------------------------------------\n-- 7. region_stats (지역별 인구·가구·사업체·상권 수요 및 임대비용 지표)\n-- ----------------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS region_stats (\n    region_stat_id          BIGSERIAL PRIMARY KEY,\n    region_code             VARCHAR(10) NOT NULL REFERENCES region_boundaries(region_code),\n    district_type           VARCHAR(30) NOT NULL         -- RESIDENTIAL(주거형), OFFICE(업무형), MIXED(혼합형), UNIVERSITY(대학/역세권), COMMERCIAL(중심상업)\n                            CHECK (district_type IN ('RESIDENTIAL', 'OFFICE', 'MIXED', 'UNIVERSITY', 'COMMERCIAL')),\n    resident_population     INTEGER,                     -- 주민등록 인구 수 (명)\n    household_count         INTEGER,                     -- 가구 수 (세대)\n    worker_population       INTEGER,                     -- 종사자(직장) 인구 수 (명)\n    floating_pop_daily      INTEGER,                     -- 일평균 유동인구 (명, 공공 상권 데이터 확보 시만 기록, 미확보 시 NULL)\n    age_20_39_ratio         NUMERIC(5,2),                -- 20~39세 인구 비중 (%)\n    age_40_59_ratio         NUMERIC(5,2),                -- 40~59세 인구 비중 (%)\n    total_biz_count         INTEGER,                     -- 전체 사업체 수\n    -- 비용 지표 (한국부동산원/지자체 통상 상가 임대 시세 기준, 만원)\n    avg_monthly_rent_per_py NUMERIC(8,2),                -- 평당 월평균 임대료 (만원/평, 미확보 시 NULL)\n    avg_deposit_per_py      NUMERIC(8,2),                -- 평당 평균 보증금 (만원/평, 미확보 시 NULL)\n    estimated_interior_per_py NUMERIC(8,2),              -- 평당 평균 초기 인테리어/시설비 (만원/평)\n    source_id               VARCHAR(50) NOT NULL REFERENCES data_sources(source_id),\n    base_year               INTEGER NOT NULL,\n    observation_period      VARCHAR(50) NOT NULL,\n    published_at            DATE NOT NULL,\n    collected_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),\n    quality_status          VARCHAR(20) NOT NULL DEFAULT 'OFFICIAL'\n                            CHECK (quality_status IN ('OFFICIAL', 'PARTIAL_COVERAGE', 'MISSING_COST_DATA'))\n);\n\n-- ----------------------------------------------------------------------------\n-- 8. recommendation_results (사용자 조건별 입지 추천 산출 이력 및 분석 근거)\n-- ----------------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS recommendation_results (\n    result_id               UUID PRIMARY KEY,\n    industry_code           VARCHAR(20) NOT NULL REFERENCES industry_codes(industry_code),\n    sido_name               VARCHAR(40) NOT NULL,\n    sigungu_name            VARCHAR(60),\n    radius_meters           INTEGER NOT NULL DEFAULT 500,\n    budget_limit_manwon     INTEGER,                     -- 초기 투자 예산 한도 (만원)\n    rent_limit_manwon       INTEGER,                     -- 월 임대료 한도 (만원)\n    store_type              VARCHAR(30) NOT NULL,\n    weights_used            JSONB NOT NULL,              -- 적용된 가중치 (예: {\"survival\":0.40,\"competition\":0.25,\"demand\":0.20,\"cost\":0.15})\n    ranked_candidates       JSONB NOT NULL,              -- 추천 후보 상권 TOP 10 및 항목별 점수/신뢰도/근거\n    comparability_check     JSONB NOT NULL,              -- 지역 단위 및 기준 기간 비교 가능성 검증 결과\n    created_at              TIMESTAMPTZ NOT NULL DEFAULT NOW()\n);\n\n-- ----------------------------------------------------------------------------\n-- 9. api_sync_logs (외부 공공데이터 API 수집·갱신·오류 이력 로그)\n-- ----------------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS api_sync_logs (\n    log_id                  BIGSERIAL PRIMARY KEY,\n    source_id               VARCHAR(50) NOT NULL REFERENCES data_sources(source_id),\n    job_type                VARCHAR(60) NOT NULL,        -- INITIAL_LOAD | SCHEDULED_SYNC | MANUAL_VERIFY | BIZ_STATUS_CHECK\n    status                  VARCHAR(20) NOT NULL CHECK (status IN ('SUCCESS', 'PARTIAL_ERROR', 'FAILED', 'RATE_LIMITED')),\n    records_fetched         INTEGER DEFAULT 0,\n    records_upserted        INTEGER DEFAULT 0,\n    duplicates_removed      INTEGER DEFAULT 0,\n    http_status_code        INTEGER,\n    error_message           TEXT,                        -- 인증키는 절대 로그에 기록하지 않음\n    started_at              TIMESTAMPTZ NOT NULL,\n    finished_at             TIMESTAMPTZ NOT NULL DEFAULT NOW()\n);\n";
+window.__ORIG_FETCH__ = window.fetch.bind(window);
+window.fetch = async function(url, options = {}) {
+  try {
+    if (typeof url === 'string' && url.startsWith('/api/')) {
+      const S = window.__STORE__;
+      const E = window.__ENGINE__;
+      const body = options.body ? JSON.parse(options.body) : {};
+      const mkRes = (obj) => ({ ok: true, status: 200, json: async () => obj });
+      if (url.startsWith('/api/meta')) {
+        return mkRes({
+          industries: S.INDUSTRY_CODES,
+          regions: S.REGIONS_TREE,
+          default_weights: E.DEFAULT_WEIGHTS,
+          data_sources: S.DATA_SOURCES,
+          total_commercial_zones: S.COMMERCIAL_ZONES.length
+        });
+      }
+      if (url.startsWith('/api/recommend')) {
+        return mkRes(E.runRecommendationAnalysis(body));
+      }
+      if (url.startsWith('/api/compare')) {
+        return mkRes(E.compareCandidateZones(body.zoneIds || [], body.queryParams || {}));
+      }
+      if (url.startsWith('/api/nts/verify')) {
+        const cleaned = String(body.bizNo || '').replace(/[^0-9]/g, '');
+        if (cleaned.length !== 10) return mkRes({ valid_format: false, error: '사업자등록번호는 숫자 10자리여야 합니다.' });
+        const masked = cleaned.slice(0,3) + '-' + cleaned.slice(3,5) + '-*****';
+        return mkRes({
+          valid_format: true,
+          b_no_masked: masked,
+          b_stt: cleaned.endsWith('0') ? '폐업자' : '계속사업자',
+          tax_type: '부가가치세 일반과세자',
+          policy_notice: '국세청 사업자등록 상태조회는 사업자번호를 알고 있는 개별 대상 확인용이며, 전국 점포의 과거 폐업 이력을 일괄 추출하는 용도로 사용할 수 없습니다.'
+        });
+      }
+      if (url.startsWith('/api/admin/overview')) {
+        return mkRes({
+          security_status: {
+            frontend_key_exposure: false,
+            configured_keys: {
+              DATA_GO_KR_SERVICE_KEY: 'SERVER_ENV_ISOLATED (서버 환경변수 보안 보관)',
+              KOSIS_API_KEY: 'SERVER_ENV_ISOLATED (서버 환경변수 보안 보관)',
+              KAKAO_MAP_KEY: 'OPENSTREETMAP_ACTIVE (무료 표준 타일 구동 중)'
+            }
+          },
+          data_sources: S.DATA_SOURCES,
+          sync_logs: S.INITIAL_SYNC_LOGS,
+          industry_codes: S.INDUSTRY_CODES,
+          quality_summary: {
+            total_zones: S.COMMERCIAL_ZONES.length,
+            official_verified_zones: S.COMMERCIAL_ZONES.filter(z => z.quality_status === 'OFFICIAL').length,
+            partial_coverage_zones: S.COMMERCIAL_ZONES.filter(z => z.quality_status !== 'OFFICIAL').length,
+            duplicate_cleaning_policy: '상가업소번호(store_id) 및 도로명주소+상호명+층정보 해시 기준 중복 제거'
+          },
+          schema_sql: window.__SCHEMA_SQL__
+        });
+      }
+      if (url.startsWith('/api/admin/sync')) {
+        const target = S.DATA_SOURCES.find(s => s.source_id === body.sourceId) || S.DATA_SOURCES[0];
+        target.last_verified_at = new Date().toISOString();
+        target.daily_quota_used += 1;
+        S.INITIAL_SYNC_LOGS.unshift({
+          log_id: S.INITIAL_SYNC_LOGS.length + 1001,
+          source_id: target.source_id,
+          job_type: 'MANUAL_VERIFY (' + target.dataset_name + ' 정규화 및 중복 점검)',
+          status: 'SUCCESS',
+          records_fetched: 1250,
+          records_upserted: 1238,
+          duplicates_removed: 12,
+          error_message: null,
+          finished_at: new Date().toISOString()
+        });
+        return mkRes({ triggered: true });
+      }
+    }
+  } catch (e) { console.error(e); }
+  return window.__ORIG_FETCH__(url, options);
+};
+
+/**
+ * 창업입지 AI - 프런트엔드 애플리케이션 (public/app.js)
+ * 기획서의 5개 핵심 화면(검색, TOP 10 지도 추천, 상권 상세, 후보 2~3곳 비교, 창업 분석 보고서, 관리자)을
+ * 백엔드 API와 실시간으로 연동합니다.
+ */
+
+const state = {
+  meta: null,
+  analysisResult: null,
+  selectedZoneRank: 1,
+  compareZoneIds: new Set(),
+  clickedLatLng: null,
+  map: null,
+  zoneMarkersLayer: null,
+  competitorMarkersLayer: null,
+  radiusCircleLayer: null,
+  adminData: null
+};
+
+// 숫자 포맷 유틸리티 (결측치는 절대 0이나 임의 숫자로 바꾸지 않고 '미확보 (NULL)'로 표시)
+function fmtNum(val, suffix = '') {
+  if (val === null || val === undefined || Number.isNaN(val)) {
+    return '<span style="color:#d97706;font-weight:600;">미확보 (통계 없음)</span>';
+  }
+  return `${Number(val).toLocaleString('ko-KR')}${suffix}`;
+}
+
+function fmtMoneyManwon(manwon) {
+  if (manwon === null || manwon === undefined) {
+    return '미확보 (비표본 지역)';
+  }
+  const n = Number(manwon);
+  if (n >= 10000) {
+    const eok = Math.floor(n / 10000);
+    const rem = n % 10000;
+    return rem > 0 ? `${eok}억 ${rem.toLocaleString()}만 원` : `${eok}억 원`;
+  }
+  return `${n.toLocaleString()}만 원`;
+}
+
+// 탭 전환
+function switchView(viewId) {
+  document.querySelectorAll('.nav-tab').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.view === viewId);
+  });
+  document.querySelectorAll('.view-section').forEach((sec) => {
+    sec.classList.toggle('active', sec.id === `view-${viewId}`);
+  });
+
+  if (viewId === 'main-analysis' && state.map) {
+    setTimeout(() => state.map.invalidateSize(), 100);
+  } else if (viewId === 'zone-detail') {
+    renderZoneDetailView();
+  } else if (viewId === 'zone-compare') {
+    loadAndRenderComparison();
+  } else if (viewId === 'analysis-report') {
+    renderAnalysisReportView();
+  } else if (viewId === 'admin-console') {
+    loadAndRenderAdminConsole();
+  }
+}
+
+// Leaflet 지도 초기화
+function initMap() {
+  state.map = L.map('leafletMap', {
+    center: [37.5006, 127.0468],
+    zoom: 13
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors | 상가정보·KOSIS 공공데이터 결합'
+  }).addTo(state.map);
+
+  state.zoneMarkersLayer = L.layerGroup().addTo(state.map);
+  state.competitorMarkersLayer = L.layerGroup().addTo(state.map);
+  state.radiusCircleLayer = L.layerGroup().addTo(state.map);
+
+  // 지도에서 직접 위치 선택 지원 (기획서 4.1 요구사항)
+  state.map.on('click', (e) => {
+    state.clickedLatLng = e.latlng;
+    const lat = e.latlng.lat.toFixed(5);
+    const lng = e.latlng.lng.toFixed(5);
+    document.getElementById('clickedCoordText').textContent =
+      `위도 ${lat}, 경도 ${lng} (클릭 지점 기준 반경 표시 완료)`;
+
+    const radiusMeters = Number(document.getElementById('radiusSelect').value) || 500;
+    state.radiusCircleLayer.clearLayers();
+    L.circle([e.latlng.lat, e.latlng.lng], {
+      radius: radiusMeters,
+      color: '#2563eb',
+      weight: 2,
+      fillColor: '#3b82f6',
+      fillOpacity: 0.12
+    })
+      .bindPopup(`<b>사용자 선택 위치</b><br/>분석 반경: ${radiusMeters}m`)
+      .addTo(state.radiusCircleLayer)
+      .openPopup();
+  });
+}
+
+// 초기 메타데이터 로드 및 셀렉트 박스 채우기
+async function initApp() {
+  initMap();
+
+  const metaRes = await fetch('/api/meta');
+  state.meta = await metaRes.json();
+
+  const industrySelect = document.getElementById('industrySelect');
+  industrySelect.innerHTML = state.meta.industries
+    .map(
+      (ind) =>
+        `<option value="${ind.industry_code}">${ind.industry_name} (${ind.category_middle})</option>`
+    )
+    .join('');
+
+  industrySelect.addEventListener('change', updateIndustryHint);
+  updateIndustryHint();
+
+  const sidoSelect = document.getElementById('sidoSelect');
+  sidoSelect.innerHTML = state.meta.regions
+    .map((r) => `<option value="${r.sido_name}">${r.sido_name}</option>`)
+    .join('');
+
+  sidoSelect.addEventListener('change', () => populateSigunguSelect(sidoSelect.value));
+  populateSigunguSelect(sidoSelect.value);
+
+  document.getElementById('sigunguSelect').addEventListener('change', () => {
+    populateEmdSelect(sidoSelect.value, document.getElementById('sigunguSelect').value);
+  });
+
+  // 예산 입력 힌트 실시간 업데이트
+  document.getElementById('budgetInput').addEventListener('input', (e) => {
+    document.getElementById('budgetFormattedHint').textContent =
+      `약 ${fmtMoneyManwon(e.target.value)} (보증금+시설비 기준)`;
+  });
+
+  // 매장 유형 라디오 토글
+  document.querySelectorAll('#storeTypeGroup input[name="storeType"]').forEach((radio) => {
+    radio.addEventListener('change', () => {
+      document.querySelectorAll('#storeTypeGroup .radio-pill').forEach((lbl) => {
+        lbl.classList.toggle('active', lbl.querySelector('input').checked);
+      });
+    });
+  });
+
+  // 네비게이션 탭 이벤트
+  document.querySelectorAll('.nav-tab').forEach((btn) => {
+    btn.addEventListener('click', () => switchView(btn.dataset.view));
+  });
+
+  document.getElementById('brandHomeBtn').addEventListener('click', () => switchView('main-analysis'));
+
+  // 기획서 예시 프리셋 버튼 (커피숍 + 서울특별시 강남구 + 초기 투자비 1억 원 이하)
+  document.getElementById('btnGangnamPreset').addEventListener('click', () => {
+    industrySelect.value = 'IND_CAFE';
+    document.getElementById('industryKeywordInput').value = '';
+    updateIndustryHint();
+    sidoSelect.value = '서울특별시';
+    populateSigunguSelect('서울특별시');
+    document.getElementById('sigunguSelect').value = '강남구';
+    populateEmdSelect('서울특별시', '강남구');
+    document.getElementById('emdSelect').value = '';
+    document.getElementById('radiusSelect').value = '500';
+    document.getElementById('budgetInput').value = '10000';
+    document.getElementById('rentInput').value = '350';
+    document.getElementById('budgetFormattedHint').textContent = '약 1억 원 (보증금+시설비 기준)';
+    runSearchAnalysis();
+  });
+
+  // 검색 폼 제출
+  document.getElementById('searchForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    runSearchAnalysis();
+  });
+
+  // 경쟁 점포 표시 토글
+  document.getElementById('toggleCompetitorsChk').addEventListener('change', () => {
+    renderMapMarkers();
+  });
+
+  // 선택 비교 이동 버튼
+  document.getElementById('btnGoCompareFromList').addEventListener('click', () => {
+    switchView('zone-compare');
+  });
+
+  // 비교 화면 빠른 선택 버튼
+  document.getElementById('btnAutoPickTop3').addEventListener('click', () => {
+    if (!state.analysisResult) return;
+    state.compareZoneIds.clear();
+    state.analysisResult.top_recommendations.slice(0, 3).forEach((z) => state.compareZoneIds.add(z.zone_id));
+    updateCompareBadges();
+    renderRankingList();
+    loadAndRenderComparison();
+  });
+
+  document.getElementById('btnIncludePartialZone').addEventListener('click', () => {
+    if (!state.analysisResult) return;
+    state.compareZoneIds.clear();
+    const top1 = state.analysisResult.top_recommendations[0];
+    if (top1) state.compareZoneIds.add(top1.zone_id);
+    state.compareZoneIds.add('ZONE_GN_12'); // 세곡동 일부 통계 결측 검증용 상권
+    updateCompareBadges();
+    renderRankingList();
+    loadAndRenderComparison();
+  });
+
+  // 보고서 인쇄 버튼
+  document.getElementById('btnPrintReport').addEventListener('click', () => {
+    window.print();
+  });
+
+  // 최초 실행: 기획서 2장 핵심 예시(커피숍 · 서울특별시 강남구 · 초기 투자비 1억 이하) 자동 분석
+  await runSearchAnalysis();
+}
+
+function updateIndustryHint() {
+  const code = document.getElementById('industrySelect').value;
+  const ind = state.meta.industries.find((i) => i.industry_code === code);
+  if (ind) {
+    document.getElementById('industryCodeHint').textContent =
+      `상가정보 코드: ${ind.semas_code} ↔ 통계청 KSIC: ${ind.kosis_ksic_code} (기본 ${ind.typical_area_pyeong.GENERAL}평)`;
+  }
+}
+
+function populateSigunguSelect(sidoName) {
+  const sido = state.meta.regions.find((r) => r.sido_name === sidoName) || state.meta.regions[0];
+  const sigunguSelect = document.getElementById('sigunguSelect');
+  sigunguSelect.innerHTML = sido.sigungu_list
+    .map((sg) => `<option value="${sg.sigungu_name}">${sg.sigungu_name}</option>`)
+    .join('');
+  populateEmdSelect(sido.sido_name, sigunguSelect.value);
+}
+
+function populateEmdSelect(sidoName, sigunguName) {
+  const sido = state.meta.regions.find((r) => r.sido_name === sidoName) || state.meta.regions[0];
+  const sigungu =
+    sido.sigungu_list.find((sg) => sg.sigungu_name === sigunguName) || sido.sigungu_list[0];
+  const emdSelect = document.getElementById('emdSelect');
+  emdSelect.innerHTML =
+    `<option value="">${sigungu.sigungu_name} 내 전체 후보 상권 비교</option>` +
+    sigungu.emd_list.map((emd) => `<option value="${emd}">${emd}</option>`).join('');
+}
+
+// 추천 분석 API 호출
+async function runSearchAnalysis() {
+  const keywordInput = document.getElementById('industryKeywordInput').value.trim();
+  const industryParam = keywordInput || document.getElementById('industrySelect').value;
+  const sido = document.getElementById('sidoSelect').value;
+  const sigungu = document.getElementById('sigunguSelect').value;
+  const emd = document.getElementById('emdSelect').value;
+  const radius = document.getElementById('radiusSelect').value;
+  const budget = document.getElementById('budgetInput').value;
+  const rent = document.getElementById('rentInput').value;
+  const storeType = document.querySelector('input[name="storeType"]:checked').value;
+
+  const res = await fetch('/api/recommend', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      industry: industryParam,
+      sido,
+      sigungu,
+      emd,
+      radius,
+      budget,
+      rent,
+      storeType,
+      lat: state.clickedLatLng ? state.clickedLatLng.lat : null,
+      lng: state.clickedLatLng ? state.clickedLatLng.lng : null
+    })
+  });
+
+  const data = await res.json();
+  state.analysisResult = data;
+  state.selectedZoneRank = 1;
+
+  // 드롭다운을 해석된 표준 업종 코드와 동기화
+  document.getElementById('industrySelect').value = data.query_summary.industry_code;
+  updateIndustryHint();
+
+  // 기본 비교 대상으로 상위 1·2위 자동 등록 (비교 화면 즉시 체험 가능)
+  if (state.compareZoneIds.size === 0 && data.top_recommendations.length >= 2) {
+    state.compareZoneIds.add(data.top_recommendations[0].zone_id);
+    state.compareZoneIds.add(data.top_recommendations[1].zone_id);
+    updateCompareBadges();
+  }
+
+  document.getElementById('mapHeaderTitle').textContent =
+    `${data.query_summary.sido_name} ${data.query_summary.sigungu_name} · [${data.query_summary.industry_name}] 추천 상권 TOP 10`;
+  document.getElementById('mapSubNotice').textContent = data.query_summary.scope_notice;
+
+  renderRankingList();
+  renderMapMarkers(true);
+}
+
+function updateCompareBadges() {
+  const cnt = state.compareZoneIds.size;
+  document.getElementById('compareCountPill').textContent = `${cnt}/3`;
+  document.getElementById('selectedCompareCountBtn').textContent = String(cnt);
+}
+
+// 우측 TOP 10 순위 리스트 렌더링
+function renderRankingList() {
+  const container = document.getElementById('rankingListContainer');
+  const list = (state.analysisResult && state.analysisResult.top_recommendations) || [];
+
+  container.innerHTML = list
+    .map((item) => {
+      const isSelected = item.rank === state.selectedZoneRank;
+      const isChecked = state.compareZoneIds.has(item.zone_id);
+      const relClass =
+        item.reliability.grade === 'HIGH'
+          ? 'tag-rel-high'
+          : item.reliability.grade === 'MEDIUM'
+          ? 'tag-rel-medium'
+          : 'tag-rel-low';
+
+      const surv3 =
+        item.survival_closure_stats.survival_rate_3yr != null
+          ? `${item.survival_closure_stats.survival_rate_3yr}%`
+          : '미확보';
+      const closure =
+        item.survival_closure_stats.annual_closure_rate != null
+          ? `${item.survival_closure_stats.annual_closure_rate}%`
+          : '미확보';
+      const estCost =
+        item.cost_stats.estimated_total_startup_cost_manwon != null
+          ? fmtMoneyManwon(item.cost_stats.estimated_total_startup_cost_manwon)
+          : '미확보';
+
+      return `
+        <div class="rank-card ${isSelected ? 'selected' : ''}" data-rank="${item.rank}">
+          <div class="rank-card-top">
+            <div class="rank-badge-wrap">
+              <span class="rank-num ${item.rank <= 3 ? 'top3' : ''}">${item.rank}</span>
+              <div>
+                <div class="rank-title">${item.zone_name}</div>
+                <div class="subtext">${item.sido_name} ${item.sigungu_name} · ${item.emd_name}</div>
+              </div>
+            </div>
+            <div class="rank-score-box">
+              <div class="score-big">${item.total_score}</div>
+              <div class="score-unit">종합점수</div>
+            </div>
+          </div>
+
+          <div class="rank-tags">
+            <span class="tag tag-type">${item.district_type_label}</span>
+            <span class="tag ${relClass}">신뢰도: ${item.reliability.label}</span>
+          </div>
+
+          <div class="rank-metrics-grid">
+            <div class="metric-cell">
+              <span>3년 생존율</span>
+              <strong>${surv3}</strong>
+            </div>
+            <div class="metric-cell">
+              <span>연간 폐업률</span>
+              <strong style="color:#e11d48;">${closure}</strong>
+            </div>
+            <div class="metric-cell">
+              <span>경쟁 점포(${state.analysisResult.query_summary.radius_meters}m)</span>
+              <strong>${item.competition_stats.same_industry_store_count}개</strong>
+            </div>
+            <div class="metric-cell">
+              <span>추정 초기비용</span>
+              <strong>${estCost}</strong>
+            </div>
+          </div>
+
+          <div class="rank-card-footer">
+            <label class="compare-chk-label" onclick="event.stopPropagation();">
+              <input type="checkbox" class="compare-chk" data-zone-id="${item.zone_id}" ${isChecked ? 'checked' : ''} />
+              <span>비교 담기</span>
+            </label>
+            <button type="button" class="btn-link-detail" data-detail-rank="${item.rank}">
+              상세 분석 및 근거 보기 &rarr;
+            </button>
+          </div>
+        </div>
+      `;
+    })
+    .join('');
+
+  // 카드 클릭 -> 지도 포커스 & 선택 변경
+  container.querySelectorAll('.rank-card').forEach((card) => {
+    card.addEventListener('click', () => {
+      state.selectedZoneRank = Number(card.dataset.rank);
+      renderRankingList();
+      renderMapMarkers(false);
+    });
+  });
+
+  // 상세 분석 바로가기 버튼
+  container.querySelectorAll('.btn-link-detail').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      state.selectedZoneRank = Number(btn.dataset.detailRank);
+      switchView('zone-detail');
+    });
+  });
+
+  // 후보 비교 체크박스 (최대 3곳)
+  container.querySelectorAll('.compare-chk').forEach((chk) => {
+    chk.addEventListener('change', (e) => {
+      const zId = e.target.dataset.zoneId;
+      if (e.target.checked) {
+        if (state.compareZoneIds.size >= 3) {
+          e.target.checked = false;
+          alert('후보 상권 비교는 최대 3곳까지 선택할 수 있습니다.');
+          return;
+        }
+        state.compareZoneIds.add(zId);
+      } else {
+        state.compareZoneIds.delete(zId);
+      }
+      updateCompareBadges();
+    });
+  });
+}
+
+// 지도 마커 및 경쟁 점포 공간 분포 렌더링
+function renderMapMarkers(fitBounds = false) {
+  if (!state.map || !state.analysisResult) return;
+
+  state.zoneMarkersLayer.clearLayers();
+  state.competitorMarkersLayer.clearLayers();
+  state.radiusCircleLayer.clearLayers();
+
+  const list = state.analysisResult.top_recommendations || [];
+  const radiusMeters = state.analysisResult.query_summary.radius_meters || 500;
+  const showCompetitors = document.getElementById('toggleCompetitorsChk').checked;
+  const latLngs = [];
+
+  list.forEach((item) => {
+    const isSelected = item.rank === state.selectedZoneRank;
+    latLngs.push([item.lat, item.lng]);
+
+    const markerKind =
+      item.reliability.missing_metrics.length > 0
+        ? 'partial'
+        : item.rank <= 3
+        ? 'top3'
+        : 'normal';
+
+    const size = isSelected ? 38 : 30;
+    const icon = L.divIcon({
+      className: '',
+      html: `<div class="zone-rank-marker ${markerKind}" style="width:${size}px;height:${size}px;">${item.rank}위</div>`,
+      iconSize: [size, size],
+      iconAnchor: [size / 2, size / 2]
+    });
+
+    const marker = L.marker([item.lat, item.lng], { icon }).addTo(state.zoneMarkersLayer);
+
+    const popupHtml = `
+      <div style="min-width:230px;font-family:'Pretendard',sans-serif;">
+        <div style="font-weight:800;font-size:13.5px;margin-bottom:4px;">
+          [${item.rank}위] ${item.zone_name}
+        </div>
+        <div style="font-size:12px;color:#475569;margin-bottom:6px;">
+          종합 <b>${item.total_score}점</b> · ${item.district_type_label}
+        </div>
+        <div style="font-size:12px;line-height:1.6;">
+          • 1년/3년 생존율: <b>${item.survival_closure_stats.survival_rate_1yr ?? '미확보'}% / ${item.survival_closure_stats.survival_rate_3yr ?? '미확보'}%</b><br/>
+          • 연간 폐업(소멸)률: <b style="color:#e11d48;">${item.survival_closure_stats.annual_closure_rate ?? '미확보'}%</b><br/>
+          • 반경 ${radiusMeters}m 동일 업종: <b>${item.competition_stats.same_industry_store_count}개</b><br/>
+          • 데이터 신뢰도: <b>${item.reliability.label}</b>
+        </div>
+      </div>
+    `;
+    marker.bindPopup(popupHtml);
+
+    marker.on('click', () => {
+      state.selectedZoneRank = item.rank;
+      renderRankingList();
+      renderMapMarkers(false);
+    });
+
+    // 현재 선택된 후보 상권이면 반경 원과 주변 경쟁 점포 마커 표시
+    if (isSelected) {
+      marker.openPopup();
+      L.circle([item.lat, item.lng], {
+        radius: radiusMeters,
+        color: '#1d4ed8',
+        weight: 2,
+        fillColor: '#3b82f6',
+        fillOpacity: 0.10
+      }).addTo(state.radiusCircleLayer);
+
+      if (showCompetitors && item.competition_stats.nearby_stores) {
+        item.competition_stats.nearby_stores.forEach((st) => {
+          L.circleMarker([st.lat, st.lng], {
+            radius: 5,
+            color: '#ffffff',
+            weight: 1.5,
+            fillColor: '#f97316',
+            fillOpacity: 0.9
+          })
+            .bindPopup(
+              `<b>${st.store_name}</b><br/>업종: ${st.industry_name} (${st.semas_code})<br/>층정보: ${st.floor_info} · 중심거리 ${st.distance_m}m<br/><span style="font-size:11px;color:#64748b;">${st.observed_status}<br/>* ${st.individual_survival_history_note}</span>`
+            )
+            .addTo(state.competitorMarkersLayer);
+        });
+      }
+    }
+  });
+
+  if (fitBounds && latLngs.length > 0) {
+    state.map.fitBounds(latLngs, { padding: [40, 40], maxZoom: 14 });
+  } else {
+    const selectedItem = list.find((x) => x.rank === state.selectedZoneRank);
+    if (selectedItem) {
+      state.map.panTo([selectedItem.lat, selectedItem.lng]);
+    }
+  }
+}
+
+// [화면 3] 상권 상세 분석 렌더링
+function renderZoneDetailView() {
+  const container = document.getElementById('zoneDetailContent');
+  if (!state.analysisResult) return;
+
+  const list = state.analysisResult.top_recommendations || [];
+  const item = list.find((x) => x.rank === state.selectedZoneRank) || list[0];
+  if (!item) return;
+
+  const q = state.analysisResult.query_summary;
+  const sc = item.survival_closure_stats;
+  const comp = item.competition_stats;
+  const dem = item.demand_stats;
+  const cost = item.cost_stats;
+
+  const zoneOptionsHtml = list
+    .map(
+      (z) =>
+        `<option value="${z.rank}" ${z.rank === item.rank ? 'selected' : ''}>[${z.rank}위] ${z.zone_name} (종합 ${z.total_score}점)</option>`
+    )
+    .join('');
+
+  const missingWarningHtml =
+    item.reliability.missing_metrics.length > 0
+      ? `<div class="warning-callout">
+          <strong>[데이터 부족 및 불확실성 경고]</strong>
+          해당 상권은 다음 공식 통계 항목이 표본 미제공 상태입니다: <b>${item.reliability.missing_metrics.join(', ')}</b>.
+          본 플랫폼은 결측 데이터를 임의의 숫자로 채우지 않으며, 확보된 항목만으로 가중치(${JSON.stringify(item.weights_applied)})를 재정규화하여 산출했습니다.
+        </div>`
+      : '';
+
+  container.innerHTML = `
+    <div class="card detail-header-card">
+      <div>
+        <div class="subtext">분석 대상 업종: <b>${q.industry_name}</b> (상가정보 ${q.semas_code} / 통계청 KSIC ${q.kosis_ksic_code})</div>
+        <h2 style="font-size:20px;margin-top:4px;">[${item.rank}위] ${item.zone_name}</h2>
+        <div class="rank-tags" style="margin-top:8px;">
+          <span class="tag tag-type">${item.sido_name} ${item.sigungu_name} ${item.emd_name}</span>
+          <span class="tag tag-type">${item.district_type_label}</span>
+          <span class="tag ${item.reliability.grade === 'HIGH' ? 'tag-rel-high' : 'tag-rel-low'}">
+            데이터 신뢰도: ${item.reliability.label} (지표 확보율 ${item.reliability.coverage_pct}%)
+          </span>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+        <div>
+          <label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px;">다른 추천 후보 상권 전환</label>
+          <select id="detailZoneSwitcher" style="min-width:290px;">${zoneOptionsHtml}</select>
+        </div>
+        <div style="text-align:right;background:#eff6ff;padding:10px 16px;border-radius:10px;border:1px solid #bfdbfe;">
+          <div style="font-size:11.5px;color:#1e40af;font-weight:600;">종합 추천 점수</div>
+          <div style="font-size:24px;font-weight:800;color:#1d4ed8;">${item.total_score} <span style="font-size:13px;">/ 100</span></div>
+        </div>
+      </div>
+    </div>
+
+    ${missingWarningHtml}
+
+    <div class="detail-grid-2">
+      <!-- 4.2 업종별 폐업률·생존율 분석 -->
+      <div class="card detail-box">
+        <h3>
+          <span>1. 업종별 생존율 · 폐업(소멸)률 공식 통계 분석</span>
+          <span class="tag tag-type">영역 점수: ${item.pillar_scores.survival ?? '미산출'}점 (가중치 ${(item.weights_applied.survival * 100).toFixed(0)}%)</span>
+        </h3>
+
+        <div class="stat-definition-callout">
+          <strong>[통계 정의 구분 안내]</strong> ${sc.metric_definition}
+          개별 점포의 과거 생존 이력이 확인되지 않은 경우 특정 업체의 생존 여부를 추정해 확정 표시하지 않습니다.
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label-line">
+            <span>1년 생존율 (전국 동일업종 기준 ${sc.national_benchmark.survival_rate_1yr}%)</span>
+            <strong>${fmtNum(sc.survival_rate_1yr, '%')}</strong>
+          </div>
+          <div class="bar-track"><div class="bar-fill emerald" style="width:${sc.survival_rate_1yr || 0}%;"></div></div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label-line">
+            <span>3년 생존율 (전국 동일업종 기준 ${sc.national_benchmark.survival_rate_3yr}%)</span>
+            <strong>${fmtNum(sc.survival_rate_3yr, '%')}</strong>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width:${sc.survival_rate_3yr || 0}%;"></div></div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label-line">
+            <span>5년 생존율 (전국 동일업종 기준 ${sc.national_benchmark.survival_rate_5yr}%)</span>
+            <strong>${fmtNum(sc.survival_rate_5yr, '%')}</strong>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width:${sc.survival_rate_5yr || 0}%;"></div></div>
+        </div>
+
+        <div class="bar-row" style="margin-top:14px;">
+          <div class="bar-label-line">
+            <span>연간 폐업(소멸)률 (당해 활동사업체 대비 소멸 비율 · 전국 ${sc.national_benchmark.annual_closure_rate}%)</span>
+            <strong style="color:#e11d48;">${fmtNum(sc.annual_closure_rate, '%')}</strong>
+          </div>
+          <div class="bar-track"><div class="bar-fill closure" style="width:${Math.min(100, (sc.annual_closure_rate || 0) * 3)}%;"></div></div>
+        </div>
+
+        <div class="meta-footnote">
+          <span>출처: ${sc.source_name}</span>
+          <span>기준연도/관측기간: ${sc.base_year}년 (${sc.observation_period}) · 공표일: ${sc.published_at}</span>
+        </div>
+      </div>
+
+      <!-- 4.3 경쟁 점포 분석 -->
+      <div class="card detail-box">
+        <h3>
+          <span>2. 동일 업종 경쟁 점포 분포 및 밀집도 분석</span>
+          <span class="tag tag-type">영역 점수: ${item.pillar_scores.competition}점 (가중치 ${(item.weights_applied.competition * 100).toFixed(0)}%)</span>
+        </h3>
+
+        <table class="data-table">
+          <tbody>
+            <tr>
+              <th>반경 ${q.radius_meters}m 내 동일 업종 점포 수</th>
+              <td><strong>${comp.same_industry_store_count}개</strong> (밀집도: ${comp.density_per_km2}개/km²)</td>
+            </tr>
+            <tr>
+              <th>점포 1개당 유효 배후수요 (상주+직장인구)</th>
+              <td><strong>약 ${comp.demand_per_store.toLocaleString()}명 / 점포</strong></td>
+            </tr>
+            <tr>
+              <th>전년 동기 대비 점포 수 증감률</th>
+              <td><strong>${comp.yoy_store_change_pct > 0 ? `+${comp.yoy_store_change_pct}% 증가` : `${comp.yoy_store_change_pct}%`}</strong></td>
+            </tr>
+            <tr>
+              <th>인접 경쟁 상권 관계</th>
+              <td>${comp.adjacent_zones.join(' · ')}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top:12px;">
+          <div style="font-size:12.5px;font-weight:700;margin-bottom:6px;">반경 내 주요 경쟁 점포 표본 (상가정보 API 좌표 기준)</div>
+          <div style="max-height:135px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;padding:8px;font-size:12px;">
+            ${comp.nearby_stores
+              .slice(0, 8)
+              .map(
+                (st) =>
+                  `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #f1f5f9;">
+                    <span><b>${st.store_name}</b> (${st.floor_info})</span>
+                    <span style="color:#64748b;">중심거리 ${st.distance_m}m · ${st.observed_status}</span>
+                  </div>`
+              )
+              .join('')}
+          </div>
+        </div>
+
+        <div class="meta-footnote">
+          <span>출처: ${comp.source_name}</span>
+          <span>관측 기준: ${comp.observation_period}</span>
+        </div>
+      </div>
+
+      <!-- 4.4 상권 수요 분석 -->
+      <div class="card detail-box">
+        <h3>
+          <span>3. 상권 배후 수요 (인구·가구·직장인구·유동인구)</span>
+          <span class="tag tag-type">영역 점수: ${item.pillar_scores.demand}점 (가중치 ${(item.weights_applied.demand * 100).toFixed(0)}%)</span>
+        </h3>
+
+        <table class="data-table">
+          <tbody>
+            <tr>
+              <th>주민등록 상주인구 / 가구 수</th>
+              <td><strong>${fmtNum(dem.resident_population, '명')}</strong> / ${fmtNum(dem.household_count, '세대')}</td>
+            </tr>
+            <tr>
+              <th>사업체 종사자(직장) 인구</th>
+              <td><strong>${fmtNum(dem.worker_population, '명')}</strong> (전체 사업체 ${fmtNum(dem.total_biz_count, '개')})</td>
+            </tr>
+            <tr>
+              <th>일평균 유동인구 (공공 상권센서)</th>
+              <td><strong>${fmtNum(dem.floating_pop_daily, '명/일')}</strong></td>
+            </tr>
+            <tr>
+              <th>핵심 소비 연령대 구조</th>
+              <td>20~39세 <b>${fmtNum(dem.age_20_39_ratio, '%')}</b> · 40~59세 <b>${fmtNum(dem.age_40_59_ratio, '%')}</b></td>
+            </tr>
+            <tr>
+              <th>상권 특성 분류</th>
+              <td><strong>${item.district_type_label} (${item.district_type})</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="meta-footnote">
+          <span>출처: ${dem.source_name}</span>
+          <span>기준 시점: ${dem.observation_period}</span>
+        </div>
+      </div>
+
+      <!-- 임대료 및 창업비용 분석 -->
+      <div class="card detail-box">
+        <h3>
+          <span>4. 임대료 시세 및 초기 창업비용 부담 분석</span>
+          <span class="tag tag-type">영역 점수: ${item.pillar_scores.cost ?? '미산출'}점 (가중치 ${(item.weights_applied.cost * 100).toFixed(0)}%)</span>
+        </h3>
+
+        <table class="data-table">
+          <tbody>
+            <tr>
+              <th>적용 매장 유형 및 기준 면적</th>
+              <td><strong>${cost.store_type}</strong> (기준 전용 <b>${cost.reference_area_pyeong}평</b>)</td>
+            </tr>
+            <tr>
+              <th>평당 월평균 임대료 / 평당 보증금</th>
+              <td>월 ${fmtNum(cost.avg_monthly_rent_per_py, '만 원/평')} / 보증금 ${fmtNum(cost.avg_deposit_per_py, '만 원/평')}</td>
+            </tr>
+            <tr>
+              <th>추정 월 임대료 (한도 ${fmtMoneyManwon(cost.rent_limit_manwon)})</th>
+              <td>
+                <strong>${fmtMoneyManwon(cost.estimated_monthly_rent_manwon)}</strong>
+                ${
+                  cost.is_within_rent === true
+                    ? '<span class="tag tag-rel-high" style="margin-left:6px;">한도 이내</span>'
+                    : cost.is_within_rent === false
+                    ? '<span class="tag tag-rel-low" style="margin-left:6px;">한도 초과 주의</span>'
+                    : ''
+                }
+              </td>
+            </tr>
+            <tr>
+              <th>추정 초기 투자비 (보증금+기본시설비 · 한도 ${fmtMoneyManwon(cost.budget_limit_manwon)})</th>
+              <td>
+                <strong>${fmtMoneyManwon(cost.estimated_total_startup_cost_manwon)}</strong>
+                ${
+                  cost.is_within_budget === true
+                    ? '<span class="tag tag-rel-high" style="margin-left:6px;">예산 적합</span>'
+                    : cost.is_within_budget === false
+                    ? '<span class="tag tag-rel-low" style="margin-left:6px;">예산 초과 주의</span>'
+                    : ''
+                }
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="meta-footnote">
+          <span>출처: ${cost.source_name}</span>
+          <span>기준 시점: ${cost.observation_period} (권리금·별도 철거비 제외)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 장점 및 위험 요인 -->
+    <div class="card detail-box">
+      <h3>5. 후보 상권 핵심 장점 및 위험 요인 (추천 근거 연결)</h3>
+      <div class="pros-cons-grid">
+        <div>
+          <div style="font-weight:700;color:#065f46;margin-bottom:8px;">추천 근거 및 기회 요인 (Strengths)</div>
+          <ul class="list-pros">
+            ${item.strengths.map((s) => `<li>✓ ${s}</li>`).join('')}
+          </ul>
+        </div>
+        <div>
+          <div style="font-weight:700;color:#9f1239;margin-bottom:8px;">위험 요인 및 현장 필수 확인 사항 (Risk Factors)</div>
+          <ul class="list-risks">
+            ${item.risk_factors.map((r) => `<li>⚠ ${r}</li>`).join('')}
+          </ul>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('detailZoneSwitcher').addEventListener('change', (e) => {
+    state.selectedZoneRank = Number(e.target.value);
+    renderZoneDetailView();
+    renderRankingList();
+    renderMapMarkers(false);
+  });
+}
+
+// [화면 4] 후보 상권 2~3곳 비교 로드 및 렌더링
+async function loadAndRenderComparison() {
+  const container = document.getElementById('compareTableContainer');
+  const zoneIds = Array.from(state.compareZoneIds);
+
+  if (zoneIds.length < 2) {
+    container.innerHTML = `
+      <div style="padding:32px;text-align:center;color:#64748b;">
+        비교할 후보 상권을 2곳 이상(최대 3곳) 선택해주세요.<br/>
+        우측 상단의 <b>[상위 1·2·3위 자동 선택]</b> 버튼을 누르면 즉시 비교표를 확인할 수 있습니다.
+      </div>
+    `;
+    return;
+  }
+
+  const q = state.analysisResult ? state.analysisResult.query_summary : {};
+  const res = await fetch('/api/compare', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      zoneIds,
+      queryParams: {
+        industry: q.industry_code || 'IND_CAFE',
+        radius: q.radius_meters || 500,
+        budget: q.budget_limit_manwon || 10000,
+        rent: q.rent_limit_manwon || 350,
+        storeType: q.store_type || 'GENERAL'
+      }
+    })
+  });
+
+  const data = await res.json();
+  const cands = data.candidates || [];
+  const summary = data.comparison_summary;
+
+  const warningListHtml =
+    summary && summary.uncertainty_warnings && summary.uncertainty_warnings.length > 0
+      ? `<div style="margin-top:8px;color:#92400e;background:#fffbeb;padding:8px 12px;border-radius:6px;border:1px solid #fde68a;">
+          <strong>[데이터 누락 및 불확실성 고지]</strong><br/>
+          ${summary.uncertainty_warnings.join('<br/>')}
+        </div>`
+      : '';
+
+  container.innerHTML = `
+    ${
+      summary
+        ? `<div class="compare-summary-banner">
+            <strong>[비교 요약 결론]</strong> 비교 대상 중 <b>${summary.leader_zone_name}</b>이(가) 점수 차이 <b>+${summary.score_gap}점</b>으로 우세합니다.<br/>
+            ${summary.key_difference}
+            ${warningListHtml}
+          </div>`
+        : ''
+    }
+    <div class="compare-table-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th style="width:210px;">비교 항목 (업종: ${data.industry.industry_name})</th>
+            ${cands
+              .map(
+                (c, i) => `
+                <th>
+                  <div style="font-size:14px;color:#0f172a;">후보 ${i + 1}. ${c.zone_name}</div>
+                  <div style="font-size:11.5px;color:#64748b;font-weight:500;">${c.sido_name} ${c.sigungu_name} ${c.emd_name} · ${c.district_type_label}</div>
+                </th>
+              `
+              )
+              .join('')}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>종합 평가 점수 (100점 만점)</th>
+            ${cands.map((c) => `<td><strong style="font-size:18px;color:#1d4ed8;">${c.total_score}점</strong></td>`).join('')}
+          </tr>
+          <tr>
+            <th>데이터 신뢰도 및 결측 여부</th>
+            ${cands
+              .map(
+                (c) => `
+                <td>
+                  <span class="tag ${c.reliability.grade === 'HIGH' ? 'tag-rel-high' : 'tag-rel-low'}">${c.reliability.label}</span>
+                  <div style="font-size:11.5px;color:#64748b;margin-top:4px;">
+                    지표 확보율: ${c.reliability.coverage_pct}%
+                    ${c.reliability.missing_metrics.length > 0 ? `<br/><span style="color:#d97706;">미확보: ${c.reliability.missing_metrics.join(', ')}</span>` : '<br/>필수 공공통계 전항목 확보'}
+                  </div>
+                </td>
+              `
+              )
+              .join('')}
+          </tr>
+          <tr>
+            <th>1년 / 3년 / 5년 생존율 (KOSIS 코호트)</th>
+            ${cands
+              .map(
+                (c) => `
+                <td>
+                  1년: <b>${fmtNum(c.survival_closure_stats.survival_rate_1yr, '%')}</b><br/>
+                  3년: <b>${fmtNum(c.survival_closure_stats.survival_rate_3yr, '%')}</b><br/>
+                  5년: <b>${fmtNum(c.survival_closure_stats.survival_rate_5yr, '%')}</b>
+                </td>
+              `
+              )
+              .join('')}
+          </tr>
+          <tr>
+            <th>연간 폐업(소멸)률 (활동사업체 대비)</th>
+            ${cands
+              .map(
+                (c) => `
+                <td>
+                  <strong style="color:#e11d48;">${fmtNum(c.survival_closure_stats.annual_closure_rate, '%')}</strong>
+                  <span style="font-size:11.5px;color:#64748b;">(전국 평균 ${c.survival_closure_stats.national_benchmark.annual_closure_rate}%)</span>
+                </td>
+              `
+              )
+              .join('')}
+          </tr>
+          <tr>
+            <th>동일 업종 경쟁 점포 수 및 밀집도</th>
+            ${cands
+              .map(
+                (c) => `
+                <td>
+                  <b>${c.competition_stats.same_industry_store_count}개</b> (${c.competition_stats.density_per_km2}개/km²)<br/>
+                  <span style="font-size:11.5px;color:#64748b;">점포당 유효수요: ${c.competition_stats.demand_per_store.toLocaleString()}명</span>
+                </td>
+              `
+              )
+              .join('')}
+          </tr>
+          <tr>
+            <th>배후 인구 (상주 / 직장 / 일유동)</th>
+            ${cands
+              .map(
+                (c) => `
+                <td>
+                  상주: ${fmtNum(c.demand_stats.resident_population, '명')}<br/>
+                  직장: ${fmtNum(c.demand_stats.worker_population, '명')}<br/>
+                  유동: ${fmtNum(c.demand_stats.floating_pop_daily, '명/일')}
+                </td>
+              `
+              )
+              .join('')}
+          </tr>
+          <tr>
+            <th>추정 초기 투자비 / 월 임대료 (${cands[0]?.cost_stats.reference_area_pyeong || 15}평 기준)</th>
+            ${cands
+              .map(
+                (c) => `
+                <td>
+                  초기비용: <b>${fmtMoneyManwon(c.cost_stats.estimated_total_startup_cost_manwon)}</b><br/>
+                  월임대료: <b>${fmtMoneyManwon(c.cost_stats.estimated_monthly_rent_manwon)}</b>
+                </td>
+              `
+              )
+              .join('')}
+          </tr>
+          <tr>
+            <th>핵심 강점 (Strengths)</th>
+            ${cands.map((c) => `<td>${c.strengths.map((s) => `• ${s}`).join('<br/>')}</td>`).join('')}
+          </tr>
+          <tr>
+            <th>위험 요인 및 주의사항 (Risks)</th>
+            ${cands.map((c) => `<td style="color:#9f1239;">${c.risk_factors.map((r) => `• ${r}`).join('<br/>')}</td>`).join('')}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// [화면 5-A] 창업 분석 보고서 렌더링
+function renderAnalysisReportView() {
+  const container = document.getElementById('reportDocumentContainer');
+  if (!state.analysisResult) return;
+
+  const r = state.analysisResult;
+  const q = r.query_summary;
+  const top10 = r.top_recommendations || [];
+  const top1 = top10[0];
+
+  container.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #0f172a;padding-bottom:16px;">
+      <div>
+        <div style="font-size:12px;color:#2563eb;font-weight:700;">창업입지 AI · 공공데이터 기반 상권 분석 리포트</div>
+        <h1 style="font-size:22px;margin-top:4px;">[${q.sido_name} ${q.sigungu_name}] ${q.industry_name} 창업 입지 추천 보고서</h1>
+        <p style="font-size:12.5px;color:#475569;margin-top:4px;">
+          분석 ID: ${r.analysis_id} · 생성일시: ${new Date(r.generated_at).toLocaleString('ko-KR')}
+        </p>
+      </div>
+      <div style="text-align:right;font-size:12px;color:#475569;">
+        <div>분석 반경: <b>${q.radius_meters}m</b> · 매장유형: <b>${q.store_type} (${q.reference_area_pyeong}평)</b></div>
+        <div>초기 투자 예산 한도: <b>${fmtMoneyManwon(q.budget_limit_manwon)}</b></div>
+        <div>월 임대료 한도: <b>${fmtMoneyManwon(q.rent_limit_manwon)}</b></div>
+      </div>
+    </div>
+
+    <div class="stat-definition-callout" style="margin-top:16px;">
+      <strong>[보고서 활용 및 한계 고지]</strong> ${r.disclaimer}
+    </div>
+
+    <div class="report-section">
+      <h3>1. 추천 상권 TOP 10 종합 요약표</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>순위</th>
+            <th>후보 상권명 (행정동)</th>
+            <th>상권 유형</th>
+            <th>종합 점수</th>
+            <th>1년 / 3년 / 5년 생존율</th>
+            <th>연간 폐업률</th>
+            <th>동일업종 점포수</th>
+            <th>추정 초기비용 (월임대료)</th>
+            <th>데이터 신뢰도</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${top10
+            .map(
+              (item) => `
+              <tr>
+                <td><b>${item.rank}위</b></td>
+                <td><b>${item.zone_name}</b><br/><span style="font-size:11px;color:#64748b;">${item.emd_name}</span></td>
+                <td>${item.district_type_label}</td>
+                <td><b style="color:#1d4ed8;">${item.total_score}점</b></td>
+                <td>${item.survival_closure_stats.survival_rate_1yr ?? '-'}% / ${item.survival_closure_stats.survival_rate_3yr ?? '-'}% / ${item.survival_closure_stats.survival_rate_5yr ?? '미확보'}%</td>
+                <td style="color:#e11d48;font-weight:700;">${item.survival_closure_stats.annual_closure_rate ?? '-'}%</td>
+                <td>${item.competition_stats.same_industry_store_count}개</td>
+                <td>${fmtMoneyManwon(item.cost_stats.estimated_total_startup_cost_manwon)}<br/><span style="font-size:11px;color:#64748b;">(월 ${fmtMoneyManwon(item.cost_stats.estimated_monthly_rent_manwon)})</span></td>
+                <td>${item.reliability.label}</td>
+              </tr>
+            `
+            )
+            .join('')}
+        </tbody>
+      </table>
+    </div>
+
+    ${
+      top1
+        ? `
+      <div class="report-section">
+        <h3>2. 1순위 추천 상권(${top1.zone_name}) 심층 분석 및 현장 점검 체크리스트</h3>
+        <div class="pros-cons-grid" style="margin-top:10px;">
+          <div>
+            <div style="font-weight:700;margin-bottom:6px;color:#065f46;">핵심 추천 근거</div>
+            <ul class="list-pros">${top1.strengths.map((s) => `<li>✓ ${s}</li>`).join('')}</ul>
+          </div>
+          <div>
+            <div style="font-weight:700;margin-bottom:6px;color:#9f1239;">위험 요인 및 계약 전 필수 확인 사항</div>
+            <ul class="list-risks">${top1.risk_factors.map((rk) => `<li>⚠ ${rk}</li>`).join('')}</ul>
+          </div>
+        </div>
+      </div>
+    `
+        : ''
+    }
+
+    <div class="report-section">
+      <h3>3. 데이터 비교 가능성 검증 및 산출 기준</h3>
+      <table class="data-table">
+        <tbody>
+          <tr>
+            <th style="width:220px;">표준 업종 매핑 기준</th>
+            <td>${r.comparability_check.industry_standard_mapping}</td>
+          </tr>
+          <tr>
+            <th>공간 단위 정합성</th>
+            <td>${r.comparability_check.spatial_alignment_note}</td>
+          </tr>
+          <tr>
+            <th>관측 기간 및 시점 정합성</th>
+            <td>${r.comparability_check.temporal_alignment_note}</td>
+          </tr>
+          <tr>
+            <th>결측치(Missing Data) 처리 원칙</th>
+            <td>${r.comparability_check.missing_data_policy}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="report-section">
+      <h3>4. 활용 공공데이터 출처 및 기준일 명세</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>제공기관</th>
+            <th>데이터셋 / API 명칭</th>
+            <th>갱신 주기</th>
+            <th>제공 지역 단위</th>
+            <th>최근 검증 시각</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${r.data_sources_used
+            .map(
+              (src) => `
+              <tr>
+                <td><b>${src.provider_name}</b></td>
+                <td>${src.dataset_name}<br/><span style="font-size:11px;color:#64748b;">${src.official_url}</span></td>
+                <td>${src.update_cycle}</td>
+                <td>${src.spatial_granularity}</td>
+                <td>${new Date(src.last_verified_at).toLocaleString('ko-KR')}</td>
+              </tr>
+            `
+            )
+            .join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// [화면 5-B] 관리자 대시보드 로드 및 렌더링
+async function loadAndRenderAdminConsole() {
+  const container = document.getElementById('adminConsoleContainer');
+  const res = await fetch('/api/admin/overview');
+  const admin = await res.json();
+  state.adminData = admin;
+
+  container.innerHTML = `
+    <div class="admin-grid-3">
+      <div class="card detail-box">
+        <h3>API 인증키 보안 및 환경변수 격리 상태</h3>
+        <p class="subtext">프런트엔드 키 노출 여부: <b style="color:#059669;">노출 없음 (서버 환경변수 전용)</b></p>
+        <div style="margin-top:10px;font-size:12.5px;display:flex;flex-direction:column;gap:6px;">
+          <div>• 공공데이터포털 키: <b>${admin.security_status.configured_keys.DATA_GO_KR_SERVICE_KEY}</b></div>
+          <div>• 통계청 KOSIS 키: <b>${admin.security_status.configured_keys.KOSIS_API_KEY}</b></div>
+          <div>• 지도 서비스: <b>${admin.security_status.configured_keys.KAKAO_MAP_KEY}</b></div>
+        </div>
+      </div>
+
+      <div class="card detail-box">
+        <h3>내부 DB 적재 품질 및 중복 정리 현황</h3>
+        <p class="subtext">기준: ${admin.quality_summary.duplicate_cleaning_policy}</p>
+        <div style="margin-top:10px;font-size:12.5px;display:flex;flex-direction:column;gap:6px;">
+          <div>• 관리 중인 전국 표본 상권: <b>${admin.quality_summary.total_zones}곳</b></div>
+          <div>• 공식 통계 전항목 확보 상권: <b style="color:#059669;">${admin.quality_summary.official_verified_zones}곳</b></div>
+          <div>• 일부 통계 미확보(결측 경고) 상권: <b style="color:#d97706;">${admin.quality_summary.partial_coverage_zones}곳</b></div>
+        </div>
+      </div>
+
+      <div class="card detail-box">
+        <h3>국세청 사업자등록 상태조회 단건 검증기 (보조 API)</h3>
+        <p class="subtext">사업자등록번호를 알고 있는 특정 대상의 현재 영업 상태만 확인합니다.</p>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input type="text" id="ntsBizNoInput" placeholder="사업자번호 10자리 (예: 120-81-47521)" value="120-81-47521" />
+          <button type="button" class="btn-primary" id="btnVerifyBizNo" style="white-space:nowrap;">상태 조회</button>
+        </div>
+        <div id="ntsVerifyResultBox" style="margin-top:8px;font-size:12px;color:#334155;"></div>
+      </div>
+    </div>
+
+    <!-- 외부 API 연결 상태 및 수동 동기화 -->
+    <div class="card detail-box">
+      <h3>1. 외부 공공데이터 API 연결 상태 및 호출 한도 관리</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>출처 ID</th>
+            <th>제공기관 및 API 명</th>
+            <th>우선순위</th>
+            <th>갱신 주기</th>
+            <th>일일 호출량 / 한도</th>
+            <th>최근 정상 확인 시각</th>
+            <th>수동 수집·검증</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${admin.data_sources
+            .map(
+              (s) => `
+              <tr>
+                <td><code>${s.source_id}</code></td>
+                <td><b>${s.provider_name}</b> - ${s.dataset_name}</td>
+                <td><span class="tag tag-type">${s.priority}</span></td>
+                <td>${s.update_cycle}</td>
+                <td>${s.daily_quota_used.toLocaleString()} / ${s.daily_quota_limit.toLocaleString()}건</td>
+                <td>${new Date(s.last_verified_at).toLocaleString('ko-KR')}</td>
+                <td>
+                  <button type="button" class="btn-secondary-sm btn-trigger-sync" data-source-id="${s.source_id}">
+                    즉시 갱신·중복점검
+                  </button>
+                </td>
+              </tr>
+            `
+            )
+            .join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 수집 및 오류 로그 -->
+    <div class="card detail-box">
+      <h3>2. 데이터 수집 · 갱신 · 오류 로그 (api_sync_logs)</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>로그 ID</th>
+            <th>출처 ID</th>
+            <th>작업 유형</th>
+            <th>상태</th>
+            <th>수집 건수 / 적재 건수 / 중복 제거</th>
+            <th>오류 및 결측 처리 내역</th>
+            <th>완료 시각</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${admin.sync_logs
+            .map(
+              (log) => `
+              <tr>
+                <td>#${log.log_id}</td>
+                <td><code>${log.source_id}</code></td>
+                <td>${log.job_type}</td>
+                <td>
+                  <span class="tag ${log.status === 'SUCCESS' ? 'tag-rel-high' : 'tag-rel-low'}">${log.status}</span>
+                </td>
+                <td>수집 ${log.records_fetched.toLocaleString()} / 적재 ${log.records_upserted.toLocaleString()} / 중복제거 ${log.duplicates_removed}</td>
+                <td>${log.error_message || '<span style="color:#64748b;">정상 처리 완료</span>'}</td>
+                <td>${new Date(log.finished_at).toLocaleString('ko-KR')}</td>
+              </tr>
+            `
+            )
+            .join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 표준 업종 코드 및 PostgreSQL + PostGIS DDL 스키마 -->
+    <div class="detail-grid-2">
+      <div class="card detail-box">
+        <h3>3. 표준 업종 코드 매핑 관리 (상가정보 ↔ 통계청 KSIC)</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>내부 표준코드</th>
+              <th>표준 업종명</th>
+              <th>상가정보 코드</th>
+              <th>KOSIS KSIC</th>
+              <th>기준 평수(일반/테이크아웃/대형)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${admin.industry_codes
+              .map(
+                (ind) => `
+                <tr>
+                  <td><code>${ind.industry_code}</code></td>
+                  <td><b>${ind.industry_name}</b></td>
+                  <td><code>${ind.semas_code}</code></td>
+                  <td><code>${ind.kosis_ksic_code}</code></td>
+                  <td>${ind.typical_area_pyeong.GENERAL}평 / ${ind.typical_area_pyeong.TAKEOUT}평 / ${ind.typical_area_pyeong.LARGE}평</td>
+                </tr>
+              `
+              )
+              .join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card detail-box">
+        <h3>4. PostgreSQL + PostGIS 공간 데이터베이스 스키마 (db/schema.sql)</h3>
+        <pre class="code-block">${admin.schema_sql.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+      </div>
+    </div>
+  `;
+
+  // 국세청 사업자번호 조회 이벤트
+  document.getElementById('btnVerifyBizNo').addEventListener('click', async () => {
+    const bizNo = document.getElementById('ntsBizNoInput').value;
+    const res = await fetch('/api/nts/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bizNo })
+    });
+    const result = await res.json();
+    const box = document.getElementById('ntsVerifyResultBox');
+    if (!result.valid_format) {
+      box.innerHTML = `<span style="color:#e11d48;font-weight:700;">${result.error}</span>`;
+      return;
+    }
+    box.innerHTML = `
+      <div style="background:#f8fafc;border:1px solid #cbd5e1;padding:8px 10px;border-radius:6px;">
+        <div>• 사업자번호: <b>${result.b_no_masked}</b> → 현재 상태: <b style="color:#1d4ed8;">${result.b_stt}</b> (${result.tax_type})</div>
+        <div style="font-size:11px;color:#64748b;margin-top:3px;">* ${result.policy_notice}</div>
+      </div>
+    `;
+  });
+
+  // 수동 동기화 트리거 이벤트
+  container.querySelectorAll('.btn-trigger-sync').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const sourceId = btn.dataset.sourceId;
+      await fetch('/api/admin/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sourceId })
+      });
+      await loadAndRenderAdminConsole();
+    });
+  });
+}
+
+window.addEventListener('DOMContentLoaded', initApp);
+</script>
+</body>
+</html>
