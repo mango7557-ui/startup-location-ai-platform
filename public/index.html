@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>창업입지 AI | 전국 상권 데이터 기반 창업 입지 추천 플랫폼</title>
+  <!-- Pretendard Font & Leaflet Interactive Map -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <!-- 상단 글로벌 네비게이션 -->
+  <header class="topbar">
+    <div class="topbar-brand" id="brandHomeBtn">
+      <div class="brand-logo">AI</div>
+      <div>
+        <div class="brand-title">창업입지 AI <span class="badge-mvp">MVP v1.0</span></div>
+        <div class="brand-subtitle">공공데이터·KOSIS 공식 생멸통계 기반 전국 창업 의사결정 지원 플랫폼</div>
+      </div>
+    </div>
+
+    <nav class="topbar-nav" role="tablist">
+      <button class="nav-tab active" data-view="main-analysis">
+        <span class="step-num">1·2</span> 검색 · 지도 추천 (TOP 10)
+      </button>
+      <button class="nav-tab" data-view="zone-detail">
+        <span class="step-num">3</span> 상권 상세 분석
+      </button>
+      <button class="nav-tab" data-view="zone-compare">
+        <span class="step-num">4</span> 후보 상권 비교 <span class="compare-count-pill" id="compareCountPill">0/3</span>
+      </button>
+      <button class="nav-tab" data-view="analysis-report">
+        <span class="step-num">5</span> 창업 분석 보고서
+      </button>
+      <button class="nav-tab" data-view="admin-console">
+        <span class="step-num">관리</span> 데이터·API·DB 관리
+      </button>
+    </nav>
+
+    <div class="topbar-status">
+      <span class="status-dot"></span>
+      <span id="apiStatusText">공공데이터 DB 연결 정상 (2026-Q1 기준)</span>
+    </div>
+  </header>
+
+  <!-- 의사결정 지원 도구 원칙 안내 배너 -->
+  <div class="principle-banner">
+    <div class="principle-inner">
+      <strong>[데이터 기반 의사결정 원칙]</strong>
+      폐업률(연간 활동사업체 대비 소멸 비율)과 생존율(신생 코호트 N년 후 생존 비율)은 정의가 달라 분리 표시합니다.
+      미확보 통계는 임의의 숫자로 채우지 않으며, 개별 사업체의 과거 폐업 이력을 추정하여 단정 표시하지 않습니다.
+    </div>
+  </div>
+
+  <!-- 메인 컨테이너 -->
+  <main class="workspace">
+
+    <!-- ================================================================== -->
+    <!-- [화면 1 & 화면 2] 업종·지역 검색 + 지도 기반 TOP 10 입지 추천       -->
+    <!-- ================================================================== -->
+    <section id="view-main-analysis" class="view-section active">
+      <div class="analysis-grid">
+
+        <!-- 좌측: 화면 1. 업종·지역·예산 검색 조건 패널 -->
+        <aside class="search-panel card">
+          <div class="card-header">
+            <h2>1. 창업 조건 및 입지 검색</h2>
+            <button type="button" class="btn-preset" id="btnGangnamPreset" title="기획서 예시 조건 즉시 불러오기">
+              기획서 예시 적용 (커피숍·강남구·1억)
+            </button>
+          </div>
+
+          <form id="searchForm" class="search-form">
+            <div class="form-group">
+              <label for="industrySelect">표준 업종 선택 또는 검색</label>
+              <select id="industrySelect" required></select>
+              <input type="text" id="industryKeywordInput" placeholder="직접 입력 (예: 커피숍, 치킨, 미용실, 학원...)" class="mt-6" />
+              <div class="field-hint" id="industryCodeHint">상가정보: I21201 ↔ 통계청 KSIC: I5622</div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="sidoSelect">시·도</label>
+                <select id="sidoSelect"></select>
+              </div>
+              <div class="form-group">
+                <label for="sigunguSelect">시·군·구</label>
+                <select id="sigunguSelect"></select>
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="emdSelect">읍·면·동 (선택)</label>
+                <select id="emdSelect">
+                  <option value="">시·군·구 전체 후보 비교</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="radiusSelect">분석 반경 설정</label>
+                <select id="radiusSelect">
+                  <option value="300">반경 300m (도보 4분)</option>
+                  <option value="500" selected>반경 500m (도보 7분·권장)</option>
+                  <option value="700">반경 700m (도보 10분)</option>
+                  <option value="1000">반경 1,000m (광역 상권)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="budgetInput">초기 투자 예산 한도 (만원)</label>
+                <input type="number" id="budgetInput" value="10000" min="1000" step="500" />
+                <div class="field-hint" id="budgetFormattedHint">약 1억 0,000만 원 (보증금+시설비)</div>
+              </div>
+              <div class="form-group">
+                <label for="rentInput">월 임대료 한도 (만원)</label>
+                <input type="number" id="rentInput" value="350" min="50" step="10" />
+                <div class="field-hint">부가세·관리비 별도 기준</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>매장 유형 선택</label>
+              <div class="radio-pill-group" id="storeTypeGroup">
+                <label class="radio-pill active">
+                  <input type="radio" name="storeType" value="GENERAL" checked /> 일반 매장
+                </label>
+                <label class="radio-pill">
+                  <input type="radio" name="storeType" value="TAKEOUT" /> 테이크아웃·소형
+                </label>
+                <label class="radio-pill">
+                  <input type="radio" name="storeType" value="LARGE" /> 대형 매장
+                </label>
+              </div>
+            </div>
+
+            <!-- 가중치 투명 공개 및 조정 아코디언 -->
+            <details class="weights-box">
+              <summary>평가 가중치 기준 확인 (초기 제안: 40/25/20/15%)</summary>
+              <div class="weights-body">
+                <p class="weights-note">기획서 8장 기준 초기 가중치입니다. 결측 지표 발생 시 확보된 지표만으로 자동 재정규화됩니다.</p>
+                <div class="weight-row">
+                  <span>생존·폐업 통계</span>
+                  <strong id="wSurvivalLabel">40%</strong>
+                </div>
+                <div class="weight-row">
+                  <span>동일 업종 경쟁 강도</span>
+                  <strong id="wCompLabel">25%</strong>
+                </div>
+                <div class="weight-row">
+                  <span>지역 수요·인구</span>
+                  <strong id="wDemandLabel">20%</strong>
+                </div>
+                <div class="weight-row">
+                  <span>임대료·창업비용 부담</span>
+                  <strong id="wCostLabel">15%</strong>
+                </div>
+              </div>
+            </details>
+
+            <button type="submit" class="btn-primary-full" id="btnRunAnalysis">
+              상권 분석 및 후보지 TOP 10 추천 실행
+            </button>
+          </form>
+
+          <div class="Selected-point-box" id="mapClickedPointBox">
+            <span>지도 클릭 좌표:</span>
+            <strong id="clickedCoordText">지도에서 원하는 위치를 직접 클릭해 반경을 확인할 수 있습니다.</strong>
+          </div>
+        </aside>
+
+        <!-- 중앙: 인터랙티브 지도 (추천 마커, 반경 원, 경쟁 점포 분포 표시) -->
+        <div class="map-panel card">
+          <div class="map-toolbar">
+            <div>
+              <h2 id="mapHeaderTitle">추천 상권 지도 및 경쟁 점포 공간 분포</h2>
+              <p class="subtext" id="mapSubNotice">마커를 클릭하면 우측 순위 카드 및 상권 상세 분석과 즉시 연동됩니다.</p>
+            </div>
+            <div class="map-controls">
+              <label class="checkbox-inline">
+                <input type="checkbox" id="toggleCompetitorsChk" checked />
+                <span>선택 상권 내 경쟁 점포 분포 표시</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="leafletMap" class="leaflet-map-container"></div>
+
+          <div class="map-legend-bar">
+            <div class="legend-item"><span class="dot rank-top"></span> 추천 1~3위 후보 상권</div>
+            <div class="legend-item"><span class="dot rank-mid"></span> 추천 4~10위 후보 상권</div>
+            <div class="legend-item"><span class="dot competitor-dot"></span> 반경 내 동일 업종 경쟁 점포</div>
+            <div class="legend-item"><span class="dot warn-dot"></span> 일부 통계 미확보(신뢰도 주의) 상권</div>
+          </div>
+        </div>
+
+        <!-- 우측: 화면 2. 추천 상권 TOP 10 순위 리스트 -->
+        <aside class="ranking-panel card">
+          <div class="card-header">
+            <div>
+              <h2>2. 추천 상권 TOP 10</h2>
+              <p class="subtext" id="rankingMetaTime">기준일: 2026-Q1 상가정보 · 2025 기업생멸통계</p>
+            </div>
+            <button type="button" class="btn-secondary-sm" id="btnGoCompareFromList">
+              선택 비교 (<span id="selectedCompareCountBtn">0</span>)
+            </button>
+          </div>
+
+          <div id="rankingListContainer" class="ranking-list">
+            <!-- JS에서 추천 상권 TOP 10 렌더링 -->
+          </div>
+        </aside>
+
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- [화면 3] 상권 상세 분석 패널                                        -->
+    <!-- ================================================================== -->
+    <section id="view-zone-detail" class="view-section">
+      <div id="zoneDetailContent" class="detail-container">
+        <!-- JS에서 선택된 후보 상권 상세 정보 렌더링 -->
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- [화면 4] 후보 상권 비교 (2~3곳 선택 항목별 비교표 및 불확실성 안내)   -->
+    <!-- ================================================================== -->
+    <section id="view-zone-compare" class="view-section">
+      <div class="card compare-wrapper">
+        <div class="card-header">
+          <div>
+            <h2>4. 후보 상권 정밀 비교 (2~3곳)</h2>
+            <p class="subtext">추천 상권 목록에서 체크한 2~3곳의 생존율·폐업률·경쟁 강도·배후 수요·예상 비용 및 데이터 누락 여부를 나란히 비교합니다.</p>
+          </div>
+          <div class="compare-actions">
+            <button type="button" class="btn-secondary-sm" id="btnAutoPickTop3">상위 1·2·3위 자동 선택</button>
+            <button type="button" class="btn-secondary-sm" id="btnIncludePartialZone">통계 부족(결측) 상권 포함 비교 예시</button>
+          </div>
+        </div>
+        <div id="compareTableContainer"></div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- [화면 5-A] 창업 분석 보고서 (인쇄 및 PDF 저장 지원)                  -->
+    <!-- ================================================================== -->
+    <section id="view-analysis-report" class="view-section">
+      <div class="report-toolbar">
+        <div>
+          <h2>5. 데이터 기반 창업 입지 분석 보고서</h2>
+          <p class="subtext">예비 창업자·소상공인·컨설턴트 제출용 종합 분석 리포트 (데이터 출처 및 기준일 포함)</p>
+        </div>
+        <button type="button" class="btn-primary" id="btnPrintReport">보고서 인쇄 / PDF 저장</button>
+      </div>
+      <div id="reportDocumentContainer" class="report-paper card">
+        <!-- JS에서 보고서 렌더링 -->
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- [화면 5-B] 관리자 대시보드 (API 상태, 수집로그, 국세청 검증, DB 스키마) -->
+    <!-- ================================================================== -->
+    <section id="view-admin-console" class="view-section">
+      <div id="adminConsoleContainer" class="admin-container">
+        <!-- JS에서 관리자 기능 렌더링 -->
+      </div>
+    </section>
+
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
