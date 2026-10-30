@@ -34,7 +34,7 @@
         <span class="step-num">5</span> 창업 분석 보고서
       </button>
       <button class="nav-tab" data-view="admin-console">
-        <span class="step-num">관리</span> 데이터·API·DB 관리
+        <span class="step-num">API·관리</span> 5대 공공·지도 API 연동 센터
       </button>
     </nav>
 
@@ -178,7 +178,16 @@
               <h2 id="mapHeaderTitle">추천 상권 지도 및 경쟁 점포 공간 분포</h2>
               <p class="subtext" id="mapSubNotice">마커를 클릭하면 우측 순위 카드 및 상권 상세 분석과 즉시 연동됩니다.</p>
             </div>
-            <div class="map-controls">
+            <div class="map-controls" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <div style="display:flex;gap:5px;align-items:center;">
+                <input
+                  type="text"
+                  id="kakaoPlaceSearchInput"
+                  placeholder="카카오 로컬 주소·역세권 검색 (예: 판교테크노밸리, 전포카페거리)"
+                  style="width:255px;padding:6px 9px;font-size:12px;"
+                />
+                <button type="button" class="btn-secondary-sm" id="btnKakaoPlaceSearch">위치 이동</button>
+              </div>
               <label class="checkbox-inline">
                 <input type="checkbox" id="toggleCompetitorsChk" checked />
                 <span>선택 상권 내 경쟁 점포 분포 표시</span>

@@ -86,6 +86,21 @@ const DATA_SOURCES = [
     last_verified_at: '2026-10-30T08:20:00+09:00',
     status: 'CONNECTED',
     priority: '보조'
+  },
+  {
+    source_id: 'SRC_KAKAO_MAP',
+    provider_name: '카카오 개발자센터 (Kakao Developers)',
+    dataset_name: 'Kakao Local (주소·장소 검색·좌표→행정동 변환 REST API) 및 지도',
+    official_url: 'https://developers.kakao.com/',
+    api_endpoint: 'https://dapi.kakao.com/v2/local/search/keyword.json',
+    update_cycle: '실시간 호출',
+    spatial_granularity: '도로명/지번 주소, 장소 키워드, 법정동·행정동 10자리 코드',
+    terms_of_use: '카카오 개발자 약관 및 일일 쿼터 준수 (서버 REST API 키 격리)',
+    daily_quota_limit: 300000,
+    daily_quota_used: 410,
+    last_verified_at: '2026-10-30T08:25:00+09:00',
+    status: 'CONNECTED',
+    priority: '필수'
   }
 ];
 

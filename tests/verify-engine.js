@@ -1,5 +1,5 @@
 /**
- * 창업입지 AI - 추천 알고리즘 및 핵심 원칙 자동 검증 테스트 (tests/verify-engine.js)
+ * 창업입지 AI - 추천 알고리즘 및 5대 외부 API 연동 자동 검증 테스트 (tests/verify-engine.js)
  */
 
 const assert = require('assert');
@@ -8,8 +8,10 @@ const {
   compareCandidateZones
 } = require('../server/services/recommendationEngine');
 const {
+  OFFICIAL_API_CATALOG,
   getApiKeySecurityStatus,
-  verifyBusinessRegistrationNumber
+  verifyBusinessRegistrationNumber,
+  runExternalApiDiagnostic
 } = require('../server/services/externalApiConnectors');
 
 async function runTests() {
@@ -38,14 +40,25 @@ async function runTests() {
   assert.ok(partialCandidate.reliability.missing_metrics.length >= 2, '미확보 지표 안내가 포함되어야 합니다.');
   console.log(`   -> 결측 상권 신뢰도 등급: ${partialCandidate.reliability.label}`);
 
-  console.log('3. [국세청 사업자등록정보 상태조회 보조 검증 및 보안 격리 확인]');
+  console.log('3. [5대 공식 외부 API 카탈로그 및 통합 정규화 파이프라인 검증]');
+  assert.strictEqual(OFFICIAL_API_CATALOG.length, 5, '5대 핵심 외부 API 카탈로그가 모두 등록되어야 합니다.');
   const sec = getApiKeySecurityStatus();
   assert.strictEqual(sec.frontend_key_exposure, false);
-  const bizCheck = await verifyBusinessRegistrationNumber('120-81-47521');
-  assert.strictEqual(bizCheck.valid_format, true);
-  console.log(`   -> 사업자번호 검증 응답: ${bizCheck.b_no_masked} (${bizCheck.b_stt})`);
 
-  console.log('\n모든 추천 엔진 및 데이터 무결성 검증 테스트를 통과했습니다.');
+  const diag = await runExternalApiDiagnostic('ALL');
+  assert.ok(diag.diagnostics.semas_store.items.length > 0, '소상공인 상가정보 API 정규화 결과가 반환되어야 합니다.');
+  assert.strictEqual(diag.diagnostics.nts_biz_status.valid_format, true, '국세청 상태조회 API 검증이 작동해야 합니다.');
+  assert.ok(diag.diagnostics.kosis_stats.normalized_records.length > 0, 'KOSIS 기업생멸통계 정규화 결과가 반환되어야 합니다.');
+  assert.ok(diag.diagnostics.data_go_kr_region.normalized_region_stat.region_code, '공공데이터포털 지역통계가 반환되어야 합니다.');
+  assert.ok(diag.diagnostics.kakao_local.documents.length > 0, '카카오 로컬 검색 결과가 반환되어야 합니다.');
+
+  console.log('   -> 1) 상가·상권정보 API 정규화 건수:', diag.diagnostics.semas_store.items.length);
+  console.log('   -> 2) 국세청 사업자등록 상태조회:', diag.diagnostics.nts_biz_status.b_no_masked, diag.diagnostics.nts_biz_status.b_stt);
+  console.log('   -> 3) KOSIS 기업생멸통계 지표 수:', diag.diagnostics.kosis_stats.normalized_records.length);
+  console.log('   -> 4) 공공데이터포털 지역통계 행정동:', diag.diagnostics.data_go_kr_region.normalized_region_stat.emd_name);
+  console.log('   -> 5) 카카오 로컬 검색 1순위:', diag.diagnostics.kakao_local.documents[0].place_name);
+
+  console.log('\n모든 추천 엔진 및 5대 외부 API 연동 테스트를 통과했습니다.');
 }
 
 runTests().catch((err) => {

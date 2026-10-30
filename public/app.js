@@ -179,6 +179,48 @@ async function initApp() {
     renderMapMarkers();
   });
 
+  // 카카오 로컬 주소·장소 검색 버튼
+  const kakaoSearchBtn = document.getElementById('btnKakaoPlaceSearch');
+  const kakaoSearchInput = document.getElementById('kakaoPlaceSearchInput');
+  if (kakaoSearchBtn && kakaoSearchInput) {
+    const runKakaoPlaceSearch = async () => {
+      const q = kakaoSearchInput.value.trim();
+      if (!q) return;
+      const res = await fetch('/api/external/kakao', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q })
+      });
+      const data = await res.json();
+      const first = data.documents && data.documents[0];
+      if (first && first.lat && first.lng) {
+        state.clickedLatLng = { lat: Number(first.lat), lng: Number(first.lng) };
+        const radiusMeters = Number(document.getElementById('radiusSelect').value) || 500;
+        state.map.setView([first.lat, first.lng], 15);
+        state.radiusCircleLayer.clearLayers();
+        L.circle([first.lat, first.lng], {
+          radius: radiusMeters,
+          color: '#1d4ed8',
+          weight: 2,
+          fillColor: '#3b82f6',
+          fillOpacity: 0.14
+        })
+          .bindPopup(`<b>[카카오 로컬 검색] ${first.place_name}</b><br/>${first.address_name || ''}<br/>반경 ${radiusMeters}m`)
+          .addTo(state.radiusCircleLayer)
+          .openPopup();
+        document.getElementById('clickedCoordText').textContent =
+          `${first.place_name} (위도 ${Number(first.lat).toFixed(5)}, 경도 ${Number(first.lng).toFixed(5)})`;
+      }
+    };
+    kakaoSearchBtn.addEventListener('click', runKakaoPlaceSearch);
+    kakaoSearchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        runKakaoPlaceSearch();
+      }
+    });
+  }
+
   // 선택 비교 이동 버튼
   document.getElementById('btnGoCompareFromList').addEventListener('click', () => {
     switchView('zone-compare');
@@ -1112,14 +1154,109 @@ function renderAnalysisReportView() {
   `;
 }
 
-// [화면 5-B] 관리자 대시보드 로드 및 렌더링
+// [화면 5-B] 관리자 대시보드 및 5대 외부 API 연동 센터 로드·렌더링
 async function loadAndRenderAdminConsole() {
   const container = document.getElementById('adminConsoleContainer');
   const res = await fetch('/api/admin/overview');
   const admin = await res.json();
   state.adminData = admin;
 
+  const catalog = (admin.security_status && admin.security_status.catalog) || [];
+
   container.innerHTML = `
+    <!-- 5대 공식 외부 API 실시간 연동 및 인증키 설정 허브 -->
+    <div class="card detail-box" style="border:2px solid #2563eb;background:#f8fbff;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+        <div>
+          <span class="tag tag-rel-high" style="margin-bottom:4px;display:inline-block;">5대 핵심 공공·지도 OpenAPI 연동 완료</span>
+          <h2 style="font-size:18px;color:#0f172a;">5대 외부 API 실시간 연동 센터 (소상공인 상가정보 · 국세청 · KOSIS · 공공데이터포털 · 카카오맵)</h2>
+          <p class="subtext">
+            서버 환경변수(<code>.env</code>) 또는 아래 런타임 금고에 발급받은 인증키를 입력하면 즉시 실시간 외부 API를 호출하며, 키 미입력/점검 시에는 내부 표준 적재 데이터로 무중단 폴백됩니다.
+          </p>
+        </div>
+        <button type="button" class="btn-primary" id="btnTestAll5Apis">
+          5대 외부 API 일괄 호출 & 정규화 검증 실행
+        </button>
+      </div>
+
+      <!-- 런타임 인증키 주입 폼 (서버 메모리에만 보관, 프런트 노출 차단) -->
+      <div style="background:#ffffff;border:1px solid #cbd5e1;border-radius:10px;padding:14px;margin-bottom:16px;">
+        <div style="font-weight:700;font-size:13px;margin-bottom:8px;color:#1e293b;">
+          🔑 API 인증키 런타임 설정 (서버 메모리 보안 격리 · 로그/클라이언트 평문 노출 차단)
+        </div>
+        <div class="admin-grid-3">
+          <div class="form-group">
+            <label>공공데이터포털 서비스키 (상가정보 · 국세청 · 지역통계 공통)</label>
+            <input type="text" id="inputDataGoKrKey" placeholder="DATA_GO_KR_SERVICE_KEY (Decoding/Encoding 키 모두 지원)" />
+            <div class="field-hint">현재 상태: <b>${admin.security_status.configured_keys.DATA_GO_KR_SERVICE_KEY}</b></div>
+          </div>
+          <div class="form-group">
+            <label>통계청 KOSIS OpenAPI 인증키 (기업생멸·생존율·인구)</label>
+            <input type="text" id="inputKosisKey" placeholder="KOSIS_API_KEY 입력" />
+            <div class="field-hint">현재 상태: <b>${admin.security_status.configured_keys.KOSIS_API_KEY}</b></div>
+          </div>
+          <div class="form-group">
+            <label>카카오 개발자센터 REST API 키 (주소·장소·행정동 좌표변환)</label>
+            <input type="text" id="inputKakaoRestKey" placeholder="KAKAO_REST_API_KEY 입력" />
+            <div class="field-hint">현재 상태: <b>${admin.security_status.configured_keys.KAKAO_REST_API_KEY}</b></div>
+          </div>
+        </div>
+        <div style="margin-top:10px;display:flex;justify-content:flex-end;gap:8px;align-items:center;">
+          <span id="keySaveFeedback" style="font-size:12px;color:#059669;font-weight:600;"></span>
+          <button type="button" class="btn-secondary-sm" id="btnSaveRuntimeKeys">인증키 적용 및 실시간 모드 전환</button>
+        </div>
+      </div>
+
+      <!-- 5대 공식 API 카탈로그 및 개별 호출 테스트 테이블 -->
+      <table class="data-table" style="background:#fff;">
+        <thead>
+          <tr>
+            <th>연동 API 명칭 및 공식 사이트</th>
+            <th>실제 호출 엔드포인트 및 오퍼레이션</th>
+            <th>내부 DB 적재 테이블</th>
+            <th>개별 연동 테스트</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${catalog
+            .map(
+              (api) => `
+              <tr>
+                <td>
+                  <b>${api.title}</b><br/>
+                  <a href="${api.official_portal_url}" target="_blank" rel="noopener" style="font-size:11.5px;color:#2563eb;text-decoration:underline;">
+                    ${api.official_portal_url} ↗
+                  </a>
+                </td>
+                <td>
+                  <code style="font-size:11.5px;color:#0f172a;">${api.base_endpoint}</code>
+                  <div style="font-size:11.5px;color:#475569;margin-top:4px;">
+                    ${api.operations.map((op) => `• <b>[${op.method}] ${op.path}</b>: ${op.desc}`).join('<br/>')}
+                  </div>
+                </td>
+                <td><code>${api.target_db_table}</code><br/><span class="tag tag-type">${api.priority}</span></td>
+                <td>
+                  <button type="button" class="btn-secondary-sm btn-test-single-api" data-api-id="${api.api_id}">
+                    실시간 호출 & 정규화 확인
+                  </button>
+                </td>
+              </tr>
+            `
+            )
+            .join('')}
+        </tbody>
+      </table>
+
+      <!-- 실시간 API 호출 및 정규화 결과 출력 콘솔 -->
+      <div style="margin-top:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <strong style="font-size:13px;color:#0f172a;">📡 외부 API 호출 및 내부 표준 스키마 정규화(Normalization) 실시간 결과</strong>
+          <span style="font-size:11.5px;color:#64748b;">버튼 클릭 시 실제 엔드포인트 요청 및 정규화 파이프라인 결과를 아래에 표시합니다.</span>
+        </div>
+        <pre id="externalApiTestOutput" class="code-block" style="max-height:280px;">상단의 [5대 외부 API 일괄 호출 & 정규화 검증 실행] 또는 각 API 우측의 [실시간 호출 & 정규화 확인] 버튼을 클릭하세요.</pre>
+      </div>
+    </div>
+
     <div class="admin-grid-3">
       <div class="card detail-box">
         <h3>API 인증키 보안 및 환경변수 격리 상태</h3>
@@ -1127,7 +1264,7 @@ async function loadAndRenderAdminConsole() {
         <div style="margin-top:10px;font-size:12.5px;display:flex;flex-direction:column;gap:6px;">
           <div>• 공공데이터포털 키: <b>${admin.security_status.configured_keys.DATA_GO_KR_SERVICE_KEY}</b></div>
           <div>• 통계청 KOSIS 키: <b>${admin.security_status.configured_keys.KOSIS_API_KEY}</b></div>
-          <div>• 지도 서비스: <b>${admin.security_status.configured_keys.KAKAO_MAP_KEY}</b></div>
+          <div>• 카카오 로컬/지도: <b>${admin.security_status.configured_keys.KAKAO_REST_API_KEY}</b></div>
         </div>
       </div>
 
@@ -1173,7 +1310,10 @@ async function loadAndRenderAdminConsole() {
               (s) => `
               <tr>
                 <td><code>${s.source_id}</code></td>
-                <td><b>${s.provider_name}</b> - ${s.dataset_name}</td>
+                <td>
+                  <b>${s.provider_name}</b> - ${s.dataset_name}<br/>
+                  <a href="${s.official_url}" target="_blank" rel="noopener" style="font-size:11px;color:#2563eb;">${s.official_url}</a>
+                </td>
                 <td><span class="tag tag-type">${s.priority}</span></td>
                 <td>${s.update_cycle}</td>
                 <td>${s.daily_quota_used.toLocaleString()} / ${s.daily_quota_limit.toLocaleString()}건</td>
@@ -1267,6 +1407,55 @@ async function loadAndRenderAdminConsole() {
     </div>
   `;
 
+  // 런타임 인증키 저장 버튼
+  document.getElementById('btnSaveRuntimeKeys').addEventListener('click', async () => {
+    const payload = {};
+    const dKey = document.getElementById('inputDataGoKrKey').value.trim();
+    const kKey = document.getElementById('inputKosisKey').value.trim();
+    const kaKey = document.getElementById('inputKakaoRestKey').value.trim();
+    if (dKey) payload.DATA_GO_KR_SERVICE_KEY = dKey;
+    if (kKey) payload.KOSIS_API_KEY = kKey;
+    if (kaKey) payload.KAKAO_REST_API_KEY = kaKey;
+
+    await fetch('/api/external/keys', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    await loadAndRenderAdminConsole();
+    const fb = document.getElementById('keySaveFeedback');
+    if (fb) fb.textContent = '✓ 인증키가 서버 런타임 금고에 안전하게 반영되었습니다.';
+  });
+
+  // 5대 API 전체 일괄 호출 테스트
+  document.getElementById('btnTestAll5Apis').addEventListener('click', async () => {
+    const out = document.getElementById('externalApiTestOutput');
+    out.textContent = '5대 외부 API(상가정보, 국세청, KOSIS, 공공데이터포털 지역통계, 카카오 로컬) 호출 및 정규화 중...';
+    const resDiag = await fetch('/api/external/test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ apiId: 'ALL' })
+    });
+    const json = await resDiag.json();
+    out.textContent = JSON.stringify(json, null, 2);
+  });
+
+  // 개별 API 호출 테스트 버튼
+  container.querySelectorAll('.btn-test-single-api').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const apiId = btn.dataset.apiId;
+      const out = document.getElementById('externalApiTestOutput');
+      out.textContent = `[${apiId}] API 엔드포인트 호출 및 내부 DB 스키마 정규화 실행 중...`;
+      const resDiag = await fetch('/api/external/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiId })
+      });
+      const json = await resDiag.json();
+      out.textContent = JSON.stringify(json, null, 2);
+    });
+  });
+
   // 국세청 사업자번호 조회 이벤트
   document.getElementById('btnVerifyBizNo').addEventListener('click', async () => {
     const bizNo = document.getElementById('ntsBizNoInput').value;
@@ -1284,7 +1473,8 @@ async function loadAndRenderAdminConsole() {
     box.innerHTML = `
       <div style="background:#f8fafc;border:1px solid #cbd5e1;padding:8px 10px;border-radius:6px;">
         <div>• 사업자번호: <b>${result.b_no_masked}</b> → 현재 상태: <b style="color:#1d4ed8;">${result.b_stt}</b> (${result.tax_type})</div>
-        <div style="font-size:11px;color:#64748b;margin-top:3px;">* ${result.policy_notice}</div>
+        <div style="font-size:11px;color:#64748b;margin-top:3px;">* 호출 엔드포인트: <code>${result.endpoint_called || 'https://api.odcloud.kr/api/nts-businessman/v1/status'}</code></div>
+        <div style="font-size:11px;color:#64748b;margin-top:2px;">* ${result.policy_notice}</div>
       </div>
     `;
   });

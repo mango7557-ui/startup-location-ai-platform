@@ -31,8 +31,15 @@ const {
 } = require('./services/recommendationEngine');
 
 const {
+  OFFICIAL_API_CATALOG,
   getApiKeySecurityStatus,
+  updateRuntimeApiKeys,
+  fetchSemasStoresInRadius,
   verifyBusinessRegistrationNumber,
+  fetchKosisEnterpriseSurvivalStats,
+  fetchDataGoKrRegionStats,
+  searchKakaoLocationOrAddress,
+  runExternalApiDiagnostic,
   triggerDataSyncJob,
   getSyncLogs
 } = require('./services/externalApiConnectors');
@@ -196,6 +203,52 @@ const server = http.createServer(async (req, res) => {
       const body = await parseJsonBody(req);
       const syncResult = triggerDataSyncJob(body.sourceId);
       return sendJson(res, 200, syncResult);
+    }
+
+    // 8. 5대 외부 API 공식 명세 및 키 상태 조회 (GET) / 런타임 키 등록 (POST)
+    if (pathname === '/api/external/keys' && req.method === 'POST') {
+      const body = await parseJsonBody(req);
+      const updated = updateRuntimeApiKeys(body);
+      return sendJson(res, 200, updated);
+    }
+
+    if (pathname === '/api/external/catalog' && req.method === 'GET') {
+      return sendJson(res, 200, {
+        catalog: OFFICIAL_API_CATALOG,
+        security_status: getApiKeySecurityStatus()
+      });
+    }
+
+    // 9. 5대 외부 API 실시간 연결 테스트 및 표준 정규화 응답 확인 (POST)
+    if (pathname === '/api/external/test' && req.method === 'POST') {
+      const body = await parseJsonBody(req);
+      const diag = await runExternalApiDiagnostic(body.apiId || 'ALL');
+      return sendJson(res, 200, diag);
+    }
+
+    // 10. 개별 외부 API 직접 호출 라우트 (상가정보 / KOSIS / 공공데이터포털 지역통계 / 카카오 로컬)
+    if (pathname === '/api/external/semas' && (req.method === 'GET' || req.method === 'POST')) {
+      const params = req.method === 'POST' ? await parseJsonBody(req) : Object.fromEntries(parsedUrl.searchParams.entries());
+      const result = await fetchSemasStoresInRadius(params);
+      return sendJson(res, 200, result);
+    }
+
+    if (pathname === '/api/external/kosis' && (req.method === 'GET' || req.method === 'POST')) {
+      const params = req.method === 'POST' ? await parseJsonBody(req) : Object.fromEntries(parsedUrl.searchParams.entries());
+      const result = await fetchKosisEnterpriseSurvivalStats(params);
+      return sendJson(res, 200, result);
+    }
+
+    if (pathname === '/api/external/region' && (req.method === 'GET' || req.method === 'POST')) {
+      const params = req.method === 'POST' ? await parseJsonBody(req) : Object.fromEntries(parsedUrl.searchParams.entries());
+      const result = await fetchDataGoKrRegionStats(params);
+      return sendJson(res, 200, result);
+    }
+
+    if (pathname === '/api/external/kakao' && (req.method === 'GET' || req.method === 'POST')) {
+      const params = req.method === 'POST' ? await parseJsonBody(req) : Object.fromEntries(parsedUrl.searchParams.entries());
+      const result = await searchKakaoLocationOrAddress(params);
+      return sendJson(res, 200, result);
     }
 
     // 8. 정적 파일 서빙 (프런트엔드 웹앱)
