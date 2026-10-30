@@ -107,15 +107,49 @@ async function initApp() {
   state.meta = await metaRes.json();
 
   const industrySelect = document.getElementById('industrySelect');
-  industrySelect.innerHTML = state.meta.industries
+  const groupedIndustries = {};
+  state.meta.industries.forEach((ind) => {
+    if (!groupedIndustries[ind.category_large]) {
+      groupedIndustries[ind.category_large] = [];
+    }
+    groupedIndustries[ind.category_large].push(ind);
+  });
+
+  industrySelect.innerHTML = Object.entries(groupedIndustries)
     .map(
-      (ind) =>
-        `<option value="${ind.industry_code}">${ind.industry_name} (${ind.category_middle})</option>`
+      ([catLarge, items]) =>
+        `<optgroup label="■ ${catLarge} (${items.length}종)">` +
+        items
+          .map(
+            (ind) =>
+              `<option value="${ind.industry_code}">${ind.industry_name} (${ind.category_middle})</option>`
+          )
+          .join('') +
+        `</optgroup>`
     )
     .join('');
 
-  industrySelect.addEventListener('change', updateIndustryHint);
+  industrySelect.addEventListener('change', () => {
+    document.getElementById('industryKeywordInput').value = '';
+    updateIndustryHint();
+  });
   updateIndustryHint();
+
+  // 직접 검색어 입력 시 실시간으로 28개 표준 업종 매칭
+  document.getElementById('industryKeywordInput').addEventListener('input', (e) => {
+    const kw = e.target.value.trim().toLowerCase();
+    if (!kw) return;
+    const matched = state.meta.industries.find(
+      (ind) =>
+        ind.industry_name.toLowerCase().includes(kw) ||
+        ind.category_middle.toLowerCase().includes(kw) ||
+        ind.keywords.some((k) => k.toLowerCase().includes(kw) || kw.includes(k.toLowerCase()))
+    );
+    if (matched) {
+      industrySelect.value = matched.industry_code;
+      updateIndustryHint();
+    }
+  });
 
   const sidoSelect = document.getElementById('sidoSelect');
   sidoSelect.innerHTML = state.meta.regions

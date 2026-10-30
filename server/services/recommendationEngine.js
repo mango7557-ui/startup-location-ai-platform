@@ -85,12 +85,32 @@ function buildNearbyCompetitorStores(zone, industryObj, scaledStoreCount, radius
   const brandPrefixes = {
     IND_CAFE: ['스페셜티로스터스', '어반커피랩', '브루잉컴퍼니', '데일리빈', '포레스트카페', '모닝에스프레소'],
     IND_KOREAN: ['정담한식당', '서울국밥집', '참숯구이관', '미가백반', '온기식탁', '전통솥밥'],
+    IND_MEAT: ['숙성삼겹살관', '한우명가숯불', '서울돈구이', '정통갈비회관', '프리미엄육류식당'],
     IND_CHICKEN: ['크리스피치킨호프', '황금맥주치킨', '바삭통닭', '오븐로스트치킨', '동네호프공방'],
     IND_BAKERY: ['아티장베이커리', '고메브레드', '밀밭제과점', '르뱅구움과자', '메종드파티세리'],
+    IND_SNACK: ['바른김밥분식', '서울떡볶이연구소', '정성김밥앤라면', '모두의분식당'],
+    IND_JAPANESE: ['스시타쿠미', '도쿄라멘공방', '프리미엄돈카츠', '사케앤사시미'],
+    IND_CHINESE: ['북경반점', '사천마라탕하우스', '청담중화요리', '황제양꼬치마라'],
+    IND_WESTERN: ['트attoria파스타', '어반브런치키친', '화덕피자앤스테이크', '비스트로서울'],
+    IND_FASTFOOD: ['크래프트수제버거', '프레시그린샐러드', '뉴욕피자슬라이스', '데일리포케샌드위치'],
+    IND_PUB: ['심야요리포차', '이자카야하루', '어반와인앤하이볼', '청춘맥주주점'],
     IND_CONV: ['24시편의점', '데일리마트CVS', '스마일편의점', '시티익스프레스'],
+    IND_SUPER: ['프레시식자재마트', '우리동네청과슈퍼', '정성반찬마켓', '그린로컬푸드'],
+    IND_PHARMACY: ['온누리건강약국', '케어플러스약국', '메디컬프라자약국', '헬스앤뷰티약국'],
+    IND_FLOWER: ['블룸플라워샵', '보타닉가든화원', '플로리스트아뜰리에', '그린플랜트스튜디오'],
+    IND_CLOTHING: ['모던셀렉트샵', '어반어패럴스토어', '트렌드부티크', '데일리룩쇼룸'],
+    IND_UNMANNED: ['24시무인아이스크림', '프레시무인밀키트', '스마트무인스토어', '해피무인간식방'],
     IND_BEAUTY: ['아뜰리에헤어', '살롱드뷰티', '더클래식바버', '루미에르헤어샵'],
+    IND_NAIL_SKIN: ['블랑네일앤래쉬', '에스테틱더퓨어', '살롱드스킨케어', '글로우네일스튜디오'],
+    IND_LAUNDRY: ['24시코인워시', '크린세탁편의점', '스마트런드리존', '에코클리닝샵'],
+    IND_PET: ['해피독애견미용', '프리미엄펫부티크', '포우즈펫살롱', '러블리펫마트'],
+    IND_CLINIC: ['바른케어의원', '서울디지털치과의원', '경희보감한의원', '더맑은피부과의원'],
     IND_FITNESS: ['코어필라테스스튜디오', '바디랩피트니스', '짐앤모어PT', '밸런스요가앤짐'],
-    IND_ACADEMY: ['미래에듀학원', '탑클래스영어수학', '시너지입시연구소', '글로벌어학원']
+    IND_ACADEMY: ['미래에듀학원', '탑클래스영어수학', '시너지입시연구소', '글로벌어학원'],
+    IND_ARTS_EDU: ['클랑피아노음악학원', '아뜰리에미술교습소', '용인대석사태권도', '키즈발레아카데미'],
+    IND_STUDYCAFE: ['집중스터디카페24', '포커스프리미엄독서실', '워크앤스터디라운지', '스마트공유오피스'],
+    IND_SCREEN_GOLF: ['프렌즈스크린골프존', '더스윙GDR아카데미', '어반실내테니스장', '스트라이크볼링라운지'],
+    IND_PC_KARAOKE: ['이스포츠아레나PC방', '스타코인노래연습장', '히어로보드게임카페', '포토시그니처부스']
   };
   const prefixes = brandPrefixes[industryObj.industry_code] || ['표준상가'];
 
@@ -173,11 +193,23 @@ function evaluateZoneCandidate(zone, industryObj, params) {
   // --------------------------------------------------------------------------
   // [B] 동일 업종 경쟁 강도 (가중치 25%)
   // --------------------------------------------------------------------------
-  const baseCount500m = (zone.store_counts_by_industry && zone.store_counts_by_industry[industryObj.industry_code]) || 25;
+  const explicitCount = zone.store_counts_by_industry && zone.store_counts_by_industry[industryObj.industry_code];
+  const fallbackBaseCount = Math.max(
+    4,
+    Math.round(
+      ((zone.store_counts_by_industry && zone.store_counts_by_industry.IND_CAFE) || 40) *
+        (industryObj.store_density_ratio || 0.45)
+    )
+  );
+  const baseCount500m = explicitCount != null ? explicitCount : fallbackBaseCount;
   const storeCountInRadius = Math.max(1, Math.round(baseCount500m * radiusFactor));
   const areaKm2 = Math.PI * Math.pow(radiusMeters / 1000, 2);
   const densityPerKm2 = round1(storeCountInRadius / areaKm2);
-  const yoyChangePct = (zone.store_trend_yoy_pct && zone.store_trend_yoy_pct[industryObj.industry_code]) ?? null;
+  const explicitYoy = zone.store_trend_yoy_pct && zone.store_trend_yoy_pct[industryObj.industry_code];
+  const yoyChangePct =
+    explicitYoy !== undefined
+      ? explicitYoy
+      : round1((baseSurvival.new_entry_rate - baseSurvival.annual_closure_rate) * 0.85);
 
   // 유효 배후수요(상주인구 + 직장인구*1.2) 대비 점포당 잠재 고객 수
   const effectivePop = (zone.resident_population || 0) + (zone.worker_population || 0) * 1.2;
@@ -200,7 +232,8 @@ function evaluateZoneCandidate(zone, industryObj, params) {
     demandSubScores.push({ val: floatingScore, weight: 0.35 });
   }
   if (zone.age_20_39_ratio != null) {
-    const targetAgeBonus = industryObj.industry_code === 'IND_ACADEMY'
+    const familyOr4059Focused = ['IND_ACADEMY', 'IND_ARTS_EDU', 'IND_SUPER', 'IND_LAUNDRY', 'IND_PHARMACY', 'IND_CLINIC', 'IND_SCREEN_GOLF'];
+    const targetAgeBonus = familyOr4059Focused.includes(industryObj.industry_code)
       ? clamp(40 + (zone.age_40_59_ratio || 35) * 1.25, 45, 95)
       : clamp(40 + zone.age_20_39_ratio * 1.1, 45, 95);
     demandSubScores.push({ val: targetAgeBonus, weight: 0.15 });

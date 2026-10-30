@@ -7,6 +7,7 @@ const {
   runRecommendationAnalysis,
   compareCandidateZones
 } = require('../server/services/recommendationEngine');
+const { INDUSTRY_CODES } = require('../server/data/publicDatasetStore');
 const {
   OFFICIAL_API_CATALOG,
   getApiKeySecurityStatus,
@@ -57,6 +58,16 @@ async function runTests() {
   console.log('   -> 3) KOSIS 기업생멸통계 지표 수:', diag.diagnostics.kosis_stats.normalized_records.length);
   console.log('   -> 4) 공공데이터포털 지역통계 행정동:', diag.diagnostics.data_go_kr_region.normalized_region_stat.emd_name);
   console.log('   -> 5) 카카오 로컬 검색 1순위:', diag.diagnostics.kakao_local.documents[0].place_name);
+
+  console.log(`4. [28개 전체 표준 업종 추천 산출 및 생존·폐업 통계 매핑 검증]`);
+  assert.strictEqual(INDUSTRY_CODES.length, 28, '총 28개 표준 업종이 등록되어야 합니다.');
+  for (const ind of INDUSTRY_CODES) {
+    const r = runRecommendationAnalysis({ industry: ind.industry_code, sido: '서울특별시', sigungu: '강남구' });
+    assert.strictEqual(r.query_summary.industry_code, ind.industry_code);
+    assert.strictEqual(r.top_recommendations.length, 10);
+    assert.ok(r.top_recommendations[0].survival_closure_stats.survival_rate_1yr > 0);
+  }
+  console.log(`   -> 총 ${INDUSTRY_CODES.length}개 업종 전체 추천 순위 및 생존·폐업 통계 산출 정상 확인 완료.`);
 
   console.log('\n모든 추천 엔진 및 5대 외부 API 연동 테스트를 통과했습니다.');
 }

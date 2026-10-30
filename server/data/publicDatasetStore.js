@@ -105,6 +105,7 @@ const DATA_SOURCES = [
 ];
 
 const INDUSTRY_CODES = [
+  // ======================== 1. 음식점업 (11종) ========================
   {
     industry_code: 'IND_CAFE',
     industry_name: '커피전문점·카페',
@@ -113,6 +114,7 @@ const INDUSTRY_CODES = [
     semas_code: 'I21201',
     kosis_ksic_code: 'I5622',
     typical_area_pyeong: { GENERAL: 15, TAKEOUT: 8, LARGE: 35 },
+    store_density_ratio: 1.0,
     keywords: ['커피숍', '카페', '커피', '에스프레소', '디저트카페', '테이크아웃커피', '로스터리']
   },
   {
@@ -123,7 +125,19 @@ const INDUSTRY_CODES = [
     semas_code: 'I20101',
     kosis_ksic_code: 'I5611',
     typical_area_pyeong: { GENERAL: 24, TAKEOUT: 10, LARGE: 50 },
-    keywords: ['한식', '백반', '국밥', '고기집', '삼겹살', '식당', '찌개', '분식']
+    store_density_ratio: 1.45,
+    keywords: ['한식', '백반', '국밥', '찌개', '한정식', '해장국', '칼국수', '냉면']
+  },
+  {
+    industry_code: 'IND_MEAT',
+    industry_name: '고기구이·삼겹살·갈비 전문점',
+    category_large: '음식점업',
+    category_middle: '한식 육류요리 전문점',
+    semas_code: 'I20102',
+    kosis_ksic_code: 'I5611',
+    typical_area_pyeong: { GENERAL: 32, TAKEOUT: 15, LARGE: 65 },
+    store_density_ratio: 0.62,
+    keywords: ['고기집', '삼겹살', '갈비', '소고기', '곱창', '막창', '정육식당', '구이']
   },
   {
     industry_code: 'IND_CHICKEN',
@@ -133,57 +147,278 @@ const INDUSTRY_CODES = [
     semas_code: 'I21006',
     kosis_ksic_code: 'I5619',
     typical_area_pyeong: { GENERAL: 18, TAKEOUT: 9, LARGE: 35 },
-    keywords: ['치킨', '통닭', '호프', '맥주', '배달치킨', '치맥']
+    store_density_ratio: 0.42,
+    keywords: ['치킨', '통닭', '호프', '맥주', '배달치킨', '치맥', '닭강정']
   },
   {
     industry_code: 'IND_BAKERY',
-    industry_name: '제과·베이커리',
+    industry_name: '제과·베이커리·디저트',
     category_large: '음식점업',
     category_middle: '제과점업',
     semas_code: 'I21001',
     kosis_ksic_code: 'I5619',
     typical_area_pyeong: { GENERAL: 18, TAKEOUT: 10, LARGE: 40 },
-    keywords: ['빵집', '베이커리', '제과점', '케이크', '디저트', '구움과자']
+    store_density_ratio: 0.36,
+    keywords: ['빵집', '베이커리', '제과점', '케이크', '디저트', '구움과자', '마카롱', '도넛']
   },
   {
+    industry_code: 'IND_SNACK',
+    industry_name: '분식·김밥·떡볶이 전문점',
+    category_large: '음식점업',
+    category_middle: '김밥 및 기타 간이음식점업',
+    semas_code: 'I21003',
+    kosis_ksic_code: 'I5619',
+    typical_area_pyeong: { GENERAL: 14, TAKEOUT: 8, LARGE: 28 },
+    store_density_ratio: 0.52,
+    keywords: ['분식', '김밥', '떡볶이', '라면', '순대', '튀김', '우동', '토스트']
+  },
+  {
+    industry_code: 'IND_JAPANESE',
+    industry_name: '일식·초밥·라멘·돈카츠',
+    category_large: '음식점업',
+    category_middle: '일식 음식점업',
+    semas_code: 'I20301',
+    kosis_ksic_code: 'I5612',
+    typical_area_pyeong: { GENERAL: 20, TAKEOUT: 11, LARGE: 42 },
+    store_density_ratio: 0.48,
+    keywords: ['일식', '초밥', '스시', '라멘', '돈까스', '돈카츠', '덮밥', '소바', '오마카세']
+  },
+  {
+    industry_code: 'IND_CHINESE',
+    industry_name: '중식당·마라탕·양꼬치 전문점',
+    category_large: '음식점업',
+    category_middle: '중식 음식점업',
+    semas_code: 'I20201',
+    kosis_ksic_code: 'I5612',
+    typical_area_pyeong: { GENERAL: 24, TAKEOUT: 12, LARGE: 48 },
+    store_density_ratio: 0.34,
+    keywords: ['중식', '중국집', '짜장면', '짬뽕', '마라탕', '마라샹궈', '양꼬치', '딤섬']
+  },
+  {
+    industry_code: 'IND_WESTERN',
+    industry_name: '양식·파스타·브런치 레스토랑',
+    category_large: '음식점업',
+    category_middle: '서양식 음식점업',
+    semas_code: 'I20401',
+    kosis_ksic_code: 'I5612',
+    typical_area_pyeong: { GENERAL: 25, TAKEOUT: 12, LARGE: 50 },
+    store_density_ratio: 0.38,
+    keywords: ['양식', '파스타', '스테이크', '브런치', '이탈리안', '레스토랑', '화덕피자']
+  },
+  {
+    industry_code: 'IND_FASTFOOD',
+    industry_name: '피자·햄버거·샌드위치·샐러드',
+    category_large: '음식점업',
+    category_middle: '피자·햄버거·샌드위치 및 유사 음식점업',
+    semas_code: 'I21002',
+    kosis_ksic_code: 'I5619',
+    typical_area_pyeong: { GENERAL: 16, TAKEOUT: 9, LARGE: 32 },
+    store_density_ratio: 0.40,
+    keywords: ['피자', '햄버거', '수제버거', '샌드위치', '샐러드', '포케', '타코', '패스트푸드']
+  },
+  {
+    industry_code: 'IND_PUB',
+    industry_name: '요리주점·포차·이자카야·와인바',
+    category_large: '음식점업',
+    category_middle: '일반 유흥 및 기타 주점업',
+    semas_code: 'I21104',
+    kosis_ksic_code: 'I5621',
+    typical_area_pyeong: { GENERAL: 24, TAKEOUT: 12, LARGE: 48 },
+    store_density_ratio: 0.58,
+    keywords: ['술집', '주점', '포차', '이자카야', '와인바', '하이볼', '칵테일바', '전집']
+  },
+
+  // ======================== 2. 소매업 (6종) ========================
+  {
     industry_code: 'IND_CONV',
-    industry_name: '편의점',
+    industry_name: '편의점 (CVS)',
     category_large: '소매업',
     category_middle: '체인화 편의점',
     semas_code: 'G20405',
     kosis_ksic_code: 'G4712',
     typical_area_pyeong: { GENERAL: 20, TAKEOUT: 12, LARGE: 32 },
-    keywords: ['편의점', '24시마트', 'CVS', '소매점']
+    store_density_ratio: 0.55,
+    keywords: ['편의점', '24시마트', 'CVS', 'GS25', 'CU', '세븐일레븐']
   },
   {
+    industry_code: 'IND_SUPER',
+    industry_name: '슈퍼마켓·식자재·반찬·청과점',
+    category_large: '소매업',
+    category_middle: '음·식료품 위주 종합소매업',
+    semas_code: 'G20404',
+    kosis_ksic_code: 'G4712',
+    typical_area_pyeong: { GENERAL: 28, TAKEOUT: 12, LARGE: 65 },
+    store_density_ratio: 0.30,
+    keywords: ['슈퍼마켓', '마트', '식자재', '반찬가게', '정육점', '과일가게', '청과']
+  },
+  {
+    industry_code: 'IND_PHARMACY',
+    industry_name: '약국·드럭스토어·건강기능식품',
+    category_large: '소매업',
+    category_middle: '의약품 및 의료용품 소매업',
+    semas_code: 'G21501',
+    kosis_ksic_code: 'G4781',
+    typical_area_pyeong: { GENERAL: 16, TAKEOUT: 10, LARGE: 35 },
+    store_density_ratio: 0.28,
+    keywords: ['약국', '드럭스토어', '올리브영', '건강기능식품', '영양제']
+  },
+  {
+    industry_code: 'IND_FLOWER',
+    industry_name: '꽃집·플라워샵·식물소품',
+    category_large: '소매업',
+    category_middle: '화초 및 식물 소매업',
+    semas_code: 'G22101',
+    kosis_ksic_code: 'G4785',
+    typical_area_pyeong: { GENERAL: 12, TAKEOUT: 7, LARGE: 25 },
+    store_density_ratio: 0.22,
+    keywords: ['꽃집', '플라워샵', '화원', '식물', '가드닝', '꽃배달']
+  },
+  {
+    industry_code: 'IND_CLOTHING',
+    industry_name: '의류·패션잡화·셀렉트샵',
+    category_large: '소매업',
+    category_middle: '섬유·의복·신발 및 가죽제품 소매업',
+    semas_code: 'G20901',
+    kosis_ksic_code: 'G4741',
+    typical_area_pyeong: { GENERAL: 16, TAKEOUT: 9, LARGE: 38 },
+    store_density_ratio: 0.46,
+    keywords: ['옷가게', '의류', '패션', '편집샵', '셀렉트샵', '신발', '악세사리']
+  },
+  {
+    industry_code: 'IND_UNMANNED',
+    industry_name: '무인 아이스크림·밀키트·문구점',
+    category_large: '소매업',
+    category_middle: '기타 무인 소매점업',
+    semas_code: 'G20499',
+    kosis_ksic_code: 'G4719',
+    typical_area_pyeong: { GENERAL: 12, TAKEOUT: 8, LARGE: 22 },
+    store_density_ratio: 0.25,
+    keywords: ['무인', '무인아이스크림', '밀키트', '무인문구', '무인매장']
+  },
+
+  // ======================== 3. 생활서비스·의료 (5종) ========================
+  {
     industry_code: 'IND_BEAUTY',
-    industry_name: '미용실·헤어샵',
-    category_large: '생활서비스',
+    industry_name: '미용실·헤어샵·바버샵',
+    category_large: '생활서비스·의료',
     category_middle: '두발 미용업',
     semas_code: 'S20701',
     kosis_ksic_code: 'S9611',
     typical_area_pyeong: { GENERAL: 15, TAKEOUT: 9, LARGE: 35 },
-    keywords: ['미용실', '헤어샵', '바버샵', '네일', '뷰티']
+    store_density_ratio: 0.65,
+    keywords: ['미용실', '헤어샵', '바버샵', '미장원', '염색방']
   },
   {
+    industry_code: 'IND_NAIL_SKIN',
+    industry_name: '네일아트·피부관리·왁싱·에스테틱',
+    category_large: '생활서비스·의료',
+    category_middle: '피부 및 기타 미용업',
+    semas_code: 'S20702',
+    kosis_ksic_code: 'S9611',
+    typical_area_pyeong: { GENERAL: 12, TAKEOUT: 7, LARGE: 26 },
+    store_density_ratio: 0.48,
+    keywords: ['네일', '네일샵', '피부관리', '에스테틱', '속눈썹', '왁싱', '마사지']
+  },
+  {
+    industry_code: 'IND_LAUNDRY',
+    industry_name: '코인세탁소·크리닝·세탁편의점',
+    category_large: '생활서비스·의료',
+    category_middle: '가정용 세탁업',
+    semas_code: 'S20901',
+    kosis_ksic_code: 'S9691',
+    typical_area_pyeong: { GENERAL: 14, TAKEOUT: 9, LARGE: 26 },
+    store_density_ratio: 0.24,
+    keywords: ['세탁소', '코인세탁', '빨래방', '크리닝', '워시엔조이', '크린토피아']
+  },
+  {
+    industry_code: 'IND_PET',
+    industry_name: '반려동물용품·애견미용·펫카페',
+    category_large: '생활서비스·의료',
+    category_middle: '반려동물 관련 서비스업',
+    semas_code: 'S21201',
+    kosis_ksic_code: 'S9699',
+    typical_area_pyeong: { GENERAL: 18, TAKEOUT: 10, LARGE: 40 },
+    store_density_ratio: 0.22,
+    keywords: ['애견', '반려동물', '펫샵', '애견미용', '애견유치원', '동물병원', '강아지']
+  },
+  {
+    industry_code: 'IND_CLINIC',
+    industry_name: '의원·치과·한의원·피부과',
+    category_large: '생활서비스·의료',
+    category_middle: '일반 의원 및 치과·한의원업',
+    semas_code: 'Q10201',
+    kosis_ksic_code: 'Q8620',
+    typical_area_pyeong: { GENERAL: 40, TAKEOUT: 25, LARGE: 80 },
+    store_density_ratio: 0.44,
+    keywords: ['병원', '의원', '치과', '한의원', '피부과', '내과', '정형외과', '클리닉']
+  },
+
+  // ======================== 4. 교육·여가·공간대여 (6종) ========================
+  {
     industry_code: 'IND_FITNESS',
-    industry_name: '피트니스·필라테스',
-    category_large: '여가·스포츠',
+    industry_name: '피트니스·필라테스·요가·PT샵',
+    category_large: '교육·여가·공간',
     category_middle: '체력단련시설 운영업',
     semas_code: 'R10307',
     kosis_ksic_code: 'R9113',
     typical_area_pyeong: { GENERAL: 45, TAKEOUT: 22, LARGE: 90 },
-    keywords: ['헬스장', '피트니스', '필라테스', '요가', 'PT샵', '운동']
+    store_density_ratio: 0.34,
+    keywords: ['헬스장', '피트니스', '필라테스', '요가', 'PT샵', '운동', '크로스핏']
   },
   {
     industry_code: 'IND_ACADEMY',
-    industry_name: '보습·입시·외국어학원',
-    category_large: '교육서비스',
+    industry_name: '보습·입시·외국어·코딩학원',
+    category_large: '교육·여가·공간',
     category_middle: '일반 교습학원',
     semas_code: 'P10501',
     kosis_ksic_code: 'P8550',
     typical_area_pyeong: { GENERAL: 35, TAKEOUT: 18, LARGE: 70 },
-    keywords: ['학원', '교습소', '영어학원', '수학학원', '공부방', '어학원']
+    store_density_ratio: 0.60,
+    keywords: ['학원', '교습소', '영어학원', '수학학원', '공부방', '어학원', '코딩학원']
+  },
+  {
+    industry_code: 'IND_ARTS_EDU',
+    industry_name: '음악·미술·태권도·예체능학원',
+    category_large: '교육·여가·공간',
+    category_middle: '예술 및 스포츠 교육기관',
+    semas_code: 'P10601',
+    kosis_ksic_code: 'P8561',
+    typical_area_pyeong: { GENERAL: 32, TAKEOUT: 16, LARGE: 60 },
+    store_density_ratio: 0.38,
+    keywords: ['피아노학원', '미술학원', '태권도', '발레', '실용음악', '체대입시', '예체능']
+  },
+  {
+    industry_code: 'IND_STUDYCAFE',
+    industry_name: '스터디카페·독서실·공유오피스',
+    category_large: '교육·여가·공간',
+    category_middle: '독서실 및 스터디카페 운영업',
+    semas_code: 'R10901',
+    kosis_ksic_code: 'R9021',
+    typical_area_pyeong: { GENERAL: 42, TAKEOUT: 25, LARGE: 75 },
+    store_density_ratio: 0.24,
+    keywords: ['스터디카페', '독서실', '공유오피스', '소호오피스', '파티룸', '공간대여']
+  },
+  {
+    industry_code: 'IND_SCREEN_GOLF',
+    industry_name: '스크린골프·실내테니스·볼링장',
+    category_large: '교육·여가·공간',
+    category_middle: '기타 스포츠시설 운영업',
+    semas_code: 'R10312',
+    kosis_ksic_code: 'R9113',
+    typical_area_pyeong: { GENERAL: 65, TAKEOUT: 35, LARGE: 120 },
+    store_density_ratio: 0.20,
+    keywords: ['스크린골프', '골프연습장', 'GDR', '실내테니스', '볼링장', '당구장']
+  },
+  {
+    industry_code: 'IND_PC_KARAOKE',
+    industry_name: 'PC방·코인노래방·보드게임·포토부스',
+    category_large: '교육·여가·공간',
+    category_middle: '오락 및 여가시설 운영업',
+    semas_code: 'R10405',
+    kosis_ksic_code: 'R9129',
+    typical_area_pyeong: { GENERAL: 45, TAKEOUT: 14, LARGE: 85 },
+    store_density_ratio: 0.26,
+    keywords: ['PC방', '피씨방', '코인노래방', '노래방', '보드게임카페', '인생네컷', '셀프포토']
   }
 ];
 
@@ -416,6 +651,286 @@ const INDUSTRY_BASE_SURVIVAL_STATS = {
     avg_operating_years: 5.4,
     metric_definition:
       '생존율은 일반 교습학원 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 학원 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_MEAT: {
+    survival_rate_1yr: 65.4,
+    survival_rate_3yr: 43.1,
+    survival_rate_5yr: 30.2,
+    annual_closure_rate: 11.9,
+    new_entry_rate: 13.8,
+    avg_operating_years: 4.1,
+    metric_definition:
+      '생존율은 한식 육류요리(고기구이) 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_SNACK: {
+    survival_rate_1yr: 62.8,
+    survival_rate_3yr: 39.5,
+    survival_rate_5yr: 27.6,
+    annual_closure_rate: 13.4,
+    new_entry_rate: 15.6,
+    avg_operating_years: 3.3,
+    metric_definition:
+      '생존율은 분식·김밥 간이음식점 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_JAPANESE: {
+    survival_rate_1yr: 64.9,
+    survival_rate_3yr: 42.4,
+    survival_rate_5yr: 29.8,
+    annual_closure_rate: 12.2,
+    new_entry_rate: 15.9,
+    avg_operating_years: 3.6,
+    metric_definition:
+      '생존율은 일식 음식점업 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_CHINESE: {
+    survival_rate_1yr: 67.2,
+    survival_rate_3yr: 45.8,
+    survival_rate_5yr: 33.1,
+    annual_closure_rate: 10.9,
+    new_entry_rate: 12.8,
+    avg_operating_years: 4.6,
+    metric_definition:
+      '생존율은 중식 음식점업 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_WESTERN: {
+    survival_rate_1yr: 63.7,
+    survival_rate_3yr: 40.9,
+    survival_rate_5yr: 28.5,
+    annual_closure_rate: 12.8,
+    new_entry_rate: 16.2,
+    avg_operating_years: 3.5,
+    metric_definition:
+      '생존율은 서양식 음식점업 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_FASTFOOD: {
+    survival_rate_1yr: 65.8,
+    survival_rate_3yr: 43.6,
+    survival_rate_5yr: 30.8,
+    annual_closure_rate: 11.8,
+    new_entry_rate: 14.7,
+    avg_operating_years: 3.8,
+    metric_definition:
+      '생존율은 피자·햄버거·샌드위치 업종 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_PUB: {
+    survival_rate_1yr: 58.4,
+    survival_rate_3yr: 34.8,
+    survival_rate_5yr: 22.9,
+    annual_closure_rate: 15.6,
+    new_entry_rate: 17.4,
+    avg_operating_years: 2.8,
+    metric_definition:
+      '생존율은 일반 유흥·요리주점업 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_SUPER: {
+    survival_rate_1yr: 76.2,
+    survival_rate_3yr: 56.8,
+    survival_rate_5yr: 42.9,
+    annual_closure_rate: 8.2,
+    new_entry_rate: 9.8,
+    avg_operating_years: 5.8,
+    metric_definition:
+      '생존율은 음·식료품 위주 종합소매업 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_PHARMACY: {
+    survival_rate_1yr: 86.4,
+    survival_rate_3yr: 72.5,
+    survival_rate_5yr: 61.2,
+    annual_closure_rate: 4.6,
+    new_entry_rate: 6.8,
+    avg_operating_years: 8.4,
+    metric_definition:
+      '생존율은 의약품 및 의료용품 소매업 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_FLOWER: {
+    survival_rate_1yr: 69.4,
+    survival_rate_3yr: 46.8,
+    survival_rate_5yr: 33.5,
+    annual_closure_rate: 10.6,
+    new_entry_rate: 13.9,
+    avg_operating_years: 4.3,
+    metric_definition:
+      '생존율은 화초 및 식물 소매업 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_CLOTHING: {
+    survival_rate_1yr: 64.5,
+    survival_rate_3yr: 41.2,
+    survival_rate_5yr: 28.9,
+    annual_closure_rate: 12.9,
+    new_entry_rate: 14.5,
+    avg_operating_years: 3.9,
+    metric_definition:
+      '생존율은 의복·패션잡화 소매업 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_UNMANNED: {
+    survival_rate_1yr: 71.8,
+    survival_rate_3yr: 46.2,
+    survival_rate_5yr: 31.4,
+    annual_closure_rate: 11.2,
+    new_entry_rate: 19.5,
+    avg_operating_years: 3.2,
+    metric_definition:
+      '생존율은 기타 무인 소매점업 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_NAIL_SKIN: {
+    survival_rate_1yr: 70.6,
+    survival_rate_3yr: 48.9,
+    survival_rate_5yr: 35.8,
+    annual_closure_rate: 9.8,
+    new_entry_rate: 15.4,
+    avg_operating_years: 4.2,
+    metric_definition:
+      '생존율은 피부·네일 등 기타 미용업 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_LAUNDRY: {
+    survival_rate_1yr: 79.5,
+    survival_rate_3yr: 61.2,
+    survival_rate_5yr: 47.8,
+    annual_closure_rate: 6.9,
+    new_entry_rate: 10.2,
+    avg_operating_years: 6.1,
+    metric_definition:
+      '생존율은 가정용 세탁업(코인세탁 포함) 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_PET: {
+    survival_rate_1yr: 72.4,
+    survival_rate_3yr: 50.8,
+    survival_rate_5yr: 37.6,
+    annual_closure_rate: 9.4,
+    new_entry_rate: 16.1,
+    avg_operating_years: 4.4,
+    metric_definition:
+      '생존율은 반려동물 관련 서비스·소매업 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_CLINIC: {
+    survival_rate_1yr: 88.2,
+    survival_rate_3yr: 76.4,
+    survival_rate_5yr: 66.8,
+    annual_closure_rate: 3.8,
+    new_entry_rate: 6.2,
+    avg_operating_years: 9.2,
+    metric_definition:
+      '생존율은 일반 의원·치과·한의원 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 의료기관 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_ARTS_EDU: {
+    survival_rate_1yr: 76.8,
+    survival_rate_3yr: 57.2,
+    survival_rate_5yr: 44.0,
+    annual_closure_rate: 7.9,
+    new_entry_rate: 10.6,
+    avg_operating_years: 5.7,
+    metric_definition:
+      '생존율은 예술·스포츠 교육기관 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 학원 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_STUDYCAFE: {
+    survival_rate_1yr: 72.1,
+    survival_rate_3yr: 49.4,
+    survival_rate_5yr: 34.8,
+    annual_closure_rate: 10.1,
+    new_entry_rate: 15.8,
+    avg_operating_years: 3.9,
+    metric_definition:
+      '생존율은 독서실 및 스터디카페 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_SCREEN_GOLF: {
+    survival_rate_1yr: 74.5,
+    survival_rate_3yr: 53.8,
+    survival_rate_5yr: 39.2,
+    annual_closure_rate: 8.8,
+    new_entry_rate: 12.4,
+    avg_operating_years: 4.8,
+    metric_definition:
+      '생존율은 스크린골프·실내스포츠시설 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
+    source_id: 'SRC_KOSIS_SURVIVAL',
+    base_year: 2025,
+    observation_period: '2025년 연간 (2020~2025 코호트 기준)',
+    published_at: '2025-12-18'
+  },
+  IND_PC_KARAOKE: {
+    survival_rate_1yr: 66.8,
+    survival_rate_3yr: 44.1,
+    survival_rate_5yr: 30.5,
+    annual_closure_rate: 11.7,
+    new_entry_rate: 12.9,
+    avg_operating_years: 4.1,
+    metric_definition:
+      '생존율은 PC방·노래연습장 등 오락시설 신생 코호트의 1·3·5년 후 생존 비율이며, 연간 폐업(소멸)률은 당해 전체 활동 사업체 대비 소멸 비율입니다.',
     source_id: 'SRC_KOSIS_SURVIVAL',
     base_year: 2025,
     observation_period: '2025년 연간 (2020~2025 코호트 기준)',
