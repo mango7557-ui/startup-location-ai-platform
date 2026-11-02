@@ -136,26 +136,39 @@
               </div>
             </div>
 
-            <!-- 가중치 투명 공개 및 조정 아코디언 -->
-            <details class="weights-box">
-              <summary>평가 가중치 기준 확인 (초기 제안: 40/25/20/15%)</summary>
+            <!-- 가중치 투명 공개 및 실시간 커스터마이징 아코디언 -->
+            <details class="weights-box" open>
+              <summary>평가 가중치 설정 (초기 제안: 40/25/20/15%)</summary>
               <div class="weights-body">
-                <p class="weights-note">기획서 8장 기준 초기 가중치입니다. 결측 지표 발생 시 확보된 지표만으로 자동 재정규화됩니다.</p>
+                <p class="weights-note">슬라이더 조정 시 합계 100%로 자동 정규화되며, 결측 지표 발생 시 확보된 지표만으로 재정규화됩니다.</p>
                 <div class="weight-row">
                   <span>생존·폐업 통계</span>
                   <strong id="wSurvivalLabel">40%</strong>
                 </div>
+                <input type="range" id="wSurvivalInput" min="10" max="70" step="5" value="40" />
+
                 <div class="weight-row">
                   <span>동일 업종 경쟁 강도</span>
                   <strong id="wCompLabel">25%</strong>
                 </div>
+                <input type="range" id="wCompInput" min="5" max="60" step="5" value="25" />
+
                 <div class="weight-row">
                   <span>지역 수요·인구</span>
                   <strong id="wDemandLabel">20%</strong>
                 </div>
+                <input type="range" id="wDemandInput" min="5" max="60" step="5" value="20" />
+
                 <div class="weight-row">
                   <span>임대료·창업비용 부담</span>
                   <strong id="wCostLabel">15%</strong>
+                </div>
+                <input type="range" id="wCostInput" min="5" max="60" step="5" value="15" />
+
+                <div style="display:flex;justify-content:space-between;gap:4px;margin-top:6px;">
+                  <button type="button" class="btn-secondary-sm" id="btnResetWeights" style="flex:1;padding:4px 6px;font-size:11px;">초기값(40/25/20/15)</button>
+                  <button type="button" class="btn-secondary-sm" id="btnCostFocusWeights" style="flex:1;padding:4px 6px;font-size:11px;">임대료절감 중심</button>
+                  <button type="button" class="btn-secondary-sm" id="btnDemandFocusWeights" style="flex:1;padding:4px 6px;font-size:11px;">배후수요 중심</button>
                 </div>
               </div>
             </details>
@@ -262,7 +275,11 @@
           <h2>5. 데이터 기반 창업 입지 분석 보고서</h2>
           <p class="subtext">예비 창업자·소상공인·컨설턴트 제출용 종합 분석 리포트 (데이터 출처 및 기준일 포함)</p>
         </div>
-        <button type="button" class="btn-primary" id="btnPrintReport">보고서 인쇄 / PDF 저장</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="btn-secondary-sm" id="btnExportCsv">TOP 10 엑셀(CSV) 다운로드</button>
+          <button type="button" class="btn-secondary-sm" id="btnExportJson">분석 원본(JSON) 저장</button>
+          <button type="button" class="btn-primary" id="btnPrintReport">보고서 인쇄 / PDF 저장</button>
+        </div>
       </div>
       <div id="reportDocumentContainer" class="report-paper card">
         <!-- JS에서 보고서 렌더링 -->

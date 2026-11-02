@@ -297,10 +297,52 @@ async function initApp() {
     loadAndRenderComparison();
   });
 
-  // 보고서 인쇄 버튼
+  // 보고서 인쇄 및 CSV/JSON 내보내기 버튼
   document.getElementById('btnPrintReport').addEventListener('click', () => {
     window.print();
   });
+
+  const btnExportCsv = document.getElementById('btnExportCsv');
+  if (btnExportCsv) {
+    btnExportCsv.addEventListener('click', exportRecommendationsCsv);
+  }
+  const btnExportJson = document.getElementById('btnExportJson');
+  if (btnExportJson) {
+    btnExportJson.addEventListener('click', exportRecommendationsJson);
+  }
+
+  // 가중치 슬라이더 실시간 라벨 업데이트 및 프리셋 버튼
+  const weightInputs = ['wSurvivalInput', 'wCompInput', 'wDemandInput', 'wCostInput'];
+  const updateWeightLabels = () => {
+    const s = Number(document.getElementById('wSurvivalInput')?.value || 40);
+    const c = Number(document.getElementById('wCompInput')?.value || 25);
+    const d = Number(document.getElementById('wDemandInput')?.value || 20);
+    const cost = Number(document.getElementById('wCostInput')?.value || 15);
+    const sum = Math.max(1, s + c + d + cost);
+    document.getElementById('wSurvivalLabel').textContent = `${Math.round((s / sum) * 100)}%`;
+    document.getElementById('wCompLabel').textContent = `${Math.round((c / sum) * 100)}%`;
+    document.getElementById('wDemandLabel').textContent = `${Math.round((d / sum) * 100)}%`;
+    document.getElementById('wCostLabel').textContent = `${Math.round((cost / sum) * 100)}%`;
+  };
+  weightInputs.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', updateWeightLabels);
+      el.addEventListener('change', () => runSearchAnalysis());
+    }
+  });
+
+  const setWeightPreset = (s, c, d, cost) => {
+    document.getElementById('wSurvivalInput').value = String(s);
+    document.getElementById('wCompInput').value = String(c);
+    document.getElementById('wDemandInput').value = String(d);
+    document.getElementById('wCostInput').value = String(cost);
+    updateWeightLabels();
+    runSearchAnalysis();
+  };
+  document.getElementById('btnResetWeights')?.addEventListener('click', () => setWeightPreset(40, 25, 20, 15));
+  document.getElementById('btnCostFocusWeights')?.addEventListener('click', () => setWeightPreset(30, 20, 15, 35));
+  document.getElementById('btnDemandFocusWeights')?.addEventListener('click', () => setWeightPreset(30, 20, 35, 15));
 
   // 최초 실행: 기획서 2장 핵심 예시(커피숍 · 서울특별시 강남구 · 초기 투자비 1억 이하) 자동 분석
   await runSearchAnalysis();
@@ -346,6 +388,12 @@ async function runSearchAnalysis() {
   const rent = document.getElementById('rentInput').value;
   const storeType = document.querySelector('input[name="storeType"]:checked').value;
 
+  const wSurvRaw = Number(document.getElementById('wSurvivalInput')?.value || 40);
+  const wCompRaw = Number(document.getElementById('wCompInput')?.value || 25);
+  const wDemandRaw = Number(document.getElementById('wDemandInput')?.value || 20);
+  const wCostRaw = Number(document.getElementById('wCostInput')?.value || 15);
+  const wSum = Math.max(1, wSurvRaw + wCompRaw + wDemandRaw + wCostRaw);
+
   const res = await fetch('/api/recommend', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -358,6 +406,10 @@ async function runSearchAnalysis() {
       budget,
       rent,
       storeType,
+      wSurvival: Number((wSurvRaw / wSum).toFixed(3)),
+      wCompetition: Number((wCompRaw / wSum).toFixed(3)),
+      wDemand: Number((wDemandRaw / wSum).toFixed(3)),
+      wCost: Number((wCostRaw / wSum).toFixed(3)),
       lat: state.clickedLatLng ? state.clickedLatLng.lat : null,
       lng: state.clickedLatLng ? state.clickedLatLng.lng : null
     })
@@ -1541,6 +1593,85 @@ async function loadAndRenderAdminConsole() {
       await loadAndRenderAdminConsole();
     });
   });
+}
+
+// 추천 상권 TOP 10 CSV(엑셀 호환 UTF-8 BOM) 내보내기
+function exportRecommendationsCsv() {
+  if (!state.analysisResult || !state.analysisResult.top_recommendations) return;
+  const q = state.analysisResult.query_summary;
+  const rows = [
+    [
+      '추천순위',
+      '상권명',
+      '시도',
+      '시군구',
+      '행정동/읍면',
+      '상권유형',
+      '종합점수',
+      '1년생존율(%)',
+      '3년생존율(%)',
+      '5년생존율(%)',
+      '연간폐업률(%)',
+      `반경(${q.radius_meters}m)동일업종점포수`,
+      '상주인구(명)',
+      '직장인구(명)',
+      '일유동인구(명)',
+      '추정초기투자비(만원)',
+      '추정월임대료(만원)',
+      '데이터신뢰도'
+    ]
+  ];
+
+  state.analysisResult.top_recommendations.forEach((item) => {
+    rows.push([
+      item.rank,
+      `"${item.zone_name.replace(/"/g, '""')}"`,
+      item.sido_name,
+      item.sigungu_name,
+      item.emd_name,
+      item.district_type_label,
+      item.total_score,
+      item.survival_closure_stats.survival_rate_1yr ?? '미확보',
+      item.survival_closure_stats.survival_rate_3yr ?? '미확보',
+      item.survival_closure_stats.survival_rate_5yr ?? '미확보',
+      item.survival_closure_stats.annual_closure_rate ?? '미확보',
+      item.competition_stats.same_industry_store_count,
+      item.demand_stats.resident_population ?? '미확보',
+      item.demand_stats.worker_population ?? '미확보',
+      item.demand_stats.floating_pop_daily ?? '미확보',
+      item.cost_stats.estimated_total_startup_cost_manwon ?? '미확보',
+      item.cost_stats.estimated_monthly_rent_manwon ?? '미확보',
+      `"${item.reliability.label}"`
+    ]);
+  });
+
+  const csvContent = '\uFEFF' + rows.map((r) => r.join(',')).join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `창업입지AI_${q.sido_name}_${q.sigungu_name}_${q.industry_name}_TOP10.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// 추천 결과 전체 JSON 다운로드
+function exportRecommendationsJson() {
+  if (!state.analysisResult) return;
+  const q = state.analysisResult.query_summary;
+  const blob = new Blob([JSON.stringify(state.analysisResult, null, 2)], {
+    type: 'application/json;charset=utf-8;'
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `창업입지AI_${q.sido_name}_${q.sigungu_name}_${q.industry_code}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 window.addEventListener('DOMContentLoaded', initApp);
