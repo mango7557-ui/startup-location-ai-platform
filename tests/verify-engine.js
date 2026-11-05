@@ -1,99 +1,109 @@
-/**
- * 창업입지 AI - 추천 알고리즘 및 5대 외부 API 연동 자동 검증 테스트 (tests/verify-engine.js)
- */
-
-const assert = require('assert');
-const {
-  runRecommendationAnalysis,
-  compareCandidateZones
-} = require('../server/services/recommendationEngine');
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { createConnectors, number } = require('../server/services/externalApiConnectors');
+const { demoAnalysis } = require('../server/services/demoAnalysis');
 const { INDUSTRY_CODES, REGIONS_TREE } = require('../server/data/publicDatasetStore');
-const {
-  OFFICIAL_API_CATALOG,
-  getApiKeySecurityStatus,
-  verifyBusinessRegistrationNumber,
-  runExternalApiDiagnostic
-} = require('../server/services/externalApiConnectors');
-
-async function runTests() {
-  console.log('1. [기획서 2장 예시 검증] 업종: 커피숍 / 지역: 서울특별시 강남구 / 예산: 1억 원 이하');
-  const gangnamResult = runRecommendationAnalysis({
-    industry: '커피숍',
-    sido: '서울특별시',
-    sigungu: '강남구',
-    budget: 10000,
-    rent: 350,
-    radius: 500,
-    storeType: 'GENERAL'
-  });
-
-  assert.strictEqual(gangnamResult.query_summary.industry_code, 'IND_CAFE');
-  assert.strictEqual(gangnamResult.top_recommendations.length, 10, '추천 상권 TOP 10이 반환되어야 합니다.');
-  console.log(`   -> 추천 1위: ${gangnamResult.top_recommendations[0].zone_name} (종합 ${gangnamResult.top_recommendations[0].total_score}점)`);
-
-  console.log('2. [결측 데이터 임의 숫자 생성 금지 및 신뢰도 표시 원칙 검증]');
-  const segokZone = compareCandidateZones(['ZONE_GN_01', 'ZONE_GN_12'], {
-    industry: 'IND_CAFE'
-  });
-  const partialCandidate = segokZone.candidates.find((c) => c.zone_id === 'ZONE_GN_12');
-  assert.strictEqual(partialCandidate.demand_stats.floating_pop_daily, null, '미확보 유동인구는 null로 유지되어야 합니다.');
-  assert.strictEqual(partialCandidate.survival_closure_stats.survival_rate_5yr, null, '미확보 5년 생존율은 null로 유지되어야 합니다.');
-  assert.ok(partialCandidate.reliability.missing_metrics.length >= 2, '미확보 지표 안내가 포함되어야 합니다.');
-  console.log(`   -> 결측 상권 신뢰도 등급: ${partialCandidate.reliability.label}`);
-
-  console.log('3. [5대 공식 외부 API 카탈로그 및 통합 정규화 파이프라인 검증]');
-  assert.strictEqual(OFFICIAL_API_CATALOG.length, 5, '5대 핵심 외부 API 카탈로그가 모두 등록되어야 합니다.');
-  const sec = getApiKeySecurityStatus();
-  assert.strictEqual(sec.frontend_key_exposure, false);
-
-  const diag = await runExternalApiDiagnostic('ALL');
-  assert.ok(diag.diagnostics.semas_store.items.length > 0, '소상공인 상가정보 API 정규화 결과가 반환되어야 합니다.');
-  assert.strictEqual(diag.diagnostics.nts_biz_status.valid_format, true, '국세청 상태조회 API 검증이 작동해야 합니다.');
-  assert.ok(diag.diagnostics.kosis_stats.normalized_records.length > 0, 'KOSIS 기업생멸통계 정규화 결과가 반환되어야 합니다.');
-  assert.ok(diag.diagnostics.data_go_kr_region.normalized_region_stat.region_code, '공공데이터포털 지역통계가 반환되어야 합니다.');
-  assert.ok(diag.diagnostics.kakao_local.documents.length > 0, '카카오 로컬 검색 결과가 반환되어야 합니다.');
-
-  console.log('   -> 1) 상가·상권정보 API 정규화 건수:', diag.diagnostics.semas_store.items.length);
-  console.log('   -> 2) 국세청 사업자등록 상태조회:', diag.diagnostics.nts_biz_status.b_no_masked, diag.diagnostics.nts_biz_status.b_stt);
-  console.log('   -> 3) KOSIS 기업생멸통계 지표 수:', diag.diagnostics.kosis_stats.normalized_records.length);
-  console.log('   -> 4) 공공데이터포털 지역통계 행정동:', diag.diagnostics.data_go_kr_region.normalized_region_stat.emd_name);
-  console.log('   -> 5) 카카오 로컬 검색 1순위:', diag.diagnostics.kakao_local.documents[0].place_name);
-
-  console.log(`4. [28개 전체 표준 업종 추천 산출 및 생존·폐업 통계 매핑 검증]`);
-  assert.strictEqual(INDUSTRY_CODES.length, 28, '총 28개 표준 업종이 등록되어야 합니다.');
-  for (const ind of INDUSTRY_CODES) {
-    const r = runRecommendationAnalysis({ industry: ind.industry_code, sido: '서울특별시', sigungu: '강남구' });
-    assert.strictEqual(r.query_summary.industry_code, ind.industry_code);
-    assert.strictEqual(r.top_recommendations.length, 10);
-    assert.ok(r.top_recommendations[0].survival_closure_stats.survival_rate_1yr > 0);
+const response = (obj, status = 200) => new Response(JSON.stringify(obj), { status });
+const location = { cx: 127.03, cy: 37.5, radius: 500 };
+test('missing keys never return synthetic stores, statistics or business status', async () => {
+  const c = createConnectors({ env: {}, fetchImpl() { assert.fail('must not call external API'); } });
+  for (const fn of [() => c.semas(location), () => c.nts({ bizNo: '1234567890' }), () => c.kosis(), () => c.kakao({ query: '강남역' })]) await assert.rejects(fn, { code: 'NOT_CONFIGURED' });
+  assert(c.status().every(p => p.last_success_at === null && p.status === 'NOT_CONFIGURED'));
+});
+test('SEMAS request, pagination, missing fields and actual response cache', async () => {
+  let calls = 0;
+  const c = createConnectors({ env: { DATA_GO_KR_SERVICE_KEY: 'test%2Bkey%3D' }, fetchImpl: async url => {
+    calls++; assert.equal(url.searchParams.get('serviceKey'), 'test+key='); assert.equal(url.searchParams.get('pageNo'), '2');
+    return response({ header: { resultCode: '00' }, body: { totalCount: 150, stdrYm: '202610', items: [{ bizesId: 'S1', bizesNm: '실제응답 테스트', lat: '', lon: '127.03' }] } });
+  } });
+  const result = await c.semas({ ...location, pageNo: 2 });
+  assert.equal(result.items[0].lat, null); assert.equal(result.items[0].industry_code, null);
+  assert.equal(result.total_count, 150); assert.equal(result.mode, 'LIVE');
+  assert.equal((await c.semas({ ...location, pageNo: 2 })).mode, 'CACHED'); assert.equal(calls, 1);
+  assert.equal(c.logs()[0].records_upserted, 0);
+  assert(!JSON.stringify(c.status()).includes('test%2Bkey'));
+});
+test('HTTP 200 provider errors and XML errors never turn into success', async () => {
+  const c = createConnectors({ env: { DATA_GO_KR_SERVICE_KEY: 'secret' }, fetchImpl: async () => response({ header: { resultCode: '30', resultMsg: 'secret' }, body: { items: [] } }) });
+  await assert.rejects(() => c.semas(location), { code: 'PROVIDER_REJECTED' });
+  const xml = createConnectors({ env: { DATA_GO_KR_SERVICE_KEY: 'secret' }, fetchImpl: async () => new Response('<error>secret</error>') });
+  await assert.rejects(() => xml.semas(location), { code: 'INVALID_RESPONSE' });
+  assert(!JSON.stringify(c.logs()).includes('secret'));
+});
+test('outage fallback is only a previously collected real response with unchanged timestamp', async () => {
+  const originalNow = Date.now;
+  let fail = false;
+  const c = createConnectors({ env: { DATA_GO_KR_SERVICE_KEY: 'key' }, fetchImpl: async () => {
+    if (fail) throw new Error('secret-url-with-key');
+    return response({ header: { resultCode: '00' }, body: { items: [], totalCount: 0 } });
+  } });
+  const first = await c.semas(location);
+  fail = true;
+  try {
+    Date.now = () => originalNow() + 600000;
+    const stale = await c.semas(location);
+    assert.equal(stale.mode, 'STALE'); assert.equal(stale.collected_at, first.collected_at);
+    assert(!JSON.stringify(stale).includes('secret-url'));
+    Date.now = () => originalNow() + 90000000;
+    await assert.rejects(() => c.semas(location), { code: 'UPSTREAM_UNAVAILABLE' });
+  } finally { Date.now = originalNow; }
+});
+test('KOSIS preserves suppressed values, units, classifications and time', async () => {
+  const c = createConnectors({ env: { KOSIS_API_KEY: 'key' }, fetchImpl: async url => {
+    assert.equal(url.searchParams.get('objL2'), 'B');
+    return response([{ TBL_ID: 'T', TBL_NM: '테스트 통계표', PRD_DE: '2024', DT: '-', UNIT_NM: '%', C1: 'A', C1_NM: '전국', C2: 'B', C2_NM: '산업', ITM_NM: '3년 생존율' }]);
+  } });
+  const r = await c.kosis({ orgId: '101', tblId: 'T', objL1: 'A', objL2: 'B', itmId: 'I', prdSe: 'Y' });
+  assert.equal(r.records[0].value, null); assert.equal(r.records[0].period, '2024'); assert.equal(r.records[0].classifications.length, 2);
+  assert.equal(number('1,234'), 1234); assert.equal(number('...'), null); assert.equal(number(''), null);
+});
+test('Kakao supports address, keyword and region operations without made-up matches', async () => {
+  let target;
+  const c = createConnectors({ env: { KAKAO_REST_API_KEY: 'rest-key' }, fetchImpl: async (url, opts) => {
+    target = url.pathname; assert.equal(opts.headers.Authorization, 'KakaoAK rest-key'); return response({ documents: [], meta: { total_count: 0 } });
+  } });
+  assert.deepEqual((await c.kakao({ query: '없는 주소', action: 'address' })).documents, []); assert(target.endsWith('/address.json'));
+  await c.kakao({ x: 127, y: 37, action: 'region' }); assert(target.endsWith('/coord2regioncode.json'));
+  await assert.rejects(() => c.kakao({ action: 'region', x: 'NaN', y: 37 }), { code: 'INVALID_INPUT' });
+});
+test('NTS masks identifiers, supports validation and has no persistent cache', async () => {
+  let calls = 0;
+  const c = createConnectors({ env: { NTS_SERVICE_KEY: 'key' }, fetchImpl: async (url, opts) => {
+    calls++; const body = JSON.parse(opts.body); assert(body.b_no || body.businesses);
+    return response({ status_code: 'OK', data: [{ b_no: '1234567890', b_stt: '계속사업자', end_dt: '' }] });
+  } });
+  const r = await c.nts({ bizNo: '123-45-67890' });
+  assert.equal(r.items[0].closed_on, null); assert(!JSON.stringify(r).includes('1234567890'));
+  await c.nts({ bizNo: '1234567890' }); assert.equal(calls, 2);
+  await c.nts({ action: 'validate', businesses: [{ b_no: '1234567890', start_dt: '20200101', p_nm: '테스트' }] });
+  assert(!JSON.stringify(c.logs()).includes('1234567890'));
+});
+test('all industries and listed regional choices produce explicitly labeled demo results', () => {
+  for (const i of INDUSTRY_CODES) {
+    const r = demoAnalysis({ industry: i.industry_code, sido: '서울특별시', sigungu: '강남구' });
+    assert.equal(r.mode, 'DEMO'); assert(r.candidates.length); assert(r.candidates.every(c => c.quality === 'DEMO' && c.observed_at === null));
   }
-  console.log(`   -> 총 ${INDUSTRY_CODES.length}개 업종 전체 추천 순위 및 생존·폐업 통계 산출 정상 확인 완료.`);
-
-  console.log(`5. [전국 17개 시·도 및 전체 시·군·구·읍·면·동 검색 및 TOP 10 산출 검증]`);
-  assert.strictEqual(REGIONS_TREE.length, 17, '전국 17개 시·도가 모두 등록되어야 합니다.');
-  let totalSigungu = 0;
-  let totalEmd = 0;
-  for (const sido of REGIONS_TREE) {
-    totalSigungu += sido.sigungu_list.length;
-    for (const sg of sido.sigungu_list) {
-      totalEmd += sg.emd_list.length;
-    }
-    const firstSg = sido.sigungu_list[0];
-    const r = runRecommendationAnalysis({
-      industry: 'IND_CAFE',
-      sido: sido.sido_name,
-      sigungu: firstSg.sigungu_name,
-      emd: firstSg.emd_list[0]
-    });
-    assert.strictEqual(r.top_recommendations.length, 10, `${sido.sido_name} ${firstSg.sigungu_name} TOP 10이 반환되어야 합니다.`);
-    assert.strictEqual(r.top_recommendations[0].is_exact_emd_match, true, '선택한 읍·면·동이 1순위로 매칭되어야 합니다.');
+  for (const s of REGIONS_TREE) {
+    const r = demoAnalysis({ industry: 'IND_CAFE', sido: s.sido_name, sigungu: s.sigungu_list[0].sigungu_name });
+    assert(r.candidates.every(c => Number.isFinite(c.score)));
   }
-  console.log(`   -> 전국 ${REGIONS_TREE.length}개 시·도 / ${totalSigungu}개 시·군·구 / ${totalEmd}개 읍·면·동 전체 TOP 10 분석 정상 확인 완료.`);
-
-  console.log('\n모든 추천 엔진 및 5대 외부 API 연동 테스트를 통과했습니다.');
-}
-
-runTests().catch((err) => {
-  console.error(err);
-  process.exit(1);
+  assert.throws(() => demoAnalysis({ industry: 'INVALID', sido: '서울특별시', sigungu: '강남구' }));
+});
+test('server rejects unauthenticated credential changes and invalid API input', async () => {
+  process.env.ADMIN_API_TOKEN = 'integration-test-admin-token-123456';
+  const server = require('../server');
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  const base = `http://127.0.0.1:${server.address().port}`;
+  const post = (route, body, headers = {}) => fetch(base + route, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body) });
+  try {
+    assert.equal((await post('/api/external/keys', { KOSIS_API_KEY: 'secret' })).status, 401);
+    assert.equal((await post('/api/external/keys', { KOSIS_API_KEY: 'secret' }, { Authorization: `Bearer ${process.env.ADMIN_API_TOKEN}` })).status, 200);
+    const health = await (await fetch(base + '/api/health')).json(); assert(!JSON.stringify(health).includes('secret'));
+    const live = await (await post('/api/recommend', {})).json(); assert.equal(live.mode, 'LIVE'); assert.deepEqual(live.candidates, []);
+    assert.equal((await fetch(base + '/api/not-found')).status, 404);
+    assert.equal((await post('/api/external/semas', { cx: 0, cy: 0 })).status, 400);
+    assert.equal((await post('/api/external/keys', {}, { Origin: 'https://evil.example' })).status, 403);
+    const invalid = await fetch(base + '/api/external/semas', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{' }); assert.equal(invalid.status, 400);
+  } finally { await new Promise(resolve => server.close(resolve)); }
 });

@@ -1,55 +1,70 @@
-# 전국 업종별 창업 입지 추천 플랫폼 (창업입지 AI) — 풀스택 MVP
+# 창업입지 AI
 
-공공데이터(소상공인시장진흥공단 상가·상권정보, 통계청 KOSIS 기업생멸행정통계·인구·사업체조사, 국세청 사업자등록정보 상태조회, 한국부동산원 상업용부동산 임대시세)를 결합하여 예비 창업자와 소상공인의 입지 의사결정을 지원하는 풀스택 웹 플랫폼입니다.
+지도 기반 창업 입지 탐색 워크스페이스. **실제 API 조회와 가상 추천 데모를 분리**합니다.
 
----
+## 실행
 
-## 1. 디렉토리 구조
-
-```text
-├── db/
-│   ├── schema.sql                     # PostgreSQL 15+ & PostGIS 3+ 공간 데이터베이스 DDL (9개 핵심 테이블)
-│   └── seed.sql                       # 공공데이터 출처(data_sources) 및 표준 업종 코드(industry_codes) 초기 시드
-├── server/
-│   ├── index.js                       # Node.js HTTP/REST API 서버 및 정적 웹앱 호스팅 (Rate Limiting 포함)
-│   ├── data/
-│   │   └── publicDatasetStore.js      # 전국 행정구역·상권·업종별 생존/폐업/수요/임대료 표준 데이터셋
-│   └── services/
-│       ├── recommendationEngine.js    # 8단계 입지 추천 알고리즘 (가중치 40/25/20/15%, 결측치 재정규화, 신뢰도 산출)
-│       └── externalApiConnectors.js   # 공공데이터포털·KOSIS·국세청 상태조회 API 어댑터 및 보안 격리 모듈
-├── public/
-│   ├── index.html                     # 5개 핵심 화면 통합 반응형 웹 UI
-│   ├── styles.css                     # 스타일시트 및 인쇄용 보고서 레이아웃
-│   └── app.js                         # 지도(Leaflet)·순위·상세·후보비교·보고서·관리자 연동 클라이언트
-├── tests/
-│   └── verify-engine.js               # 추천 알고리즘·결측치 원칙·국세청 검증 자동 테스트
-├── .env.example                       # 서버 환경변수 설정 예시 (API 인증키 서버 격리)
-└── package.json
-```
-
----
-
-## 2. 실행 및 검증 방법
+Node.js 24 이상이 필요합니다.
 
 ```bash
-# 1. 추천 알고리즘 및 데이터 무결성 검증 테스트 실행
-npm test
-
-# 2. 풀스택 서버 실행 (기본 포트: 3000)
+npm install
 npm start
+# http://localhost:3000
+npm run build
+npm test
+npx playwright install chromium
+npx playwright test
 ```
 
-브라우저에서 `http://localhost:3000`으로 접속하면 5개 핵심 화면을 모두 이용할 수 있습니다.
+`npm run build`는 독립 실행 가능한 `index.html` 및 `public/preview.html`을 생성합니다. 모듈 스코프를 분리해 중복 변수 선언 오류를 방지합니다. GitHub Pages는 **정적 데모만 제공**하며 인증키 입력, 실제 API 호출을 수행하지 않습니다.
 
----
+## 서버 API 설정
 
-## 3. 기획서 핵심 원칙 반영 내역
+`.env.example`을 `.env`로 복사해 발급받은 키를 입력하세요. `.env`와 `.runtime/`은 Git에서 제외됩니다. 키를 채팅이나 공개 저장소에 올리지 마세요.
 
-1. **폐업률과 생존율의 엄격한 분리:**
-   - 생존율(신생 사업체 코호트의 1·3·5년 후 영업 지속 비율)과 연간 폐업률(당해 활동 사업체 대비 소멸 비율)을 DB 컬럼부터 UI까지 분리하고 산출 기준 정의와 출처·기준연도·관측기간을 명시했습니다.
-2. **결측 데이터 임의 추정 금지 및 신뢰도 표시:**
-   - 비표본 지역의 유동인구·5년 생존율·임대료 시세 등이 없는 경우 임의의 숫자로 채우지 않고 `NULL`(`미확보`)로 유지하며, 확보된 지표만으로 가중치를 재정규화하고 `신뢰도 주의` 배지를 표시합니다.
-3. **개별 사업체 생존 이력 단정 금지 & 국세청 API 용도 준수:**
-   - 국세청 상태조회 API는 사업자등록번호(10자리)를 알고 있는 단건/배치 상태 확인 전용으로 구성했으며, 수집 시점 이전의 과거 폐업 이력을 임의 생성하지 않습니다.
-4. **인증키 보안 격리:**
-   - 모든 외부 API 인증키는 서버 환경변수(`.env`)에서만 참조하며 프런트엔드나 오류 로그에 노출하지 않습니다.
+| 설정 | 용도 |
+|---|---|
+| `DATA_GO_KR_SERVICE_KEY` | 소상공인 상가정보 활용 승인된 서비스키 |
+| `NTS_SERVICE_KEY` | 국세청 승인 서비스키 (미설정 시 공공데이터 키 사용) |
+| `KOSIS_API_KEY` | KOSIS OpenAPI 키 |
+| `KAKAO_REST_API_KEY` | Kakao Local REST API 키 |
+| `ADMIN_API_TOKEN` | 24자 이상 관리자 인증 토큰 |
+| `KOSIS_SURVIVAL_QUERY` | 기업생멸 통계표 조회 조건 JSON |
+| `KOSIS_REGION_QUERY` | 인구·가구 등 지역 통계표 조회 조건 JSON |
+
+KOSIS [통계자료 URL 생성 도구](https://kosis.kr/openapi/devGuide/devGuide_0201List.do)에서 표와 분류를 선택한 뒤 `orgId`, `tblId`, `objL1`~`objL8`, `itmId`, `prdSe`, 시점 조건을 JSON으로 설정합니다. 예시 형식(실제 코드로 교체 필요):
+
+```json
+{"orgId":"기관ID","tblId":"통계표ID","objL1":"분류코드","itmId":"항목코드","prdSe":"Y","newEstPrdCnt":"1"}
+```
+
+공공데이터포털 홈페이지 자체는 데이터 API가 아닙니다. 기존 코드의 검증되지 않은 행정안전부 엔드포인트 대신 지역통계는 KOSIS의 사용자가 지정한 표로 조회합니다. 통계표별 지역·업종 세분성은 실제 응답 확인 후 확정해야 합니다.
+
+## API
+
+- `GET /api/health`, `/api/meta`, `/api/external/catalog`: 서버, 선택 목록, 연결 상태
+- `POST /api/external/semas`: `cx`, `cy`, `radius`(최대 2000m), `pageNo`, `numOfRows`; 또는 `divId`, `key` 지역코드 조회
+- `POST /api/external/kakao`: `action` = `keyword` / `address` / `region`, `query` 또는 `x`, `y`
+- `POST /api/external/kosis`, `/api/external/region`: 통계표 조건 JSON (서버 기본 조건과 병합)
+- `POST /api/external/kosis/list`: 통계목록 조회
+- `POST /api/nts/verify`: 단일 `bizNo` 또는 최대 100개 `numbers`; `action=validate`와 `businesses`로 진위 확인
+- `POST /api/external/keys`: 허용된 키만 서버 메모리에 반영 (서버 재시작 시 초기화)
+- `GET /api/admin/logs`: 실제 요청 이력, 건수, 성공/실패 코드
+- `POST /api/recommend`: `mode=DEMO`일 때만 가상 결과 반환. 실제 추천은 비교 가능한 통계·점포 DB 적재 전까지 미제공
+
+키 변경·국세청 조회·로그 열람은 `Authorization: Bearer ADMIN_API_TOKEN`으로 보호합니다. 원문 키·업체번호·제공기관 오류 메시지는 로그에 남기지 않습니다. 관리자 토큰은 브라우저 저장소에 저장하지 않습니다.
+
+## 데이터 정확성 및 범위
+
+- 기존 28개 업종·17개 시도·일부 시군구/읍면동 목록은 선택 도우미입니다. 공식 최신 행정구역 전체 또는 검증된 업종 코드 매핑으로 간주하지 않습니다.
+- 추천 데모는 기존 가상 엔진을 명시적으로 격리한 기능입니다. 점수·인구·경쟁점포·생존율·임대료·좌표는 실제 분석 결과가 아닙니다.
+- 실점포 검색은 현재 전체 업종을 조회하며 제공기관의 원본 업종명을 표시합니다. 넓은 UI 업종을 임의로 공식 소분류 코드와 동일시하지 않습니다.
+- API 미설정·실패 시 가상의 점포·생존율·사업자 상태를 반환하지 않습니다.
+- 실제 성공 응답만 5분 캐시합니다. 장애 시 24시간 이내의 실제 이전 응답이 있으면 `STALE`과 수집 시각을 제공합니다. 국세청 개인정보와 카카오 장소 응답은 캐시하지 않습니다.
+- `db/schema.sql`은 설계 자료입니다. PostgreSQL 연결·전국 적재·자동 수집 스케줄러는 아직 운영되지 않습니다. 호출 로그의 `records_upserted`는 0으로 표시합니다.
+
+## 배포
+
+공유 정적 페이지는 `npm run build` 후 생성물을 배포합니다. 실서비스는 동일 출처 Node.js 호스팅에 전체 프로젝트를 배포하고 환경변수를 설정해야 합니다. 컨테이너/호스팅에서는 `HOST=0.0.0.0`, 호스팅이 제공하는 `PORT`를 사용하고 HTTPS 프록시 뒤에 배치하세요.
+
+검증은 모의 제공기관 응답 기반 단위·HTTP 테스트와 Playwright 브라우저 테스트를 구분합니다. 발급된 키가 없는 환경에서는 기관 실서버 연결 성공을 주장하지 않습니다.
