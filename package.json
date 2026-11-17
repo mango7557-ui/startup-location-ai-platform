@@ -1,13 +1,15 @@
 {
   "name": "startup-location-ai-platform",
   "version": "1.0.0",
-  "description": "전국 업종별 창업 입지 추천 플랫폼 (창업입지 AI) - 공공데이터·통계 기반 상권 분석 및 입지 추천 풀스택 MVP",
+  "description": "공공데이터 기반 창업 입지 탐색 및 카드매출 분석 서비스",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
     "build": "node scripts/build-bundle.js",
     "test": "node tests/verify-engine.js",
+    "test:ui": "playwright test",
+    "package:windows": "node scripts/package-windows.js",
     "deploy:firebase": "npm run build && npx firebase-tools deploy --only hosting"
   },
   "keywords": [

@@ -28,6 +28,28 @@ function text(value, name, max = 200) {
 }
 function keyValue(value) { return value && !/^(YOUR_|dev-admin)/i.test(value) ? value.trim() : ''; }
 function decodedKey(value) { try { return decodeURIComponent(value); } catch { throw new ApiError('INVALID_CONFIG', '인증키 인코딩을 확인하세요.', 503); } }
+async function limitedResponseText(res, maxBytes = 8000000) {
+  if (Number(res.headers.get('content-length')) > maxBytes) {
+    await res.body?.cancel();
+    throw new ApiError('RESPONSE_TOO_LARGE', '조회 범위를 줄여 주세요.', 502);
+  }
+  if (!res.body) return '';
+  const reader = res.body.getReader(), chunks = [];
+  let bytes = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      bytes += value.byteLength;
+      if (bytes > maxBytes) {
+        await reader.cancel();
+        throw new ApiError('RESPONSE_TOO_LARGE', '조회 범위를 줄여 주세요.', 502);
+      }
+      chunks.push(Buffer.from(value));
+    }
+  } finally { reader.releaseLock(); }
+  return Buffer.concat(chunks).toString('utf8');
+}
 function rowsFrom(json) {
   const root = json.response || json;
   const code = root.header?.resultCode ?? root.resultCode;
@@ -105,7 +127,10 @@ function createConnectors({ env = process.env, fetchImpl = (...args) => fetch(..
     if (cacheable && !previous && file) {
       try { const data = JSON.parse(fs.readFileSync(file, 'utf8')); if (data.mode === 'LIVE' && data.collected_at) previous = data; } catch { /* No prior real response */ }
     }
-    if (cacheable && previous && Date.now() - Date.parse(previous.collected_at) < 300000) return { ...previous, mode: 'CACHED' };
+    if (cacheable && previous && Date.now() - Date.parse(previous.collected_at) >= 0 && Date.now() - Date.parse(previous.collected_at) < 300000) {
+      states[id] = { status: 'CONNECTED', last_success_at: previous.collected_at, last_error: null, last_message: null };
+      return { ...previous, mode: 'CACHED' };
+    }
     const headers = { Accept: 'application/json' };
     if (id === 'kakao') headers.Authorization = `KakaoAK ${key}`;
     else url.searchParams.set(['kosis', 'region'].includes(id) ? 'apiKey' : 'serviceKey', decodedKey(key));
@@ -113,14 +138,13 @@ function createConnectors({ env = process.env, fetchImpl = (...args) => fetch(..
     const started = new Date().toISOString();
     try {
       const res = await fetchImpl(url, { method: body ? 'POST' : 'GET', headers, body: body && JSON.stringify(body), redirect: 'error', signal: AbortSignal.timeout(timeout) });
-      const raw = await res.text();
+      const raw = await limitedResponseText(res);
       if (!res.ok) {
         let hint = `제공기관 응답 오류 (${res.status}). 활용 승인·호출 한도를 확인하세요.`;
         if (raw.includes('OPEN_MAP_AND_LOCAL')) hint = '카카오 디벨로퍼스 [내 애플리케이션 → 카카오맵 → 사용 설정 ON] 활성화가 필요합니다.';
         else if (raw.includes('SERVICE_KEY_IS_NOT_REGISTERED_ERROR')) hint = '공공데이터포털에서 상가·상권정보(15012005) 별도 [활용신청] 승인 또는 동기화가 필요합니다.';
         throw new ApiError(res.status === 429 ? 'RATE_LIMITED' : 'PROVIDER_REJECTED', hint, 502);
       }
-      if (raw.length > 8000000) throw new ApiError('RESPONSE_TOO_LARGE', '조회 범위를 줄여 주세요.', 502);
       let json;
       try { json = JSON.parse(raw); } catch { throw new ApiError('INVALID_RESPONSE', '제공기관이 JSON 대신 오류 또는 XML 응답을 반환했습니다.', 502); }
       if (json?.err || json?.error || json?.status_code && json.status_code !== 'OK') throw new ApiError('PROVIDER_REJECTED', '제공기관 오류: 인증·통계표·분류 조건을 확인하세요.', 502);
@@ -131,7 +155,10 @@ function createConnectors({ env = process.env, fetchImpl = (...args) => fetch(..
       if (cacheable) {
         if (cache.size >= 100) cache.delete(cache.keys().next().value);
         cache.set(fingerprint, result);
-        if (file) { fs.mkdirSync(cacheDir, { recursive: true }); fs.writeFileSync(file, JSON.stringify(result)); }
+        if (file) {
+          try { fs.mkdirSync(cacheDir, { recursive: true }); fs.writeFileSync(file, JSON.stringify(result)); }
+          catch { log(id, started, 'CACHE_WRITE_FAILED'); }
+        }
       }
       return result;
     } catch (err) {
@@ -238,4 +265,4 @@ function createConnectors({ env = process.env, fetchImpl = (...args) => fetch(..
   return { status, configure, semas, nts, kosis, kosisList, kakao, kakaoOAuth, extraKey, logs: () => logs, profile };
 }
 const clients = createConnectors({ cacheDir: path.join(__dirname, '..', '..', '.runtime', 'cache') });
-module.exports = { CATALOG, ApiError, createConnectors, clients, number };
+module.exports = { CATALOG, ApiError, createConnectors, clients, number, limitedResponseText };

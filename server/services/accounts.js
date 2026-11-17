@@ -15,13 +15,14 @@ function createAccounts(file = process.env.ACCOUNTS_DB || path.join(__dirname, '
     if (database) return database;
     if (file !== ':memory:') fs.mkdirSync(path.dirname(file), { recursive: true });
     database = new DatabaseSync(file);
-    database.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;
+    database.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000;
       CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, hash TEXT NOT NULL, salt TEXT NOT NULL, created_at TEXT NOT NULL, kakao_id TEXT);
       CREATE TABLE IF NOT EXISTS sessions (token TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, expires INTEGER NOT NULL);
       CREATE TABLE IF NOT EXISTS searches (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, title TEXT NOT NULL, data TEXT NOT NULL, created_at TEXT NOT NULL);`);
     const cols = database.prepare('PRAGMA table_info(users)').all();
     if (!cols.some(c => c.name === 'kakao_id')) database.exec('ALTER TABLE users ADD COLUMN kakao_id TEXT');
     database.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_users_kakao_id ON users(kakao_id) WHERE kakao_id IS NOT NULL');
+    database.exec('CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires); CREATE INDEX IF NOT EXISTS idx_searches_user ON searches(user_id, created_at)');
     return database;
   }
   function addCookie(res, value) {
@@ -32,7 +33,7 @@ function createAccounts(file = process.env.ACCOUNTS_DB || path.join(__dirname, '
     const token = randomBytes(32).toString('hex');
     db().prepare('DELETE FROM sessions WHERE expires < ?').run(Date.now());
     db().prepare('INSERT INTO sessions VALUES (?, ?, ?)').run(digest(token), user.id, Date.now() + 7 * 86400000);
-    addCookie(res, `location_session=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=604800${process.env.NODE_ENV === 'production' || req.socket.encrypted ? '; Secure' : ''}`);
+    addCookie(res, `location_session=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=604800${process.env.NODE_ENV === 'production' || req.secure || req.socket.encrypted ? '; Secure' : ''}`);
     return { user: publicUser(user) };
   }
   function cookie(req) { return /(?:^|;\s*)location_session=([a-f0-9]{64})(?:;|$)/.exec(req.headers.cookie || '')?.[1] || ''; }
@@ -64,7 +65,7 @@ function createAccounts(file = process.env.ACCOUNTS_DB || path.join(__dirname, '
   function logout(req, res) {
     const token = cookie(req);
     if (token) db().prepare('DELETE FROM sessions WHERE token=?').run(digest(token));
-    res.setHeader('Set-Cookie', `location_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${process.env.NODE_ENV === 'production' || req.socket.encrypted ? '; Secure' : ''}`);
+    addCookie(res, `location_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${process.env.NODE_ENV === 'production' || req.secure || req.socket.encrypted ? '; Secure' : ''}`);
     return { success: true };
   }
   function searches(req) { return db().prepare('SELECT id,title,data,created_at FROM searches WHERE user_id=? ORDER BY created_at DESC').all(current(req).id).map(r => ({ ...r, data: JSON.parse(r.data) })); }
@@ -78,22 +79,28 @@ function createAccounts(file = process.env.ACCOUNTS_DB || path.join(__dirname, '
     db().prepare('INSERT INTO searches VALUES (?, ?, ?, ?, ?)').run(randomBytes(16).toString('hex'), user.id, p.title.trim(), JSON.stringify(data), new Date().toISOString());
     return { searches: searches(req) };
   }
-  async function loginWithKakao({ kakaoId, name, email }, req, res) {
+  async function loginWithKakao({ kakaoId, name, email, emailVerified = false }, req, res) {
     const kid = String(kakaoId || '').trim();
     if (!/^\d{4,30}$/.test(kid)) throw new ApiError('INVALID_INPUT', '카카오 계정 식별자를 확인할 수 없습니다.');
     let user = db().prepare('SELECT * FROM users WHERE kakao_id=?').get(kid);
-    const safeEmail = typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ? email.trim().toLowerCase() : `kakao_${kid}@kakao.user`;
+    const safeEmail = emailVerified && typeof email === 'string' && email.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ? email.trim().toLowerCase() : `kakao_${kid}@kakao.user`;
     const safeName = (typeof name === 'string' && name.trim() ? name.trim() : `카카오회원_${kid.slice(-4)}`).slice(0, 40);
     if (!user) {
       const byEmail = db().prepare('SELECT * FROM users WHERE email=?').get(safeEmail);
       if (byEmail) {
-        db().prepare('UPDATE users SET kakao_id=? WHERE id=?').run(kid, byEmail.id);
-        user = { ...byEmail, kakao_id: kid };
+        // Email ownership does not authorize linking an existing password account.
+        throw new ApiError('ACCOUNT_LINK_REQUIRED', '같은 이메일의 계정이 있습니다. 이메일과 비밀번호로 로그인해 주세요.', 409);
       } else {
         const salt = randomBytes(16).toString('hex');
         const hash = (await derive(randomBytes(32).toString('hex'), salt, 64)).toString('hex');
         user = { id: randomBytes(16).toString('hex'), name: safeName, email: safeEmail, created_at: new Date().toISOString(), kakao_id: kid };
-        db().prepare('INSERT INTO users (id, name, email, hash, salt, created_at, kakao_id) VALUES (?, ?, ?, ?, ?, ?, ?)').run(user.id, user.name, user.email, hash, salt, user.created_at, kid);
+        try { db().prepare('INSERT INTO users (id, name, email, hash, salt, created_at, kakao_id) VALUES (?, ?, ?, ?, ?, ?, ?)').run(user.id, user.name, user.email, hash, salt, user.created_at, kid); }
+        catch (err) {
+          const existing = db().prepare('SELECT * FROM users WHERE kakao_id=?').get(kid);
+          if (existing) user = existing;
+          else if (err.code === 'ERR_SQLITE_ERROR' && /UNIQUE/.test(err.message)) throw new ApiError('ACCOUNT_LINK_REQUIRED', '같은 이메일의 계정이 있습니다. 이메일과 비밀번호로 로그인해 주세요.', 409);
+          else throw err;
+        }
       }
     }
     return session(req, res, user);

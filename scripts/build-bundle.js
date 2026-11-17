@@ -1,5 +1,5 @@
 'use strict';
-// Static build contains ONLY explicit demo data and a scoped CommonJS loader.
+// Static preview contains public selection metadata and a scoped CommonJS loader.
 // Server API clients, secrets, authentication and network shims are never bundled.
 const fs = require('node:fs');
 const path = require('node:path');
@@ -25,4 +25,4 @@ const bundle = read('public/index.html')
   .replace('<script src="/workspace.js"></script>', () => `<script>${read('public/workspace.js').replace(/<\/script/gi, '<\\/script')}</script>`);
 fs.mkdirSync(path.join(ROOT, 'dist', 'firebase'), { recursive: true });
 for (const file of ['index.html', 'public/preview.html', 'dist/firebase/index.html']) fs.writeFileSync(path.join(ROOT, file), bundle);
-console.log('Static demo built: index.html, public/preview.html, dist/firebase/index.html. Server connectors excluded; scripts syntax checked.');
+console.log('Static preview built: index.html, public/preview.html, dist/firebase/index.html. Server connectors excluded; scripts syntax checked.');
