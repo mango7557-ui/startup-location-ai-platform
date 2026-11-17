@@ -65,6 +65,31 @@ KOSIS [통계자료 URL 생성 도구](https://kosis.kr/openapi/devGuide/devGuid
 
 ## 배포
 
+### 새 워크스페이스와 회원·관리자 기능
+
+- `#auth`: 가입·로그인, `#account`: 조건 저장·불러오기·삭제, `#admin`: 관리자 콘솔, `#guide`: 이용 가이드.
+- 회원 계정은 SQLite(`.runtime/accounts.sqlite`, `ACCOUNTS_DB`로 경로 지정)에 저장합니다. Node.js 24 이상과 쓰기 가능한 영속 디스크가 필요합니다. 여러 서버 인스턴스가 파일 하나를 공유하는 구성은 지원하지 않습니다.
+- 비밀번호는 무작위 salt와 scrypt로 해시 처리합니다. 7일 로그인 세션은 HttpOnly·SameSite 쿠키로 전달되며 로그아웃 시 서버에서 폐기합니다. `NODE_ENV=production`에서 Secure 쿠키를 사용하므로 HTTPS가 필요합니다.
+- 로그인·가입은 IP당 15분에 15회로 제한합니다. 일반 회원은 관리자 권한을 얻지 않습니다. 이메일 소유 인증·비밀번호 재설정 메일·회원 자가 삭제는 아직 제공하지 않습니다.
+- 운영 전 개인정보 처리방침, 보관·삭제 정책, 문의 창구를 운영자가 확정해야 합니다. 가입 화면에는 현재 저장 항목과 이용 목적을 표시합니다.
+- 관리자 화면에 `ADMIN_API_TOKEN`으로 로그인하면 회원 현황, API 키·KOSIS 기본 표 설정, 사업자 상태 확인, 호출 이력을 사용할 수 있습니다. 토큰과 키는 브라우저 저장소에 보관하지 않습니다. 화면의 설정 변경은 서버 메모리에만 적용되므로 영구 설정은 환경변수를 사용하세요.
+- ‘전체 API 연결 검사’는 실제 제공기관 요청을 수행합니다. 국세청은 입력된 사업자번호가 있을 때만 검사합니다. 인증키가 없는 기관은 연결 성공으로 표시하지 않습니다.
+- 실데이터 탐색의 선택적 공식 소분류 코드 필드로 제공기관 업종 필터를 적용할 수 있습니다. 상단 창업 업종 목록과 공식 분류는 자동 매핑하지 않습니다.
+
+회원 API: `POST /api/auth/register`, `/api/auth/login`, `/api/auth/logout`, `GET /api/auth/me`. 저장 조건: `GET/POST /api/account/searches`, `POST /api/account/searches/delete`. 관리자: `GET /api/admin/overview`, `POST /api/admin/check` (Bearer 인증).
+
+### Firebase 정적 데모
+
+`firebase.json`은 `dist/firebase`의 **정적 데모만** 배포합니다. 회원 API·실제 데이터 서버는 이 설정으로 배포되지 않습니다.
+
+```bash
+npx firebase-tools login
+npx firebase-tools use --add
+npm run deploy:firebase
+```
+
+현재 공유 사이트와 동일하게 정적 배포에서는 회원 정보 입력·관리자 토큰 입력을 비활성화하고 서버가 필요한 이유를 표시합니다. 서버 전체를 HTTPS Node.js 호스팅에 배포해야 가입과 실데이터 조회가 가능합니다.
+
 공유 정적 페이지는 `npm run build` 후 생성물을 배포합니다. 실서비스는 동일 출처 Node.js 호스팅에 전체 프로젝트를 배포하고 환경변수를 설정해야 합니다. 컨테이너/호스팅에서는 `HOST=0.0.0.0`, 호스팅이 제공하는 `PORT`를 사용하고 HTTPS 프록시 뒤에 배치하세요.
 
 검증은 모의 제공기관 응답 기반 단위·HTTP 테스트와 Playwright 브라우저 테스트를 구분합니다. 발급된 키가 없는 환경에서는 기관 실서버 연결 성공을 주장하지 않습니다.

@@ -43,11 +43,22 @@ function rowsFrom(json) {
 // Credentials and outbound requests stay on the server. No synthetic API fallbacks.
 function createConnectors({ env = process.env, fetchImpl = (...args) => fetch(...args), cacheDir = null, timeout = 10000 } = {}) {
   const logs = [], states = {}, cache = new Map();
-  const allowedKeys = ['DATA_GO_KR_SERVICE_KEY', 'NTS_SERVICE_KEY', 'KOSIS_API_KEY', 'KAKAO_REST_API_KEY'];
+  const allowedKeys = ['DATA_GO_KR_SERVICE_KEY', 'NTS_SERVICE_KEY', 'KOSIS_API_KEY', 'KAKAO_REST_API_KEY', 'KAKAO_CLIENT_SECRET', 'KAKAO_JAVASCRIPT_KEY', 'KAKAO_NATIVE_APP_KEY', 'KAKAO_BIZ_SECRET', 'SEOUL_DATA_API_KEY'];
   const keys = Object.fromEntries(allowedKeys.map(k => [k, keyValue(env[k])]));
+  const extraKey = name => keys[name] || '';
   function credential(id) {
     const entry = CATALOG.find(p => p.id === id);
     return keys[entry.env] || (id === 'nts' ? keys.DATA_GO_KR_SERVICE_KEY : '');
+  }
+  function kakaoOAuth() {
+    return {
+      clientId: keys.KAKAO_REST_API_KEY || '',
+      clientSecret: keys.KAKAO_CLIENT_SECRET || '',
+      jsKey: keys.KAKAO_JAVASCRIPT_KEY || '',
+      jsSdkConfigured: Boolean(keys.KAKAO_JAVASCRIPT_KEY),
+      nativeConfigured: Boolean(keys.KAKAO_NATIVE_APP_KEY),
+      bizConfigured: Boolean(keys.KAKAO_BIZ_SECRET)
+    };
   }
   function profile(id) {
     const raw = env[id === 'region' ? 'KOSIS_REGION_QUERY' : 'KOSIS_SURVIVAL_QUERY'];
@@ -57,14 +68,23 @@ function createConnectors({ env = process.env, fetchImpl = (...args) => fetch(..
   function status() {
     return CATALOG.map(p => ({ ...p, configured: Boolean(credential(p.id)),
       status: !credential(p.id) ? 'NOT_CONFIGURED' : states[p.id]?.status || ((['kosis', 'region'].includes(p.id) && !profile(p.id)) ? 'NEEDS_TABLE' : 'READY'),
-      last_success_at: states[p.id]?.last_success_at || null, last_error: states[p.id]?.last_error || null }));
+      last_success_at: states[p.id]?.last_success_at || null, last_error: states[p.id]?.last_error || null, last_message: states[p.id]?.last_message || null }));
   }
   function configure(input) {
     if (!input || typeof input !== 'object' || Array.isArray(input)) throw new ApiError('INVALID_INPUT', '설정 객체가 필요합니다.');
+    const queryKeys = ['KOSIS_SURVIVAL_QUERY', 'KOSIS_REGION_QUERY'];
     for (const [k, value] of Object.entries(input)) {
-      if (!allowedKeys.includes(k) || typeof value !== 'string' || value.length > 1024) throw new ApiError('INVALID_INPUT', '지원하지 않는 인증키 설정입니다.');
+      if (![...allowedKeys, ...queryKeys].includes(k) || typeof value !== 'string' || value.length > (queryKeys.includes(k) ? 4096 : 1024)) throw new ApiError('INVALID_INPUT', '지원하지 않는 인증키 설정입니다.');
+      if (queryKeys.includes(k) && value.trim()) {
+        let query; try { query = JSON.parse(value); } catch { throw new ApiError('INVALID_INPUT', 'KOSIS 기본 조회 조건은 JSON 객체로 입력하세요.'); }
+        if (!query || typeof query !== 'object' || Array.isArray(query)) throw new ApiError('INVALID_INPUT', 'KOSIS 조건을 JSON 객체로 입력하세요.');
+        for (const field of ['orgId', 'tblId', 'objL1', 'itmId', 'prdSe']) text(query[field], field, 1000);
+      }
     }
-    for (const [k, value] of Object.entries(input)) keys[k] = keyValue(value);
+    for (const [k, value] of Object.entries(input)) {
+      if (queryKeys.includes(k)) env[k] = value.trim();
+      else keys[k] = keyValue(value);
+    }
     for (const k of Object.keys(states)) delete states[k];
     cache.clear();
     return { providers: status(), persistence: 'MEMORY_ONLY', message: '서버 메모리에 적용했습니다. 영구 설정은 서버 환경변수를 사용하세요.' };
@@ -93,15 +113,20 @@ function createConnectors({ env = process.env, fetchImpl = (...args) => fetch(..
     const started = new Date().toISOString();
     try {
       const res = await fetchImpl(url, { method: body ? 'POST' : 'GET', headers, body: body && JSON.stringify(body), redirect: 'error', signal: AbortSignal.timeout(timeout) });
-      if (!res.ok) throw new ApiError(res.status === 429 ? 'RATE_LIMITED' : 'PROVIDER_REJECTED', `제공기관 응답 오류 (${res.status}). 활용 승인·호출 한도를 확인하세요.`, 502);
       const raw = await res.text();
+      if (!res.ok) {
+        let hint = `제공기관 응답 오류 (${res.status}). 활용 승인·호출 한도를 확인하세요.`;
+        if (raw.includes('OPEN_MAP_AND_LOCAL')) hint = '카카오 디벨로퍼스 [내 애플리케이션 → 카카오맵 → 사용 설정 ON] 활성화가 필요합니다.';
+        else if (raw.includes('SERVICE_KEY_IS_NOT_REGISTERED_ERROR')) hint = '공공데이터포털에서 상가·상권정보(15012005) 별도 [활용신청] 승인 또는 동기화가 필요합니다.';
+        throw new ApiError(res.status === 429 ? 'RATE_LIMITED' : 'PROVIDER_REJECTED', hint, 502);
+      }
       if (raw.length > 8000000) throw new ApiError('RESPONSE_TOO_LARGE', '조회 범위를 줄여 주세요.', 502);
       let json;
       try { json = JSON.parse(raw); } catch { throw new ApiError('INVALID_RESPONSE', '제공기관이 JSON 대신 오류 또는 XML 응답을 반환했습니다.', 502); }
       if (json?.err || json?.error || json?.status_code && json.status_code !== 'OK') throw new ApiError('PROVIDER_REJECTED', '제공기관 오류: 인증·통계표·분류 조건을 확인하세요.', 502);
       const data = normalize(json);
       const result = { ...data, provider: id, mode: 'LIVE', collected_at: new Date().toISOString(), source_url: CATALOG.find(p => p.id === id).url };
-      states[id] = { status: 'CONNECTED', last_success_at: result.collected_at, last_error: null };
+      states[id] = { status: 'CONNECTED', last_success_at: result.collected_at, last_error: null, last_message: null };
       log(id, started, 'SUCCESS', data.items?.length ?? data.records?.length ?? data.documents?.length ?? 0);
       if (cacheable) {
         if (cache.size >= 100) cache.delete(cache.keys().next().value);
@@ -111,7 +136,7 @@ function createConnectors({ env = process.env, fetchImpl = (...args) => fetch(..
       return result;
     } catch (err) {
       const safe = err instanceof ApiError ? err : new ApiError('UPSTREAM_UNAVAILABLE', '외부 API에 연결할 수 없습니다. 잠시 후 다시 시도하세요.', 502);
-      states[id] = { ...states[id], status: 'ERROR', last_error: safe.code };
+      states[id] = { ...states[id], status: 'ERROR', last_error: safe.code, last_message: safe.message };
       log(id, started, safe.code);
       if (cacheable && previous && Date.now() - Date.parse(previous.collected_at) <= 86400000) return { ...previous, mode: 'STALE', warning: safe.message };
       throw safe;
@@ -151,17 +176,28 @@ function createConnectors({ env = process.env, fetchImpl = (...args) => fetch(..
       if (numbers.some(n => !/^\d{10}$/.test(n))) throw new ApiError('INVALID_INPUT', '사업자번호는 숫자 10자리여야 합니다.');
       body = { b_no: numbers };
     } else {
-      if (!Array.isArray(p.businesses) || !p.businesses.length || p.businesses.length > 100) throw new ApiError('INVALID_INPUT', '진위 확인 대상은 1~100건이어야 합니다.');
-      body = { businesses: p.businesses.map(r => {
-        if (!/^\d{10}$/.test(r.b_no) || !/^\d{8}$/.test(r.start_dt)) throw new ApiError('INVALID_INPUT', '사업자번호와 개업일자를 확인하세요.');
-        return { b_no: r.b_no, start_dt: r.start_dt, p_nm: text(r.p_nm, '대표자명', 100) };
+      const list = p.businesses || (p.bizNo ? [{ b_no: p.bizNo, start_dt: p.start_dt, p_nm: p.p_nm, p_nm2: p.p_nm2, b_nm: p.b_nm, corp_no: p.corp_no, b_sector: p.b_sector, b_type: p.b_type, b_adr: p.b_adr }] : null);
+      if (!Array.isArray(list) || !list.length || list.length > 100) throw new ApiError('INVALID_INPUT', '진위 확인 대상은 1~100건이어야 합니다.');
+      body = { businesses: list.map(r => {
+        const bNo = String(r?.b_no || '').replaceAll('-', '').trim();
+        const startDt = String(r?.start_dt || '').replaceAll('-', '').trim();
+        const corpNo = String(r?.corp_no || '').replaceAll('-', '').trim();
+        if (!/^\d{10}$/.test(bNo) || !/^\d{8}$/.test(startDt)) throw new ApiError('INVALID_INPUT', '사업자번호(10자리)와 개업일자(YYYYMMDD)를 확인하세요.');
+        if (corpNo && !/^\d{13}$/.test(corpNo)) throw new ApiError('INVALID_INPUT', '법인등록번호는 숫자 13자리여야 합니다.');
+        const clean = v => (typeof v === 'string' ? v.trim().slice(0, 200) : '');
+        const entry = { b_no: bNo, start_dt: startDt, p_nm: text(r.p_nm, '대표자명', 100), b_nm: clean(r.b_nm), corp_no: corpNo, b_sector: clean(r.b_sector), b_type: clean(r.b_type), b_adr: clean(r.b_adr) };
+        if (typeof r.p_nm2 === 'string' && r.p_nm2.trim()) entry.p_nm2 = r.p_nm2.trim().slice(0, 100);
+        return entry;
       }) };
     }
-    return request('nts', `https://api.odcloud.kr/api/nts-businessman/v1/${action}`, {}, { body, cacheable: false, normalize(json) {
+    return request('nts', `https://api.odcloud.kr/api/nts-businessman/v1/${action}`, { returnType: 'JSON' }, { body, cacheable: false, normalize(json) {
       if (!Array.isArray(json.data)) throw new ApiError('INVALID_RESPONSE', '국세청 응답을 확인할 수 없습니다.', 502);
       return { action, items: json.data.map(r => ({ number_masked: `${String(r.b_no).slice(0, 3)}-${String(r.b_no).slice(3, 5)}-*****`,
-        status: r.b_stt || r.status?.b_stt || null, tax_type: r.tax_type || r.status?.tax_type || null,
-        closed_on: r.end_dt || r.status?.end_dt || null, validity: r.valid || null })), notice: '현재 조회 결과입니다. 수집 이전의 과거 폐업 이력을 복원하지 않습니다.' };
+        status: r.b_stt || r.status?.b_stt || null, status_code: r.b_stt_cd || r.status?.b_stt_cd || null,
+        tax_type: r.tax_type || r.status?.tax_type || null, tax_type_code: r.tax_type_cd || r.status?.tax_type_cd || null,
+        prev_tax_type: r.rbf_tax_type || r.status?.rbf_tax_type || null, prev_tax_type_code: r.rbf_tax_type_cd || r.status?.rbf_tax_type_cd || null,
+        closed_on: r.end_dt || r.status?.end_dt || null, utcc_yn: r.utcc_yn || r.status?.utcc_yn || null,
+        validity: r.valid || null, valid_msg: r.valid_msg || null })), notice: '국세청 v1.1 현재 조회 결과입니다. 수집 이전의 과거 폐업 이력을 복원하지 않습니다.' };
     } });
   }
   async function kosis(p = {}, id = 'kosis') {
@@ -199,7 +235,7 @@ function createConnectors({ env = process.env, fetchImpl = (...args) => fetch(..
         category: r.category_name || null, place_url: r.place_url || null })) };
     } });
   }
-  return { status, configure, semas, nts, kosis, kosisList, kakao, logs: () => logs, profile };
+  return { status, configure, semas, nts, kosis, kosisList, kakao, kakaoOAuth, extraKey, logs: () => logs, profile };
 }
 const clients = createConnectors({ cacheDir: path.join(__dirname, '..', '..', '.runtime', 'cache') });
 module.exports = { CATALOG, ApiError, createConnectors, clients, number };

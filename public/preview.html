@@ -8,11 +8,17 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
-:root{--ink:#243731;--muted:#7a8982;--green:#136f63;--green-dark:#10564e;--mint:#eaf5ee;--line:#e3e9e3;--bg:#f6f8f4;--white:#fff;--amber:#9c6922;--shadow:0 6px 26px #213c2d06}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}button,input,select,textarea{font:inherit}button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{cursor:wait;opacity:.55}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #77b9a4;outline-offset:4px}a{color:inherit}h1,h2,h3,p{margin:0}h2{font-size:17px;letter-spacing:-.4px}h3{font-size:16px}small{font-size:11px}button{border:0}button:hover{filter:brightness(.97)}[hidden]{display:none!important}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}.skip{position:fixed;top:-60px;z-index:9999;background:#fff;padding:12px}.skip:focus{top:0}
-.sidebar{position:fixed;inset:0 auto 0 0;width:232px;background:#fff;border-right:1px solid var(--line);padding:34px 20px 22px;display:flex;flex-direction:column;z-index:1001}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-size:22px;font-weight:800;letter-spacing:-1px;padding:0 7px}.brand-icon{background:var(--green);color:#fff;width:40px;height:43px;border-radius:13px;display:grid;place-items:center;font-size:34px}.brand small{display:block;font:8px 'DM Sans',sans-serif;letter-spacing:1.7px;margin-top:1px;color:var(--muted)}.ai{color:var(--green);margin-left:3px;font-size:17px}.nav-caption{font:10px 'DM Sans';letter-spacing:1.6px;color:#a0aba4;margin:52px 14px 15px}.nav{width:100%;background:transparent;color:#74827b;display:flex;align-items:center;text-align:left;gap:13px;padding:14px 15px;margin-bottom:8px;border-radius:10px;font-weight:600}.nav span{font-size:23px;width:25px}.nav b{margin-left:auto;font:10px 'DM Sans';opacity:.6}.nav.active{background:var(--mint);color:var(--green)}.sidebar-note{margin-top:auto;padding:26px 18px;background:#f3f6ec;border-radius:14px;position:relative;overflow:hidden}.tiny-label{font:8px 'DM Sans';letter-spacing:1.5px;color:#849078}.sidebar-note h3{font-size:22px;line-height:1.5;margin:12px 0}.sidebar-note p{font-size:11px;color:#85917c}.mini-grid{display:grid;grid-template-columns:repeat(3,15px);gap:5px;margin:22px 0 0}.mini-grid i{width:15px;height:15px;background:#dce5cc;border-radius:3px}.mini-grid i:nth-child(5){background:var(--green)}.sidebar-footer{display:flex;gap:9px;align-items:center;margin-top:24px;font-size:10px;font-weight:600}.sidebar-footer small{display:block;color:var(--muted);font-weight:400;font-size:9px}.avatar{background:#efeee4;border-radius:50%;padding:7px 12px;font:14px 'DM Sans'}.shell{margin-left:232px}.topbar{height:76px;background:#ffffffbb;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 38px;font-size:12px}.muted{color:var(--muted)}.crumb{color:#c7d0c9;margin:0 16px}.top-actions{display:flex;align-items:center;gap:20px}.status-pill{font-size:10px;border:1px solid var(--line);padding:5px 11px;border-radius:20px;color:var(--green)}.status-pill:before{content:'';width:5px;height:5px;display:inline-block;background:#7d9b87;border-radius:50%;margin-right:7px}.quiet{background:transparent;color:var(--muted);font-size:12px;padding:7px}.quiet:hover{color:var(--green)}main{max-width:1700px;margin:0 auto;padding:36px 38px 0}.hero{display:flex;justify-content:space-between;align-items:center;margin:0 0 30px}.eyebrow{font:9px 'DM Sans',sans-serif;letter-spacing:2px;font-weight:600;color:var(--green);margin-bottom:10px}h1{font-size:30px;line-height:1.4;letter-spacing:-1.3px;font-weight:700}h1 em{font-style:normal;color:var(--green)}.hero p:not(.eyebrow),.page-heading>p:not(.eyebrow){color:var(--muted);margin-top:12px;font-size:12px}.hero-mark{width:155px;height:110px;position:relative;display:grid;place-items:center;flex-shrink:0}.hero-mark span{display:grid;place-items:center;background:#e3efdd;color:var(--green);border-radius:24px;transform:rotate(-12deg);height:75px;width:75px;font-size:60px}.hero-mark i{position:absolute;inset:11px 15px 0;border:1px dashed #c9d5bd;border-radius:50%;transform:rotate(-25deg)}.hero-mark b{position:absolute;bottom:-7px;font:8px 'DM Sans';letter-spacing:2px;color:#81927c}.mobile-only{display:none}.mode-bar{display:flex;gap:20px;align-items:center;margin-bottom:24px}.segment{display:inline-flex;padding:4px;background:#eaf0e8;border-radius:9px;flex-shrink:0}.segment button{padding:8px 15px;background:none;border-radius:6px;font-size:11px;color:#7e8d81}.segment button.selected{background:#fff;box-shadow:0 2px 5px #3043290d;color:var(--green);font-weight:700}.mode-bar p{font-size:11px;color:#869180}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}.explorer{display:grid;grid-template-columns:270px minmax(0,1fr);gap:24px;align-items:start}.filter-panel{padding:23px 20px;position:sticky;top:16px}.section-title{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:20px}.section-title h2{font-size:14px}.step{font:8px 'DM Sans';color:#a0ada1;white-space:nowrap;letter-spacing:1px}.divider{border-top:1px solid var(--line);margin-top:22px;padding-top:22px}.filter-panel label,.padded label{display:block;font-size:11px;color:#718077;font-weight:600;margin:15px 0 7px}input,select,textarea{border:1px solid #e0e7df;background:#fcfdfa;color:var(--ink);border-radius:8px;padding:10px 11px;width:100%;font-size:12px;outline:none}label>input,label>select,label>textarea{margin-top:7px}select{cursor:pointer}input:focus,select:focus,textarea:focus{border-color:#659f87;box-shadow:0 0 0 3px #136f6310;background:white}textarea{resize:vertical}input[type=range]{padding:0;accent-color:var(--green);height:7px}details{border-top:1px solid var(--line);margin:22px 0 16px;padding-top:12px}summary{cursor:pointer;font-size:11px;color:#6e7c72;display:flex;justify-content:space-between;padding:7px 0}.weight-row{display:flex;justify-content:space-between;font-size:11px;margin-top:12px}.hint{font-size:10px;color:#909c91;line-height:1.65;margin:8px 0}.two-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}.primary,.secondary{padding:11px 16px;border-radius:8px;font-weight:600;font-size:12px;display:inline-flex;align-items:center;justify-content:center;gap:16px}.primary{background:var(--green);color:#fff}.primary:hover{background:var(--green-dark)}.secondary{background:white;border:1px solid #dbe5db;color:#5a7163}.full{width:100%;margin-top:22px;justify-content:space-between}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:20px}.metrics article{padding:17px 18px;border:1px solid var(--line);border-radius:12px;background:white;min-width:0}.metrics article>span{font-size:10px;color:#809084}.metrics strong{display:block;font:600 24px/1.5 'DM Sans',Pretendard;margin:4px 0;color:#294b3e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.metrics small{display:block;font-size:9px;color:#9aa69c}.metrics strong small{display:inline;font-size:13px;margin-left:4px}.map-panel{position:relative;overflow:hidden}.map-toolbar{display:flex;justify-content:space-between;align-items:center;padding:20px 23px}.map-toolbar h2{font-size:15px}.map-toolbar .eyebrow{font-size:8px;margin-bottom:4px}.tag{display:inline-block;background:#f1f5ee;color:#75876d;border:1px solid #e5ecdf;padding:3px 8px;font-size:9px;border-radius:5px;white-space:nowrap}.tag.demo{color:#9d783a;background:#faf4e7;border-color:#f1e4c9}.tag.live{background:var(--mint);color:var(--green)}.place-search{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:9px;position:absolute;z-index:500;top:95px;left:20px;right:20px;max-width:490px;box-shadow:0 4px 15px #24373115;padding:5px 6px 5px 13px}.place-search>span{font-size:22px;color:var(--green)}.place-search input{border:0;background:#fff;min-width:70px;box-shadow:none}.place-search select{width:65px;border:0;background:white;padding:8px;font-size:10px}.place-search button{padding:8px 15px}.place-results{position:absolute;top:150px;left:20px;right:20px;max-height:220px;overflow:auto;background:white;z-index:600;box-shadow:var(--shadow);border:1px solid var(--line);border-radius:10px}.place-results button{display:block;width:100%;text-align:left;background:white;padding:10px 14px;border-bottom:1px solid var(--line)}.place-results small{display:block;color:var(--muted)}#map{height:420px;background:#e9eee4;background-image:linear-gradient(90deg,#ffffff80 1px,transparent 1px),linear-gradient(#ffffff80 1px,transparent 1px);background-size:35px 35px;display:block}.map-fallback{padding:150px 30px 50px;text-align:center;color:var(--muted)}.map-footer{padding:11px 20px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#88958a;gap:12px}.legend-dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--green);margin-right:6px}.pin{background:var(--green);border:3px solid white;border-radius:50% 50% 50% 5px;transform:rotate(-45deg);box-shadow:0 4px 13px #136f6330;width:34px;height:34px;display:grid;place-items:center}.pin span{transform:rotate(45deg);color:white;font:700 11px 'DM Sans'}.pin.chosen{background:#c88f3f}.results-heading{display:flex;justify-content:space-between;align-items:center;margin:26px 0 16px}.results-heading h2{font-size:19px}.results-heading .eyebrow{font-size:8px;margin-bottom:4px}.results-heading button{font-size:10px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.candidate{padding:20px;transition:border-color .2s,transform .2s}.candidate:hover{border-color:#9bb89e;transform:translateY(-2px)}.candidate.selected{border-color:var(--green);box-shadow:0 0 0 1px var(--green)}.card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}.rank{font:600 10px 'DM Sans';color:var(--green);background:var(--mint);padding:4px 8px;border-radius:5px}.candidate h3{margin:14px 0 7px;line-height:1.5;font-size:14px;letter-spacing:-.4px}.candidate .location{font-size:10px;color:#89968d}.card-metrics{display:grid;grid-template-columns:repeat(3,1fr);margin:18px 0;gap:10px}.card-metrics small{display:block;color:#93a095;font-size:9px}.card-metrics strong{display:block;font:600 17px 'DM Sans',Pretendard;color:#44614d;margin-top:5px}.card-bottom{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #edf1e9;padding-top:12px;font-size:10px}.card-bottom label{cursor:pointer;display:flex;gap:6px;align-items:center;color:#82907e}.card-bottom input{width:13px;accent-color:var(--green)}.text-btn{background:none;color:var(--green);font-size:11px;font-weight:600}.empty{grid-column:1/-1;text-align:center;padding:50px 25px}.empty>span{font-size:40px;color:#98b19c}.empty h3{margin:12px 0;color:#5d7665}.empty p{font-size:12px;color:#99a393;margin:8px 0 20px;line-height:1.8}.inline-notice{padding:12px 16px;border:1px solid #eadfc9;border-radius:9px;background:#fffbf2;color:#a0865b;font-size:11px;margin-bottom:15px}.page-heading{margin-bottom:30px}.page-heading h1{font-size:29px}.button-row{display:flex;gap:10px;margin-top:22px}.provider-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:26px}.provider-card{padding:23px}.provider-card h3{margin:10px 0 7px}.provider-card p{font-size:11px;color:var(--muted);min-height:38px}.provider-card a{font-size:10px;color:var(--green);text-decoration:none}.provider-card small{display:block;color:#92a08f;font-size:9px;margin-top:12px}.provider-state{display:flex;justify-content:space-between;align-items:center}.provider-icon{width:34px;height:34px;border-radius:10px;background:#eef4ea;color:var(--green);display:grid;place-items:center;font-size:20px}.sources-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.padded{padding:26px}.padded .primary{margin-top:18px}.output{margin-top:20px;max-width:100%;overflow:auto;font-size:11px}.output pre{white-space:pre-wrap;word-break:break-word;max-height:300px;overflow:auto;padding:15px;background:var(--bg);border-radius:8px}.principles{padding-left:20px;margin:0}.principles li{padding:8px 0;color:#69816e;font-size:12px}.principles p{font-size:11px;color:#93a08f;margin-top:5px}.footer{display:flex;justify-content:space-between;gap:15px;padding:30px 0;margin-top:45px;border-top:1px solid var(--line);font-size:9px;color:#9ba695}.footer strong{font-size:12px;color:#7e8d7b}.footer>span:last-child{font:8px 'DM Sans';letter-spacing:1px}.report-paper{padding:36px}.report-paper h2{font-size:24px;margin-bottom:12px}.report-paper p{font-size:12px;color:var(--muted);margin-bottom:15px}.table-wrap{width:100%;overflow:auto}table{border-collapse:collapse;width:100%;font-size:12px;min-width:560px}th,td{text-align:left;padding:14px 12px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#f2f6ed;color:#698168;font-size:11px}td strong{color:var(--green)}.report-paper .inline-notice{color:var(--amber)}dialog{border:1px solid var(--line);border-radius:18px;padding:35px;width:min(700px,calc(100vw - 28px));color:var(--ink);max-height:85vh;box-shadow:0 20px 80px #12362326}dialog::backdrop{background:#1b392e66;backdrop-filter:blur(3px)}.dialog-close{position:absolute;right:15px;top:12px;background:none;font-size:26px;color:var(--muted)}dialog h2{font-size:23px;margin:15px 0}dialog p{font-size:12px;color:var(--muted)}.score-bars{margin-top:24px}.bar-row{margin-bottom:15px}.bar-row>div{display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px}.track{background:#edf3e8;height:7px;border-radius:10px;overflow:hidden}.track i{display:block;height:100%;background:#5e9d80;border-radius:10px}#toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);padding:14px 22px;border-radius:10px;background:#263f34;color:white;max-width:90vw;font-size:12px;box-shadow:var(--shadow);z-index:3000}.loading{opacity:.6;pointer-events:none}.skeleton{height:180px;border-radius:14px;background:linear-gradient(100deg,#eef2e9,#fff,#eef2e9);background-size:200% 100%;animation:shine 1.5s infinite}@keyframes shine{to{background-position:-200% 0}}#moreStores{margin-top:15px}
-@media(min-width:1600px){.explorer{grid-template-columns:290px minmax(0,1fr)}.cards{grid-template-columns:repeat(3,minmax(0,1fr))}#map{height:460px}}@media(max-width:1200px){.sidebar{width:200px;padding:30px 14px}.shell{margin-left:200px}main{padding:28px 24px 0}.topbar{padding:0 24px}.explorer{grid-template-columns:245px minmax(0,1fr);gap:18px}.metrics{gap:8px}.metrics article{padding:13px}.metrics strong{font-size:20px}h1{font-size:26px}.hero-mark{display:none}.cards{grid-template-columns:1fr}.provider-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:900px){.sidebar{position:static;width:100%;padding:14px 20px;border-bottom:1px solid var(--line);border-right:0;flex-direction:row;align-items:center;gap:18px}.brand{font-size:18px}.brand-icon{width:32px;height:35px;font-size:26px}.brand small,.nav-caption,.sidebar-note,.sidebar-footer,.nav b{display:none}.sidebar nav{display:flex;margin-left:auto}.nav{padding:8px 12px;font-size:11px;white-space:nowrap;margin:0}.nav span{display:none}.shell{margin:0}.topbar{height:55px}main{padding:25px 20px 0}.hero{margin-bottom:20px}.mode-bar{gap:12px}.explorer{grid-template-columns:225px minmax(0,1fr);gap:16px}.metrics{grid-template-columns:repeat(2,1fr)}.filter-panel{padding:18px 15px}.sources-grid{grid-template-columns:1fr}.footer>span:last-child{display:none}}@media(max-width:640px){.sidebar{flex-wrap:wrap;gap:12px;padding:15px 16px}.sidebar nav{width:100%;margin:0;justify-content:space-between}.nav{flex:1;justify-content:center;padding:10px 3px;font-size:12px}.brand small{display:block}.topbar{padding:0 16px}.topbar .quiet{display:none}main{padding:24px 16px 0}h1{font-size:25px}.mobile-only{display:block}.hero p:not(.eyebrow){font-size:11px;max-width:280px}.mode-bar{align-items:flex-start;flex-direction:column;gap:9px}.explorer{grid-template-columns:1fr}.filter-panel{position:static;padding:20px}.filter-panel form{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.filter-panel form>label:first-child,.filter-panel form>#industry,.filter-panel form>p,.filter-panel .section-title,.filter-panel #demoFilters,.filter-panel button[type=submit]{grid-column:1/-1}.filter-panel form>label[for=industry]{display:none}.metrics{grid-template-columns:repeat(2,1fr);margin-top:4px}.metrics strong{font-size:24px}#map{height:360px}.place-search{left:12px;right:12px;top:90px;gap:2px;padding-left:8px}.place-search input{font-size:11px}.place-search select{width:54px}.map-toolbar{padding:18px 15px}.map-toolbar h2{font-size:13px}.map-footer{padding:10px 12px;font-size:9px}.provider-grid{grid-template-columns:1fr}.page-heading h1{font-size:24px}.report-paper{padding:20px}.padded{padding:22px}.button-row{flex-wrap:wrap}.footer{flex-direction:column;padding:20px 0}.candidate{padding:19px}.card-metrics strong{font-size:20px}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}@media print{.sidebar,.topbar,.hero,.footer,.page-heading,.button-row,#toast,dialog{display:none!important}.shell{margin:0}main{padding:0}.view{display:none!important}#view-report{display:block!important}.report-paper{border:0;box-shadow:none;padding:0}.table-wrap{overflow:visible}table{min-width:0;font-size:10px}th,td{padding:8px}.inline-notice{display:block!important}}
+:root{--ink:#182d39;--muted:#657780;--green:#197266;--green-dark:#12594f;--mint:#e8f4ee;--line:#e2e9e8;--bg:#f4f7f6;--white:#fff;--amber:#926229;--shadow:0 5px 24px #18392d05;--navy:#102e3b;--lime:#cef09d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.65 Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}button,input,select,textarea{font:inherit}button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}button{cursor:pointer;border:0;transition:background .18s,box-shadow .18s,transform .18s}button:disabled{cursor:not-allowed;opacity:.55}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #6fbfa9;outline-offset:4px}a{color:inherit}h1,h2,h3,p{margin:0}h1{font-size:34px;letter-spacing:-1.5px;line-height:1.35}h2{font-size:18px;letter-spacing:-.5px}h3{font-size:17px;letter-spacing:-.4px}small{font-size:12px}button:hover:not(:disabled){filter:brightness(.96)}[hidden]{display:none!important}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}.skip{position:fixed;top:-60px;z-index:9999;background:#fff;padding:12px}.skip:focus{top:0}.muted{color:var(--muted)}
+.sidebar{position:fixed;inset:0 auto 0 0;width:236px;background:var(--navy);padding:32px 18px 22px;display:flex;flex-direction:column;z-index:1001;color:#afc3cc;overflow-y:auto}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-size:23px;font-weight:800;letter-spacing:-1px;padding:0 9px;color:#fff}.brand-icon{background:var(--lime);color:var(--navy);width:39px;height:41px;border-radius:12px;display:grid;place-items:center;font-size:32px}.brand small{display:block;font:8px 'DM Sans',sans-serif;letter-spacing:1.7px;margin-top:2px;color:#8ba5b0}.ai{color:var(--lime);margin-left:4px;font-size:16px}.nav-caption{font:10px 'DM Sans',sans-serif;letter-spacing:1.8px;color:#77939f;margin:43px 15px 17px}.nav{width:100%;background:transparent;color:#a8bdc6;display:flex;align-items:center;text-align:left;gap:12px;padding:12px 14px;margin-bottom:5px;border-radius:9px;font-weight:500;font-size:13px}.nav span{font-size:22px;width:25px;line-height:1.3}.nav b{margin-left:auto;font:9px 'DM Sans',sans-serif;opacity:.65}.nav:hover{background:#1d414f}.nav.active{background:var(--lime);color:var(--navy);font-weight:700}.admin-nav{margin-top:14px;border-top:1px solid #ffffff12;border-radius:0 0 9px 9px;padding-top:17px}.sidebar-note{margin-top:auto;padding:22px 18px;background:#ffffff06;border:1px solid #ffffff13;border-radius:14px;position:relative;overflow:hidden}.tiny-label{font:8px 'DM Sans',sans-serif;letter-spacing:1.5px;color:#a9c08a}.sidebar-note h3{font-size:22px;line-height:1.45;margin:12px 0;color:#e3ebe9}.sidebar-note p{font-size:11px;color:#8eaab3}.mini-grid{display:grid;grid-template-columns:repeat(3,11px);gap:5px;margin:18px 0 0}.mini-grid i{height:11px;background:#375661;border-radius:2px}.mini-grid i:nth-child(5){background:var(--lime)}.sidebar-footer{display:flex;gap:9px;align-items:center;margin-top:20px;font-size:10px;font-weight:600}.sidebar-footer small{display:block;color:#8ea5af;font-weight:400;font-size:9px}.avatar{background:#2b4b58;border-radius:50%;padding:7px 12px;font:14px 'DM Sans',sans-serif}.shell{margin-left:236px;min-width:0}.topbar{min-height:76px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:14px 36px;gap:14px;font-size:12px}.crumb{margin:0 14px;color:#bdc8cc}.top-actions{display:flex;gap:15px;align-items:center}.status-pill{display:inline-flex;align-items:center;gap:7px;color:#55736b;font-size:11px}.status-pill:before{content:'';width:6px;height:6px;flex-shrink:0;background:#79a890;border-radius:50%}main{max-width:1700px;margin:auto;padding:30px 34px 0}.eyebrow{font:10px/1.5 'DM Sans',sans-serif;letter-spacing:1.8px;font-weight:600;color:var(--green);margin-bottom:10px}.hero{position:relative;display:grid;grid-template-columns:1.2fr 1fr;align-items:center;min-height:344px;padding:36px 42px;background:var(--navy);color:#fff;border-radius:18px;overflow:hidden}.hero-copy{position:relative;z-index:1}.hero .eyebrow{color:#bdd7cb;font-size:9px;display:flex;align-items:center;gap:8px}.live-dot{width:6px;height:6px;background:var(--lime);border-radius:50%;display:inline-block;box-shadow:0 0 0 4px #c5f58a12}.hero h1{font-size:clamp(28px,2.5vw,43px);line-height:1.35;letter-spacing:-1.8px}.hero em,.auth-story em{font-style:normal;color:var(--lime)}.hero-copy>p:not(.eyebrow){font-size:13px;color:#afc6cb;margin-top:15px;line-height:1.9}.hero-actions{display:flex;gap:18px;align-items:center;margin-top:25px;flex-wrap:wrap}.hero-cta{background:var(--lime);color:var(--navy);padding:12px 18px;border-radius:7px;font-size:12px;font-weight:700}.hero-cta span{margin-left:16px}.hero-link{background:transparent;color:#c6d9de;font-size:11px;padding:8px 0}.hero-caption{display:flex;gap:12px;align-items:center;color:#98b1bb;font-size:10px;margin-top:22px}.hero-caption i{width:24px;height:1px;background:#46616c}.city-scene{position:relative;min-width:0;max-width:460px;width:100%;justify-self:end}.city-scene svg{display:block;width:100%;filter:drop-shadow(0 18px 16px #061b2140)}.city-label{position:absolute;right:0;top:0;font:8px 'DM Sans',sans-serif;letter-spacing:1.7px;color:#a1bcc3;display:flex;gap:9px;align-items:center}.city-callout{position:absolute;right:0;bottom:0;display:flex;gap:12px;align-items:center;padding:13px 17px;border:1px solid #ffffff25;background:#ffffff0b;backdrop-filter:blur(8px);border-radius:11px;font-size:12px}.city-callout>span{color:var(--lime);font-size:27px}.city-callout small{display:block;font:7px 'DM Sans',sans-serif;letter-spacing:1.4px;color:#8eabb4;margin-top:5px}.city-callout>b{font-size:20px;color:var(--lime);margin-left:12px}.journey-strip{display:flex;gap:30px;align-items:center;padding:22px 4px;border-bottom:1px solid var(--line);margin-bottom:24px}.journey-strip>div{display:flex;gap:11px;align-items:center}.journey-strip b{font:17px 'DM Sans',sans-serif;color:#9dafa8}.journey-strip span{font-size:12px;font-weight:600}.journey-strip small{display:block;font-size:10px;color:var(--muted);font-weight:400;margin-top:3px}.journey-end{margin-left:auto;color:var(--muted);font-size:10px!important;font-weight:400!important}.mode-bar{display:flex;gap:18px;align-items:center;margin-bottom:20px}.mode-bar>p{font-size:11px;color:var(--muted);flex:1}.segment{display:inline-flex;background:#e8eeeb;border:1px solid #dce5df;border-radius:9px;padding:4px;flex-shrink:0}.segment button{padding:8px 15px;border-radius:6px;color:#65786e;background:transparent;font-size:12px;font-weight:600}.segment .selected{color:var(--green-dark);background:#fff;box-shadow:0 2px 5px #203f2b10}.explorer{display:grid;grid-template-columns:258px minmax(0,1fr);gap:22px;align-items:start}.panel{background:var(--white);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow)}.padded{padding:26px}.filter-panel{padding:22px 20px;position:sticky;top:20px}.section-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:16px}.filter-panel h2{font-size:14px}.step{font:8px 'DM Sans',sans-serif;letter-spacing:.5px;color:#82988f;white-space:nowrap}.divider{border-top:1px solid var(--line);padding-top:23px;margin-top:24px}label{display:block;font-size:12px;font-weight:600;margin:14px 0 6px}input:not([type=checkbox]):not([type=range]),select,textarea{display:block;width:100%;min-width:0;border:1px solid #dce5e1;border-radius:7px;padding:11px 12px;background:#fff;color:var(--ink);outline:none;margin-top:7px;transition:border .2s,box-shadow .2s}input::placeholder,textarea::placeholder{color:#8a999e;font-size:11px}input:focus,select:focus,textarea:focus{border-color:#6da393!important;box-shadow:0 0 0 3px #2f806911}input[type=checkbox]{accent-color:var(--green);width:16px;height:16px;vertical-align:middle;flex-shrink:0}input[type=range]{width:100%;accent-color:var(--green)}textarea{resize:vertical}.hint{font-size:11px;font-weight:400;color:var(--muted);line-height:1.7;margin:8px 0}.official-code small{display:block;font-size:10px;font-weight:400;color:var(--muted);margin-top:5px}.two-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}.primary,.secondary,.quiet,.text-btn{border-radius:7px;font-weight:600;font-size:12px;padding:11px 16px;display:inline-flex;justify-content:center;align-items:center;gap:10px}.primary{background:var(--green);color:#fff}.primary:hover{background:var(--green-dark);box-shadow:0 4px 12px #136f6320}.secondary{background:#fff;color:var(--ink);border:1px solid #dce5e1}.quiet{background:#eef3ef;color:var(--green)}.text-btn{background:transparent;color:var(--green);padding:4px 0;font-size:11px}.full{width:100%;margin-top:20px;padding:13px}.compact{padding:8px 12px;font-size:11px}.button-row{display:flex;gap:9px;flex-wrap:wrap}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}.metrics article{background:#fff;border:1px solid var(--line);border-radius:11px;padding:17px;position:relative;overflow:hidden}.metrics article:after{content:'';position:absolute;right:0;bottom:0;height:3px;width:36px;background:#b7d3b5}.metrics article>span{font-size:11px;color:var(--muted)}.metrics strong{display:block;font:600 25px/1.35 'DM Sans',Pretendard,sans-serif;margin:8px 0;color:var(--ink);letter-spacing:-.7px;overflow-wrap:anywhere}.metrics small{color:#81918d;font-size:10px;display:block}.map-panel{overflow:hidden}.map-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 21px}.map-toolbar .eyebrow{font-size:8px;margin-bottom:4px}.map-toolbar h2{font-size:15px}.tag{display:inline-block;padding:4px 8px;border-radius:5px;background:#f0f4f2;color:#5c7269;font-size:10px;white-space:nowrap;font-weight:500}.tag.demo{background:#fbf2e0;color:#8d6428}.tag.live{background:#e7f4ec;color:#1d7255}.tag.ready{background:#eef4fb;color:#275878}.kakao-box{margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--line)}.kakao-btn{width:100%;background:#fee500;color:#191919;border-radius:8px;padding:12px 16px;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px}.kakao-box small{display:block;margin-top:8px;font-size:10px}.kakao-box code{background:#eef3f1;padding:2px 5px;border-radius:4px;font-size:10px}.channel-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}.sales-tabs{display:flex;width:100%;margin:14px 0 6px}.sales-tabs button{flex:1;padding:8px 8px;font-size:11px}.sales-breakdown{margin-top:16px;padding:16px;border:1px solid var(--line);border-radius:10px;background:#f9fbf9}.breakdown-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}.map-badges{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.map-controls-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:0 20px 12px;flex-wrap:wrap}.map-type-seg button{padding:6px 12px;font-size:11px}.map-quick-links{display:flex;gap:8px;align-items:center}.map-quick-links a{text-decoration:none}.map-domain-hint{margin:0 20px 12px;padding:8px 12px;border-radius:7px;background:#f4f7fa;border:1px solid #dde6ee;color:#4a6375;font-size:11px}.roadview-wrap{border-top:1px solid var(--line);background:#10222b}.roadview-bar{display:flex;align-items:center;gap:10px;padding:10px 18px;background:#f7faf8;border-bottom:1px solid var(--line);font-size:12px}.roadview-bar span{font-size:11px}.roadview-bar button{margin-left:auto}#roadview{height:300px;width:100%}@media(max-width:640px){.breakdown-grid{grid-template-columns:1fr}.map-controls-bar{padding:0 14px 10px}#btnDaumPostcode{padding:10px 9px;font-size:11px}}.place-search{display:flex;align-items:center;gap:10px;padding:0 20px 16px}.place-search>span{font-size:24px;color:var(--green)}.place-search input{margin:0!important;flex:1;width:0!important;min-width:0}.place-search select{width:74px;margin:0;font-size:11px}.place-search button{padding:11px 15px}.place-results{padding:0 20px 14px;max-height:220px;overflow:auto}.place-results button{display:block;text-align:left;width:100%;padding:9px 12px;border-bottom:1px solid var(--line);background:#f6f9f6;color:var(--ink)}.place-results small{display:block;color:var(--muted)}#map{height:370px;background:#e6eeea;z-index:1}.map-footer{display:flex;justify-content:space-between;gap:12px;padding:11px 18px;font-size:10px;color:var(--muted)}.legend-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:5px}.map-fallback{height:100%;display:grid;place-content:center;text-align:center;line-height:2;color:var(--muted);padding:25px}.pin{width:32px;height:32px;background:var(--green);color:#fff;border:2px solid white;box-shadow:0 3px 12px #173c3340;border-radius:50% 50% 50% 6px;transform:rotate(-45deg);display:grid;place-items:center}.pin span{transform:rotate(45deg);font:600 12px 'DM Sans',sans-serif}.pin.chosen{background:#173c4a}.results-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:27px 0 17px}.results-heading .eyebrow{font-size:9px;margin-bottom:4px}.results-heading h2{font-size:19px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.candidate{padding:20px;transition:transform .2s,border-color .2s,box-shadow .2s;min-width:0}.candidate:hover{border-color:#abc9b8;box-shadow:0 6px 20px #174f3310;transform:translateY(-2px)}.candidate.selected{border-color:var(--green)}.card-top{display:flex;justify-content:space-between;gap:9px;align-items:center;margin-bottom:16px}.rank{font:9px 'DM Sans',sans-serif;color:var(--green);letter-spacing:1px}.candidate h3{font-size:18px;letter-spacing:-.6px}.location{color:var(--muted);font-size:11px;overflow-wrap:anywhere;margin-top:4px}.card-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:18px 0;margin-top:12px;border-top:1px solid var(--line)}.card-metrics small{display:block;color:var(--muted);font-size:10px}.card-metrics strong{display:block;font:600 23px/1.5 'DM Sans',Pretendard,sans-serif;color:var(--ink);letter-spacing:-.7px;margin-top:4px}.card-metrics>div:first-child strong{color:var(--green)}.card-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid var(--line);padding-top:12px;font-size:11px}.card-bottom label{margin:0;font-size:11px;font-weight:400}.card-bottom input{margin-right:5px}.inline-notice{padding:13px 16px;border-radius:8px;background:#f4f2e8;color:#7c7050;font-size:11px;line-height:1.8;margin-bottom:16px;border:1px solid #ebe7d9}.empty{text-align:center;padding:45px 25px;color:var(--muted);grid-column:1/-1}.empty>span{display:block;font-size:34px;color:#6d9a88;margin-bottom:10px}.empty h3{color:var(--ink);margin-bottom:9px}.empty p{font-size:12px;line-height:1.9;margin-bottom:15px}.page-heading{margin:12px 0 28px}.page-heading>p:not(.eyebrow){color:var(--muted);margin-top:12px;font-size:13px}.page-heading .button-row{margin-top:22px}.table-wrap{overflow:auto;width:100%;max-width:100%}table{border-collapse:collapse;width:100%;font-size:12px;text-align:left;white-space:nowrap}th,td{padding:15px 17px;border-bottom:1px solid var(--line)}thead th{background:#f1f6f3;color:#5a7367;font-size:11px;font-weight:600}tbody th{font-weight:500}tbody tr:hover{background:#f9fbf9}.report-paper{padding:35px;min-height:320px}.report-paper h2{font-size:25px;margin-bottom:8px}.report-paper>p{margin-bottom:18px;color:var(--muted);font-size:12px}.provider-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:25px}.provider-card{padding:23px;display:flex;flex-direction:column;align-items:flex-start}.provider-state{display:flex;justify-content:space-between;width:100%;align-items:center;margin-bottom:18px}.provider-icon{display:grid;place-items:center;width:40px;height:40px;background:var(--mint);border-radius:12px;color:var(--green);font-size:25px}.provider-card h3{margin-bottom:8px}.provider-card p{font-size:12px;color:var(--muted);margin-bottom:15px}.provider-card small{font-size:10px;color:#7e9188;display:block;margin-top:auto;line-height:1.9}.provider-card a{font-size:11px;text-decoration:none;color:var(--green);margin-top:18px;border-top:1px solid var(--line);padding-top:12px;width:100%}.sources-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}.sources-grid>section{min-width:0}.sources-grid .primary{margin-top:12px}.output{margin-top:15px;overflow:auto;max-width:100%;font-size:12px;overflow-wrap:anywhere}.output table{font-size:11px}.principles{padding-left:20px;font-size:12px}.principles li{margin-bottom:15px}.principles p{font-size:11px;color:var(--muted);margin-top:4px}.footer{display:flex;align-items:center;justify-content:space-between;gap:18px;border-top:1px solid var(--line);padding:26px 0;margin-top:42px;color:var(--muted);font-size:10px}.footer strong{font-size:14px;color:var(--ink)}.footer strong span{display:block;font-size:9px;font-weight:400;color:var(--muted);margin-top:3px}.mobile-only{display:none}dialog{border:1px solid var(--line);border-radius:17px;padding:35px;max-width:660px;width:calc(100% - 32px);max-height:88vh;color:var(--ink);box-shadow:0 30px 100px #09291f40}dialog::backdrop{background:#0d293967;backdrop-filter:blur(5px)}.dialog-close{position:absolute;top:13px;right:16px;background:#f0f5f2;border-radius:50%;width:29px;height:29px;font-size:22px;color:var(--muted)}#detailBody h2{font-size:26px;margin:12px 0}#detailBody>p{font-size:12px;color:var(--muted);margin-bottom:16px}#detailBody .inline-notice{margin-top:18px}.score-bars{padding:12px 0}.bar-row{margin-bottom:16px}.bar-row>div{display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px}.bar-row small{font-size:10px;color:var(--muted);margin-left:9px}.track{height:7px;background:#eaf1eb;border-radius:10px;overflow:hidden}.track i{display:block;height:100%;background:var(--green);border-radius:10px}#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);max-width:calc(100% - 32px);padding:14px 23px;background:var(--navy);color:#fff;border:1px solid #ffffff30;border-radius:10px;box-shadow:0 8px 30px #0002;font-size:12px;z-index:9999}.weight-row{display:flex;justify-content:space-between;font-size:11px}details{border-top:1px solid var(--line);margin-top:18px;padding-top:14px}summary{cursor:pointer;font-size:12px;font-weight:600;color:var(--ink)}summary span{float:right}#moreStores{margin-top:20px}
+.auth-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1080px;margin:20px auto 45px}.auth-story{padding:48px;background:var(--navy);border-radius:17px;color:#afc6cd;overflow:hidden}.auth-story h1{font-size:34px;color:white;margin:18px 0}.auth-story .eyebrow{color:#a5c3b7;font-size:9px}.auth-story>p:not(.eyebrow){font-size:13px;line-height:1.9}.auth-orbit{width:200px;height:200px;border:1px solid #63888350;border-radius:50%;position:relative;display:grid;place-items:center;margin:34px auto 38px;box-shadow:0 0 0 22px #6f9e8510,0 0 0 44px #6f9e8505}.auth-orbit span{font-size:100px;color:var(--lime)}.auth-orbit i{position:absolute;bottom:18px;font:8px 'DM Sans',sans-serif;letter-spacing:2px;color:#9dbbae}.auth-benefit{border-top:1px solid #ffffff15;padding:15px 0;font-size:12px}.auth-benefit b{font:11px 'DM Sans',sans-serif;margin-right:18px;color:var(--lime)}.auth-form-panel{padding:42px;align-self:center}.auth-form-panel h2{font-size:28px;margin:10px 0}.auth-form-panel>p.muted{font-size:12px}.auth-tabs{display:flex;margin:26px 0}.auth-tabs button{flex:1}.auth-form-panel label{margin-top:18px}.password-field{position:relative}.password-field input{padding-right:60px!important}.password-field button{position:absolute;right:10px;top:9px;background:transparent;color:var(--green);padding:4px;font-size:11px}.check-label{display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:11px;line-height:1.8}.check-label input{margin-top:3px}.form-message{color:#9a4e35;font-size:12px;min-height:20px;margin-top:12px}.auth-bottom{border-top:1px solid var(--line);padding-top:20px;margin-top:20px;color:var(--muted);font-size:11px}.admin-gate{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;margin-bottom:24px}.admin-gate h2{font-size:24px;margin:14px 0 10px}.admin-gate form .primary{margin-top:12px}.member-panel{margin-top:22px}.guide-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.guide-number{font:36px 'DM Sans',sans-serif;color:#aac4b3;display:block;margin-bottom:35px}.guide-grid h2{margin-bottom:15px}.guide-grid p{color:var(--muted);font-size:13px;line-height:1.9;margin-bottom:25px}.faq{margin-top:24px;max-width:1000px}.faq details{padding:20px 0 5px}.faq summary{font-size:14px}.faq details p{font-size:13px;color:var(--muted);margin-top:16px;max-width:820px;line-height:1.9}.account-profile{display:flex;align-items:center;gap:16px;padding-bottom:24px;border-bottom:1px solid var(--line);margin-bottom:24px}.account-profile .avatar{font-size:22px;background:var(--mint);color:var(--green);padding:14px 21px}.account-profile p{color:var(--muted);font-size:12px}.account-profile button{margin-left:auto}.saved-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.saved-search{border:1px solid var(--line);padding:20px;border-radius:10px}.saved-search h3{margin-bottom:8px}.saved-search p{font-size:12px;color:var(--muted);margin-bottom:16px}.saved-search .tag{margin-bottom:12px}
+@media(min-width:1600px){.explorer{grid-template-columns:290px minmax(0,1fr)}.cards{grid-template-columns:repeat(3,minmax(0,1fr))}#map{height:450px}.hero{padding:44px 50px}.hero h1{font-size:45px}.provider-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-height:900px) and (min-width:901px){.sidebar-note{margin-top:24px}.sidebar-note h3{font-size:18px}.sidebar-note p,.mini-grid{display:none}.nav-caption{margin-top:28px}.sidebar{padding-top:26px}}
+@media(max-width:1200px){.sidebar{width:206px;padding-left:13px;padding-right:13px}.shell{margin-left:206px}main{padding:24px 22px 0}.topbar{padding:14px 24px}.explorer{grid-template-columns:235px minmax(0,1fr);gap:17px}.metrics{gap:8px}.metrics article{padding:13px}.metrics strong{font-size:22px}.hero{padding:32px}.hero h1{font-size:32px}.journey-end{display:none}.journey-strip{justify-content:space-between;gap:15px}.cards{grid-template-columns:1fr}.auth-story,.auth-form-panel{padding:30px}.auth-story h1{font-size:29px}.hero-actions{gap:10px}.provider-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.guide-grid{gap:12px}.guide-grid .padded{padding:22px}}
+@media(max-width:900px){.sidebar{position:static;width:100%;padding:16px 22px;flex-direction:row;flex-wrap:wrap;align-items:center;gap:15px;overflow:visible}.brand{font-size:20px}.brand-icon{width:33px;height:35px;font-size:28px}.brand small,.nav-caption,.sidebar-note,.sidebar-footer,.nav b{display:none}.sidebar nav{display:flex;width:100%;gap:4px;overflow-x:auto;scrollbar-width:thin}.nav{padding:9px 12px;font-size:11px;white-space:nowrap;margin:0;width:auto;flex-shrink:0;gap:6px}.nav span{font-size:16px;width:18px}.admin-nav{border:0;border-radius:9px}.shell{margin:0}.topbar{min-height:58px;padding:12px 22px}main{padding:22px 20px 0}.hero h1{font-size:32px}.hero{min-height:300px}.hero-link{display:none}.explorer{grid-template-columns:225px minmax(0,1fr);gap:16px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.filter-panel{padding:18px 15px}.sources-grid{grid-template-columns:1fr}.city-callout{font-size:10px}.city-callout small{font-size:6px}.city-label{font-size:7px}.auth-layout{gap:16px}.auth-story{padding:28px}.auth-story h1{font-size:27px}.auth-form-panel{padding:24px}.guide-grid{grid-template-columns:1fr}.guide-number{margin-bottom:15px}.guide-grid p{margin-bottom:12px}.admin-gate{grid-template-columns:1fr;gap:8px}}
+@media(max-width:640px){.sidebar{padding:16px;gap:15px}.sidebar nav{gap:5px;padding-bottom:2px}.nav{font-size:12px;padding:9px 12px}.brand small{display:block}.topbar{padding:12px 16px;align-items:flex-start}.topbar>div:first-child{font-size:10px;padding-top:6px}.crumb{margin:0 7px}.top-actions{gap:7px;align-items:flex-end;flex-direction:column}.status-pill{font-size:9px;order:2}.compact{font-size:10px;padding:5px 9px}main{padding:18px 16px 0}h1{font-size:27px}.hero{grid-template-columns:1fr;padding:29px 25px 20px;border-radius:13px;min-height:0}.hero h1{font-size:31px}.hero .eyebrow{font-size:7px;letter-spacing:1.3px}.hero-copy>p:not(.eyebrow){font-size:12px}.hero-actions{margin-top:20px}.hero-link{display:inline-block}.hero-caption{margin-top:18px}.city-scene{height:162px;max-width:260px;margin-top:5px}.city-scene svg{height:190px;position:absolute;top:-18px;right:-13px;width:280px}.city-label{display:none}.city-callout{left:-65px;right:auto;bottom:14px;padding:9px 12px}.city-callout>span{font-size:23px}.city-callout>b{display:none}.journey-strip{padding:18px 0;gap:8px;margin-bottom:18px}.journey-strip>div{gap:7px}.journey-strip b{font-size:13px}.journey-strip span{font-size:10px}.journey-strip small{font-size:8px}.mode-bar{align-items:flex-start;flex-direction:column;gap:9px}.mode-bar>p{font-size:10px}.explorer{grid-template-columns:1fr}.filter-panel{position:static;padding:20px}.filter-panel form{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.filter-panel form>label:first-child,.filter-panel form>select,.filter-panel form>.hint,.filter-panel .divider,#demoFilters,.filter-panel form>.primary,.official-code{grid-column:1/-1}.filter-panel form>label.sr-only{display:none}.filter-panel .divider{margin-top:18px}.filter-panel form>label{min-width:0}.filter-panel form>label select{font-size:12px}.metrics{gap:10px}.metrics article{padding:16px}.metrics strong{font-size:24px}.map-toolbar{padding:16px}.map-toolbar h2{font-size:13px}.map-toolbar .eyebrow{font-size:7px}.map-toolbar .tag{font-size:8px}.place-search{padding:0 14px 14px;gap:7px}.place-search>span{display:none}.place-search input{font-size:12px;padding:10px}.place-search select{width:63px;padding:10px 7px}.place-search button{padding:11px 10px;font-size:11px}#map{height:320px}.map-footer{font-size:9px;padding:10px 12px;flex-wrap:wrap;gap:4px}.results-heading{align-items:flex-start;flex-wrap:wrap;margin-top:23px}.results-heading h2{font-size:18px}.results-heading .button-row{gap:6px}.results-heading button{font-size:10px;padding:8px 10px}.candidate{padding:20px}.cards{grid-template-columns:1fr}.provider-grid{grid-template-columns:1fr}.provider-card{padding:22px}.page-heading h1{font-size:26px}.page-heading>p:not(.eyebrow){font-size:12px}.padded{padding:21px}.report-paper{padding:23px}.report-paper h2{font-size:22px}.footer{flex-wrap:wrap;margin-top:30px;gap:12px;padding:22px 0}.footer>span{display:none}.footer .text-btn{margin-left:auto}.auth-layout{grid-template-columns:1fr;margin-top:0}.auth-story{padding:30px}.auth-story h1{font-size:28px}.auth-orbit,.auth-benefit{display:none}.auth-story>p:not(.eyebrow){font-size:12px}.auth-form-panel{padding:26px}.auth-form-panel h2{font-size:25px}.auth-tabs{margin:20px 0}.saved-grid{grid-template-columns:1fr}.account-profile{gap:12px;flex-wrap:wrap}.account-profile .avatar{font-size:17px;padding:10px 15px}.account-profile h2{font-size:17px}.account-profile p{font-size:10px}.account-profile button{font-size:10px}.admin-gate{padding:23px}.admin-gate h2{font-size:23px}.guide-grid .padded{padding:25px}dialog{padding:28px 22px}#detailBody h2{font-size:23px}.card-metrics strong{font-size:22px}.card-metrics small{font-size:9px}.mobile-only{display:block}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media print{.sidebar,.topbar,.hero,.footer,.page-heading,.button-row,#toast,dialog{display:none!important}.shell{margin:0}main{padding:0}.view{display:none!important}#view-report{display:block!important}.report-paper{border:0;box-shadow:none;padding:0}.table-wrap{overflow:visible}table{min-width:0;font-size:10px;white-space:normal}th,td{padding:8px}.inline-notice{display:block!important}}
 </style>
 </head>
 <body>
@@ -22,19 +28,24 @@
     <p class="nav-caption">WORKSPACE</p>
     <nav aria-label="주요 메뉴">
       <button class="nav active" data-view="explore"><span>⌖</span> 상권 탐색 <b>01</b></button>
-      <button class="nav" data-view="compare"><span>▥</span> 후보 비교 <b id="compareCount">0</b></button>
+      <button class="nav" data-view="compare" hidden><span>▥</span> 후보 비교 <b id="compareCount">0</b></button>
+      <button class="nav" data-view="sales"><span>◫</span> 카드매출 분석 <b>CARD</b></button>
       <button class="nav" data-view="report"><span>▤</span> 분석 리포트 <b>03</b></button>
       <button class="nav" data-view="sources"><span>◈</span> 데이터 연결 <b>05</b></button>
+      <button class="nav" data-view="account"><span>♡</span> 내 워크스페이스 <b>MY</b></button>
+      <button class="nav" data-view="guide"><span>⊞</span> 시작 가이드 <b>↗</b></button>
+      <button class="nav admin-nav" data-view="admin"><span>⚙</span> 관리자 <b>ADMIN</b></button>
     </nav>
     <div class="sidebar-note"><span class="tiny-label">BETTER DECISIONS</span><h3>좋은 시작은<br>좋은 자리에서.</h3><p>숫자의 출처까지 확인하는<br>나만의 창업 준비 공간</p><div class="mini-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
     <div class="sidebar-footer"><span class="avatar">S</span><div>예비 창업자 워크스페이스<small>공공데이터 기반 의사결정 지원</small></div></div>
   </aside>
   <div class="shell">
-    <header class="topbar"><div><span class="muted">워크스페이스</span><span class="crumb">/</span><strong id="pageTitle">상권 탐색</strong></div><div class="top-actions"><span id="serverStatus" class="status-pill">연결 확인 중</span><button class="quiet" data-view="sources">데이터 출처 ↗</button></div></header>
+    <header class="topbar"><div><span class="muted">워크스페이스</span><span class="crumb">/</span><strong id="pageTitle">상권 탐색</strong></div><div class="top-actions"><span id="serverStatus" class="status-pill">연결 확인 중</span><button class="secondary compact" id="accountButton" data-view="auth">로그인 / 가입 ↗</button></div></header>
     <main id="main">
       <section class="view" id="view-explore">
-        <div class="hero"><div><p class="eyebrow">FIND YOUR NEXT OPPORTUNITY</p><h1>내 사업이 시작될<br class="mobile-only"> <em>좋은 자리</em>를 찾아보세요.</h1><p>업종과 지역을 선택하고, 경쟁 환경부터 데이터의 기준까지 비교하세요.</p></div><div class="hero-mark" aria-hidden="true"><span>⌖</span><i></i><b>YOUR NEXT PLACE</b></div></div>
-        <div class="mode-bar"><div class="segment" aria-label="데이터 모드"><button id="modeLive" class="selected">실데이터 탐색</button><button id="modeDemo">데모 체험</button></div><p id="modeNotice">공식 API의 실제 응답만 표시합니다. 데이터 연결 상태를 먼저 확인하세요.</p></div>
+        <div class="hero"><div class="hero-copy"><p class="eyebrow"><span class="live-dot"></span> YOUR AMBITION. THE RIGHT LOCATION.</p><h1>꿈꾸던 시작,<br><em>가능성이 있는 자리에서.</em></h1><p>감에만 맡기지 않는 첫 번째 결정.<br>내 업종에 맞는 상권을 탐색하고, 데이터로 비교하세요.</p><div class="hero-actions"><button class="hero-cta" id="heroExplore">내 창업 조건 설정하기 <span>↗</span></button><button class="hero-link" data-view="guide">어떻게 시작하나요? →</button></div><div class="hero-caption"><span>01 탐색</span><i></i><span>02 비교</span><i></i><span>03 결정</span></div></div><div class="city-scene" aria-hidden="true"><div class="city-label"><span class="live-dot"></span> FIND YOUR NEXT PLACE</div><svg viewBox="0 0 500 340" fill="none"><defs><linearGradient id="building" x1="180" y1="60" x2="320" y2="260" gradientUnits="userSpaceOnUse"><stop stop-color="#a5dcd1"/><stop offset="1" stop-color="#46897f"/></linearGradient><pattern id="windows" width="18" height="24" patternUnits="userSpaceOnUse"><rect x="5" y="4" width="6" height="10" fill="#d6f3da" opacity=".65"/></pattern></defs><path d="M25 245L245 125 475 245 255 365Z" fill="#193d47"/><path d="M40 250L245 138 460 250M115 288L325 174M183 325L394 212M122 205L335 319M190 168L408 281" stroke="#42626a" stroke-width="2"/><path d="M203 128L265 94 320 125 258 159Z" fill="#c4e9dc"/><path d="M203 128V254L258 286V159Z" fill="url(#building)"/><path d="M258 159L320 125V252L258 286Z" fill="#327b73"/><path d="M210 140V246L250 269V162Z" fill="url(#windows)"/><path d="M112 206L150 185 184 204 145 226Z" fill="#dae8d4"/><path d="M112 206V257L145 277V226Z" fill="#83b9ad"/><path d="M145 226L184 204V253L145 277Z" fill="#548e84"/><path d="M329 217L365 197 401 217 365 237Z" fill="#b9d7c9"/><path d="M329 217V269L365 289V237Z" fill="#649f93"/><path d="M365 237L401 217V269L365 289Z" fill="#37766d"/><ellipse cx="264" cy="277" rx="88" ry="41" stroke="#c5f58a" stroke-dasharray="5 6"/><path d="M265 18C244 18 228 35 228 55C228 82 265 109 265 109S302 82 302 55C302 35 286 18 265 18Z" fill="#c5f58a"/><circle cx="265" cy="54" r="12" fill="#143540"/><circle cx="87" cy="242" r="13" fill="#517c55"/><path d="M87 246V266" stroke="#b5d7ac" stroke-width="4"/><circle cx="358" cy="170" r="16" fill="#517c55"/><path d="M358 173V202" stroke="#b5d7ac" stroke-width="4"/></svg><div class="city-callout"><span>⌖</span><div>당신의 다음 시작점<small>LOCATION INTELLIGENCE</small></div><b>↗</b></div></div></div>
+        <div class="journey-strip"><div><b>01</b><span>조건을 구체적으로<small>업종 · 지역 · 반경 설정</small></span></div><div><b>02</b><span>상권을 입체적으로<small>지도 탐색 · 점포 조회</small></span></div><div><b>03</b><span>결정은 근거 있게<small>출처 확인 · 리포트 저장</small></span></div><span class="journey-end">작은 확신이 모여, 좋은 시작이 됩니다. ↗</span></div>
+        <div class="mode-bar"><div class="segment" aria-label="데이터 모드"><button id="modeLive" class="selected">실데이터 탐색</button><button id="modeDemo" hidden>데이터 탐색</button></div><p id="modeNotice">공식 API의 실제 응답만 표시합니다. 데이터 연결 상태를 먼저 확인하세요.</p></div>
         <div class="explorer">
           <aside class="filter-panel panel">
             <div class="section-title"><h2>어떤 창업을 준비하세요?</h2><span class="step">STEP 01</span></div>
@@ -53,24 +64,56 @@
                 <label>매장 형태<select id="storeType"><option value="GENERAL">일반 매장</option><option value="TAKEOUT">소형 / 테이크아웃</option><option value="LARGE">대형 매장</option></select></label>
                 <details><summary>평가 가중치 조정 <span>↗</span></summary><div id="weightControls"></div><button type="button" id="resetWeights" class="quiet">기본값으로 초기화</button><p class="hint">초기 제안 가중치이며 검증된 예측 모델이 아닙니다.</p></details>
               </div>
+              <label class="official-code">공식 소분류 코드 <span class="muted">선택</span><input id="officialIndustry" placeholder="예: I21201 · 제공기관 코드" pattern="[A-Z][0-9]{5}" maxlength="6"><small id="officialIndustryHelp">업종을 선택하면 기본 코드가 자동 입력됩니다. 코드는 직접 수정할 수 있습니다.</small></label>
               <button class="primary full" id="analyze" type="submit">이 위치의 점포 조회 <span>→</span></button>
               <p id="filterFeedback" class="hint" aria-live="polite"></p>
             </form>
           </aside>
           <div class="results-area">
             <div class="metrics" id="metrics"><article><span>데이터 모드</span><strong>실데이터</strong><small>서버 API 응답 기준</small></article><article><span>조회 점포</span><strong>—</strong><small>조회 후 표시</small></article><article><span>데이터 기준</span><strong>—</strong><small>제공기관 기준시점</small></article><article><span>분석 반경</span><strong>500<small>m</small></strong><small>지도에서 위치 선택</small></article></div>
-            <div class="map-panel panel"><div class="map-toolbar"><div><span class="eyebrow">LOCATION EXPLORER</span><h2 id="mapTitle">지도에서 가능성을 탐색하세요</h2></div><span class="tag" id="mapMode">실데이터</span></div>
-              <form id="placeForm" class="place-search"><label class="sr-only" for="placeQuery">주소·장소 검색</label><span>⌕</span><input id="placeQuery" placeholder="주소 또는 역 이름을 검색하세요" required><label class="sr-only" for="placeType">검색 종류</label><select id="placeType"><option value="keyword">장소</option><option value="address">주소</option></select><button class="primary" type="submit">검색</button></form>
+            <div class="map-panel panel"><div class="map-toolbar"><div><span class="eyebrow">DAUM · KAKAO LOCATION EXPLORER</span><h2 id="mapTitle">지도에서 가능성을 탐색하세요</h2></div><div class="map-badges"><span class="tag ready" id="mapEngineBadge">지도 연결 중</span><span class="tag" id="mapMode">실데이터</span></div></div>
+              <form id="placeForm" class="place-search"><label class="sr-only" for="placeQuery">주소·장소 검색</label><span>⌕</span><input id="placeQuery" placeholder="도로명주소, 지번 또는 역·상권명을 검색하세요" required><label class="sr-only" for="placeType">검색 종류</label><select id="placeType"><option value="keyword">장소</option><option value="address">주소</option></select><button class="primary" type="submit">검색</button><button class="secondary" type="button" id="btnDaumPostcode">다음 주소찾기</button></form>
+              <div class="map-controls-bar"><div class="segment map-type-seg"><button type="button" id="btnMapNormal" class="selected">일반지도</button><button type="button" id="btnMapSkyview">스카이뷰</button></div><div class="map-quick-links"><button type="button" class="quiet compact" id="btnRoadview">360° 로드뷰</button><a id="linkDaumMap" class="secondary compact" href="https://map.kakao.com" target="_blank" rel="noopener">다음지도 크게보기 ↗</a></div></div>
+              <div id="mapDomainHint" class="map-domain-hint" hidden></div>
               <div id="placeResults" class="place-results" hidden></div><div id="map" aria-label="상권 지도"></div>
+              <div id="roadviewWrap" class="roadview-wrap" hidden><div class="roadview-bar"><strong>다음 360° 현장 로드뷰</strong><span id="roadviewStatus" class="muted">선택 좌표 기준 가장 가까운 도로 파노라마</span><button type="button" class="quiet compact" id="closeRoadview">로드뷰 닫기</button></div><div id="roadview" aria-label="다음 로드뷰"></div></div>
               <div class="map-footer"><span><i class="legend-dot"></i> <span id="mapLegend">조회된 실제 점포</span></span><span id="coordinates">위치 선택 대기</span></div>
             </div>
-            <div class="results-heading"><div><p class="eyebrow">YOUR SHORTLIST</p><h2 id="resultsTitle">조회 결과</h2></div><button id="compareOpen" class="secondary" data-view="compare">후보 비교하기 <span>↗</span></button></div>
-            <div id="resultNotice" class="inline-notice" hidden></div><div id="cards" class="cards"><div class="empty panel"><span>⌖</span><h3>먼저 시작할 위치를 정해 주세요</h3><p>지도에서 위치를 선택하면 반경 안의 실제 점포를 조회할 수 있습니다.<br>인증키 없이 화면을 둘러보려면 데모 체험을 선택하세요.</p><button class="secondary" id="tryDemo">데모로 둘러보기 →</button></div></div>
+            <div class="results-heading"><div><p class="eyebrow">YOUR SHORTLIST</p><h2 id="resultsTitle">조회 결과</h2></div><div class="button-row"><button id="saveSearch" class="quiet">♡ 조건 저장</button><button id="compareOpen" class="secondary" data-view="compare" hidden>후보 비교하기 <span>↗</span></button></div></div>
+            <div id="resultNotice" class="inline-notice" hidden></div><div id="cards" class="cards"><div class="empty panel"><span>⌖</span><h3>먼저 시작할 위치를 정해 주세요</h3><p>지도에서 위치를 선택하면 반경 안의 실제 점포를 조회할 수 있습니다.<br>제공기관의 실제 데이터를 기준으로 표시합니다.</p></div></div>
             <button class="secondary" id="moreStores" hidden>다음 페이지 조회</button>
           </div>
         </div>
       </section>
-      <section class="view" id="view-compare" hidden><div class="page-heading"><p class="eyebrow">SIDE BY SIDE</p><h1>후보지의 차이를 한눈에.</h1><p>데모 후보 2~3곳을 선택해 같은 조건으로 비교하세요. 실데이터 순위와는 구분됩니다.</p></div><div id="comparison" class="panel empty"></div></section>
+      <section class="view" id="view-compare" hidden><div class="page-heading"><p class="eyebrow">SIDE BY SIDE</p><h1>후보지의 차이를 한눈에.</h1><p>비교 가능한 공식 데이터가 확보되면 후보지를 비교할 수 있습니다.</p></div><div id="comparison" class="panel empty"></div></section>
+      <section class="view" id="view-sales" hidden>
+        <div class="page-heading"><p class="eyebrow">OFFICIAL CARD &amp; REVENUE INTELLIGENCE</p><h1>공식 카드승인과 상권 매출의 흐름.</h1><p>여신금융협회 국내카드승인실적, 중소벤처기업부 시도·업종별 소상공인 매출 및 카드결제 비중, 서울시 상권 추정매출(카드사 가맹점 기반)을 실시간으로 확인합니다.</p></div>
+        <div id="salesStaticNotice" class="inline-notice" hidden>현재 서버에 연결되지 않았습니다. 실시간 여신금융협회·중소벤처기업부·서울 상권 카드매출 조회와 CSV 적재는 Node.js 서버에서 동작하며, 정적 화면에서는 가짜 매출 수치를 생성하지 않습니다.</div>
+        <div class="metrics" id="salesMetrics"><article><span>전국 카드승인</span><strong id="metricApproval">조회 대기</strong><small>여신금융협회 · KOSIS</small></article><article><span>소상공인 매출통계</span><strong id="metricSmeSales">17개 시도</strong><small>중소벤처기업부 · 산업중분류</small></article><article><span>카드결제 비중</span><strong id="metricCardShare">신용·체크</strong><small>중소벤처기업부 실태조사</small></article><article><span>적재된 외부 매출</span><strong id="metricImportedSales">0건</strong><small>관리자 CSV 데이터셋</small></article></div>
+        <div class="sources-grid">
+          <section class="panel padded">
+            <div class="section-title"><h2>전국 공식 카드승인 · 소상공인 매출</h2><span class="tag live">KOSIS LIVE</span></div>
+            <p class="hint">인증된 KOSIS API를 통해 여신금융협회 월간 카드승인실적과 중소벤처기업부 시도·업종별 매출·결제수단 통계를 실시간 수집합니다.</p>
+            <div class="segment sales-tabs" role="tablist"><button type="button" class="selected" data-sales-tab="approval">월간 카드승인실적</button><button type="button" data-sales-tab="sido_sales">시도·업종 매출액</button><button type="button" data-sales-tab="payment_share">카드·현금 결제비중</button></div>
+            <form id="kosisSalesForm" class="two-cols"><label>시·도 필터<select id="salesSidoFilter"><option value="">전국 전체</option></select></label><label>업종·항목 검색<input id="salesKeyword" type="search" placeholder="예: 음식점, 소매, 교육, 카드"></label><button class="primary" type="submit" style="grid-column:1/-1;margin-top:10px">공식 카드·매출 통계 조회 →</button></form>
+            <div id="kosisSalesChart" class="score-bars"></div>
+            <div id="kosisSalesOutput" class="output" aria-live="polite"></div>
+          </section>
+          <section class="panel padded">
+            <div class="section-title"><h2>골목·발달상권 카드 추정매출</h2><span class="tag ready" id="seoulKeyBadge">서울 열린데이터광장</span></div>
+            <p class="hint">카드사 가맹점 승인 데이터를 기반으로 산출된 상권별 분기 추정매출·승인건수·시간대(6구간)·요일·성연령 프로파일입니다.</p>
+            <form id="seoulSalesForm"><div class="two-cols"><label>기준 분기 (선택)<input id="seoulQuarter" placeholder="예: 20243 (비워두면 전체)" maxlength="5" inputmode="numeric"></label><label>상권·업종 필터<input id="seoulKeyword" type="search" placeholder="예: 커피, 한식, 강남"></label></div><div class="button-row" style="margin-top:12px"><button class="primary" type="submit" id="btnSeoulLive">등록 키로 상권 매출 조회</button><button class="secondary" type="button" id="btnSeoulSample">서울 공식 샘플(5건) 실시간 조회</button></div></form>
+            <div id="seoulBreakdown" class="sales-breakdown" hidden></div>
+            <div id="seoulSalesOutput" class="output" aria-live="polite"></div>
+          </section>
+        </div>
+        <section class="panel padded member-panel">
+          <div class="section-title"><h2>적재된 카드매출 데이터셋 조회</h2><span class="tag">FinDX · 지자체 · 카드사 CSV</span></div>
+          <p class="hint">금융데이터거래소(FinDX), 경기데이터드림, 지자체 포털 또는 가맹점 정산 CSV를 관리자 콘솔에서 적재하면 이곳에서 상권·업종별로 검색할 수 있습니다.</p>
+          <form id="localSalesForm" class="place-search" style="padding:0 0 12px"><input id="localSalesQuery" type="search" placeholder="지역·상권명·업종으로 적재된 카드매출 검색"><button class="secondary" type="submit">검색</button></form>
+          <div id="localSalesOutput" class="output" aria-live="polite"></div>
+        </section>
+      </section>
       <section class="view" id="view-report" hidden><div class="page-heading"><p class="eyebrow">YOUR DECISION, DOCUMENTED</p><h1>창업 준비를 한 장의 리포트로.</h1><p>조회 조건과 데이터 출처를 함께 저장하세요.</p><div class="button-row"><button id="print" class="primary">인쇄 / PDF</button><button id="csv" class="secondary">CSV 다운로드</button><button id="exportJson" class="secondary">JSON 저장</button></div></div><div id="report" class="panel report-paper"></div></section>
       <section class="view" id="view-sources" hidden>
         <div class="page-heading"><p class="eyebrow">TRANSPARENT BY DESIGN</p><h1>데이터부터, 믿을 수 있게.</h1><p>API 설정 여부와 실제 응답 성공 여부를 구분합니다. 키를 입력하는 것만으로 연결 완료로 표시하지 않습니다.</p></div>
@@ -78,14 +121,21 @@
         <div class="sources-grid">
           <section class="panel padded"><div class="section-title"><h2>서버 인증 설정</h2><span class="tag">관리자</span></div><p class="hint">키는 서버 환경변수로 관리하세요. 아래 설정은 서버 메모리에만 적용되며 재시작하면 초기화됩니다.</p><form id="keysForm"><label>관리자 토큰<input id="adminToken" type="password" autocomplete="off" placeholder="ADMIN_API_TOKEN" required></label><div id="keyFields"></div><button class="primary" type="submit">인증키 적용</button><p id="keyMessage" class="hint" aria-live="polite"></p></form></section>
           <section class="panel padded"><div class="section-title"><h2>공식 통계 조회</h2><span class="tag">KOSIS</span></div><p class="hint">KOSIS URL 생성 도구의 통계표·항목·분류 코드를 사용하세요. 지역·업종별 생존율 범위는 선택한 표에 따라 달라집니다.</p><form id="statsForm"><label>조회 대상<select id="statsProvider"><option value="kosis">기업생멸 통계</option><option value="region">인구·가구 등 지역 통계</option></select></label><label>조회 조건 (JSON)<textarea id="statsQuery" rows="5" spellcheck="false" placeholder='{"orgId":"...","tblId":"...","objL1":"...","itmId":"...","prdSe":"Y"}'></textarea></label><p class="hint">빈칸이면 서버에 설정된 통계표를 사용합니다.</p><button class="primary" type="submit">공식 통계 조회</button></form><div id="statsOutput" class="output" aria-live="polite"></div></section>
-          <section class="panel padded"><div class="section-title"><h2>사업자등록 상태 조회</h2><span class="tag">국세청 · 관리자</span></div><p class="hint">사업자번호를 알고 있는 대상만 조회할 수 있습니다. 실패 시 상태를 추정하지 않습니다.</p><form id="ntsForm"><label>사업자등록번호<input id="bizNo" placeholder="숫자 10자리" inputmode="numeric" required></label><button class="primary" type="submit">현재 상태 확인</button></form><div id="ntsOutput" class="output" aria-live="polite"></div></section>
-          <section class="panel padded"><div class="section-title"><h2>데이터 사용 원칙</h2><span>↗</span></div><ol class="principles"><li><strong>실데이터와 데모를 분리합니다.</strong><p>데모의 점수, 좌표, 점포 수, 통계는 가상 값입니다.</p></li><li><strong>미확보 데이터는 비워둡니다.</strong><p>실제 수집 성공 이력이 있는 캐시만 재사용합니다.</p></li><li><strong>생존율 ≠ 100 − 폐업률</strong><p>신생기업 코호트와 활동기업은 분모가 다릅니다.</p></li><li><strong>GitHub Pages는 정적 데모입니다.</strong><p>실제 API 사용에는 Node.js 서버와 발급된 인증키가 필요합니다.</p></li></ol><button id="viewLogs" class="secondary">서버 호출 이력 확인</button><div id="logOutput" class="output"></div></section>
+          <section class="panel padded"><div class="section-title"><h2>사업자등록 상태·진위확인</h2><span class="tag">국세청 v1.1 · 관리자</span></div><p class="hint">사업자번호를 알고 있는 대상의 현재 상태 또는 대표자·개업일·주소 진위를 확인합니다. 실패 시 추정하지 않습니다.</p><form id="ntsForm"><label>조회 종류<select id="ntsAction"><option value="status">상태조회 (사업자등록번호)</option><option value="validate">진위확인 v1.1 (대표자·개업일자·주소)</option></select></label><label>사업자등록번호<input id="bizNo" placeholder="숫자 10자리 ('-' 없이 또는 포함)" inputmode="numeric" required></label><div id="ntsValidateFields" hidden><div class="two-cols"><label>대표자성명 (필수)<input id="ntsOwner" placeholder="홍길동"></label><label>개업일자 (필수)<input id="ntsStartDt" placeholder="YYYYMMDD" inputmode="numeric" maxlength="10"></label></div><div class="two-cols"><label>상호 (선택)<input id="ntsBizName" placeholder="상호명"></label><label>법인등록번호 (선택)<input id="ntsCorpNo" placeholder="숫자 13자리" inputmode="numeric"></label></div><div class="two-cols"><label>주업태명 (선택)<input id="ntsSector" placeholder="예: 음식점업"></label><label>주종목명 (선택)<input id="ntsType" placeholder="예: 커피전문점"></label></div><label>사업장주소 (선택 · v1.1)<input id="ntsAddress" placeholder="예: 서울특별시 강남구"></label><label>외국인 대표자 한글명 (외국인인 경우만 입력)<input id="ntsOwner2" placeholder="내국인은 반드시 비워두세요"></label></div><button class="primary" type="submit">국세청 실시간 확인</button></form><div id="ntsOutput" class="output" aria-live="polite"></div></section>
+          <section class="panel padded"><div class="section-title"><h2>데이터 사용 원칙</h2><span>↗</span></div><ol class="principles"><li><strong>공식 데이터의 출처를 확인합니다.</strong><p>제공기관의 응답과 기준 시점을 확인하세요.</p></li><li><strong>미확보 데이터는 비워둡니다.</strong><p>실제 수집 성공 이력이 있는 캐시만 재사용합니다.</p></li><li><strong>생존율 ≠ 100 − 폐업률</strong><p>신생기업 코호트와 활동기업은 분모가 다릅니다.</p></li><li><strong>실제 API는 서버에서 조회합니다.</strong><p>Node.js 서버와 발급된 인증키가 필요합니다.</p></li></ol><button id="viewLogs" class="secondary">서버 호출 이력 확인</button><div id="logOutput" class="output"></div></section>
         </div>
       </section>
-      <footer class="footer"><strong>창업입지 AI</strong><span>데이터는 판단의 근거입니다. 사업의 가능성은 현장에서 함께 확인하세요.</span><span>PUBLIC DATA · BETTER DECISIONS</span></footer>
+      <section class="view" id="view-auth" hidden>
+        <div class="auth-layout"><div class="auth-story"><p class="eyebrow">A SPACE FOR YOUR NEXT CHAPTER</p><h1>좋은 아이디어에,<br><em>좋은 자리를 더하세요.</em></h1><p>여러 번의 탐색이 하나의 확신이 될 때까지.<br>내 조건을 저장하고, 준비의 흐름을 이어가세요.</p><div class="auth-orbit" aria-hidden="true"><span>⌖</span><i>YOUR NEXT CHAPTER</i></div><div class="auth-benefit"><b>01</b> 나만의 창업 조건 저장</div><div class="auth-benefit"><b>02</b> 같은 조건으로 다시 분석</div><div class="auth-benefit"><b>03</b> 출처가 남는 데이터 탐색</div></div><div class="auth-form-panel panel padded"><p class="eyebrow">WELCOME TO YOUR WORKSPACE</p><h2 id="authTitle">다시 만나 반가워요.</h2><p class="muted" id="authSubtitle">이메일로 나의 워크스페이스에 로그인하세요.</p><div class="segment auth-tabs"><button type="button" id="tabLogin" class="selected">로그인</button><button type="button" id="tabRegister">회원가입</button></div><div id="authStaticNotice" class="inline-notice" hidden>현재 서버에 연결되지 않았습니다. 회원가입·로그인은 Node.js 서버에서 이용할 수 있습니다. 입력한 개인정보를 이 페이지에 저장하지 않습니다.</div>        <div id="kakaoAuthBox" class="kakao-box" hidden><button type="button" id="kakaoLoginBtn" class="kakao-btn"><span>●</span> 카카오로 간편 시작하기</button><small class="hint">카카오 디벨로퍼스 Redirect URI에 <code id="kakaoRedirectHint">/api/auth/kakao/callback</code> 등록 시 동작합니다.</small></div><form id="authForm"><label id="nameLabel" hidden>이름<input id="authName" autocomplete="name" minlength="2" maxlength="40" placeholder="어떻게 불러드릴까요?"></label><label>이메일<input id="authEmail" type="email" autocomplete="email" maxlength="254" placeholder="you@example.com" required></label><label>비밀번호<div class="password-field"><input id="authPassword" type="password" autocomplete="current-password" maxlength="128" placeholder="비밀번호를 입력하세요" required><button id="togglePassword" type="button" aria-label="비밀번호 표시">보기</button></div></label><p id="passwordHint" class="hint" hidden>12자 이상 입력하세요. 영문·숫자·기호를 섞어 사용하면 좋습니다.</p><label id="consentLabel" class="check-label" hidden><input id="authConsent" type="checkbox"><span>이름·이메일·암호화된 비밀번호를 이 서버에 저장하는 것에 동의합니다. <button type="button" class="text-btn" id="privacyOpen">자세히 보기</button></span></label><button class="primary full" id="authSubmit" type="submit">로그인 →</button><p id="authMessage" class="form-message" role="status"></p></form><p class="auth-bottom">먼저 둘러보고 싶으신가요? <button class="text-btn" data-view="explore">상권 탐색하기 ↗</button></p></div></div>
+      </section>
+      <section class="view" id="view-account" hidden><div class="page-heading"><p class="eyebrow">YOUR PERSONAL WORKSPACE</p><h1>시작을 준비하는 나만의 공간.</h1><p>저장한 조건을 다시 불러와 탐색을 이어가세요.</p></div><div id="accountContent" class="panel padded"></div></section>
+      <section class="view" id="view-admin" hidden><div class="page-heading"><p class="eyebrow">OPERATIONS CONSOLE</p><h1>운영을 한눈에, 연결은 정확하게.</h1><p>회원 현황과 API 상태, 실제 호출 이력을 확인하는 관리자 전용 공간입니다.</p></div><div class="admin-gate panel padded"><div><span class="tag">RESTRICTED ACCESS</span><h2>관리자 인증</h2><p class="hint">서버의 ADMIN_API_TOKEN으로 인증합니다. 일반 회원 계정에는 관리 권한이 없습니다.</p></div><form id="adminLoginForm"><label>관리자 토큰<input id="adminLoginToken" type="password" autocomplete="off" placeholder="서버에 설정한 관리자 토큰" required></label><button class="primary" type="submit">관리 콘솔 열기 →</button><p id="adminMessage" class="form-message" role="status"></p></form></div><div id="adminContent" hidden><div class="results-heading"><h2>운영 현황</h2><div class="button-row"><button id="checkConnections" class="primary">전체 API 연결 검사</button><button id="adminRefresh" class="secondary">새로고침</button><button id="adminLogout" class="quiet">관리 종료</button></div></div><div id="adminMetrics" class="metrics"></div><div id="connectionResults" class="output" aria-live="polite"></div><div class="sources-grid" id="adminTools"></div><section class="panel padded member-panel"><div class="section-title"><h2>최근 가입 회원</h2><span class="tag">최대 50명</span></div><div id="memberTable"></div></section></div></section>
+      <section class="view" id="view-guide" hidden><div class="page-heading"><p class="eyebrow">SMALL STEPS. BETTER DECISIONS.</p><h1>첫 창업도, 차근차근 시작하세요.</h1><p>복잡한 상권 데이터에서 나에게 필요한 근거를 찾는 방법.</p></div><div class="guide-grid"><article class="panel padded"><span class="guide-number">01</span><h2>내 사업의 기준 정하기</h2><p>업종과 희망 지역, 도보 생활권에 맞는 분석 반경을 선택하세요. 지도나 주소 검색으로 조회 위치를 지정하세요.</p><button class="text-btn" data-view="explore">조건 설정하러 가기 →</button></article><article class="panel padded"><span class="guide-number">02</span><h2>출처와 관측 시점 확인하기</h2><p>실데이터는 제공기관의 응답을 표시합니다. 데이터 연결 화면에서 각 기관의 연결 상태와 실제 수집 이력을 확인하세요.</p><button class="text-btn" data-view="sources">데이터 출처 보기 →</button></article><article class="panel padded"><span class="guide-number">03</span><h2>비교하고 현장에서 확인하기</h2><p>실제 창업 전에는 유동인구·임대 조건·주변 점포를 현장에서 확인하세요.</p><button class="text-btn" data-view="sales">카드매출 확인하기 →</button></article></div><div class="panel padded faq"><h2>자주 묻는 질문</h2><details open><summary>어떤 데이터를 볼 수 있나요?</summary><p>상권 탐색은 공식 API의 점포 응답을, 카드매출 분석은 제공기관의 통계와 적재된 자료를 표시합니다.</p></details><details><summary>왜 실제 추천 점수가 보이지 않나요?</summary><p>실제 추천 점수에는 비교 가능한 통계와 점포 데이터의 적재·검증이 필요합니다. 현재 실데이터 모드에서는 확인된 점포와 공식 통계를 조회할 수 있습니다.</p></details><details><summary>공유 링크에서도 가입과 API 조회가 되나요?</summary><p>가입·관리자·실제 API를 사용하려면 Node.js 서버를 HTTPS로 배포하고 환경변수를 설정해야 합니다.</p></details><details><summary>내 정보는 어디에 저장되나요?</summary><p>서버 가입 시 이름·이메일·비밀번호 해시와 저장한 조건이 서버 SQLite 데이터베이스에 저장됩니다. 비밀번호 원문은 저장하지 않으며, 로그인 쿠키는 JavaScript에서 읽을 수 없습니다. 이메일 인증과 비밀번호 재설정 메일은 아직 제공하지 않습니다.</p></details></div></section>
+      <footer class="footer"><strong>창업입지 AI<span>좋은 시작을 위한 데이터.</span></strong><span>데이터로 탐색하고, 현장에서 확인하세요.</span><button class="text-btn" data-view="guide">이용 안내 ↗</button></footer>
     </main>
   </div>
   <dialog id="detail"><button class="dialog-close" id="closeDetail" aria-label="상세 창 닫기">×</button><div id="detailBody"></div></dialog>
+  <dialog id="postcodeDialog"><button class="dialog-close" id="closePostcode" aria-label="주소 검색창 닫기">×</button><p class="eyebrow">DAUM POSTCODE SERVICE</p><h2 style="margin-bottom:14px">다음 도로명·지번 주소 검색</h2><div id="postcodeEmbed" style="height:420px;border:1px solid var(--line);border-radius:10px;overflow:hidden"></div></dialog>
   <div id="toast" role="status" aria-live="polite" hidden></div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>window.APP_STATIC=true;window.APP_DEMO=(()=>{const modules={"regions":[function(require,module,exports){
@@ -2575,675 +2625,12 @@ module.exports = {
   INITIAL_SYNC_LOGS
 };
 
-},{"./koreaRegionsFull":"regions"}],
-"engine":[function(require,module,exports){
-/**
- * 창업입지 AI - 추천 알고리즘 및 의사결정 지원 엔진 (server/services/recommendationEngine.js)
- *
- * [기획서 8장 추천 알고리즘 설계 반영]
- * 1. 초기 평가 가중치 (초기 테스트 제안값 명시):
- *    - 업종별 생존·폐업 관련 통계: 40% (0.40)
- *    - 동일 업종 경쟁 강도:       25% (0.25)
- *    - 지역 수요·인구:           20% (0.20)
- *    - 임대료 및 창업비용 부담:   15% (0.15)
- * 2. 8단계 분석 절차 수행:
- *    (1) 입력 업종 → 표준 업종 코드 변환
- *    (2) 선택 지역·반경 후보 상권 필터링
- *    (3) 후보 상권 점포 수·경쟁 강도 및 공간 분포 생성
- *    (4) 비교 가능한 공식 생존·폐업 통계 연결 (생존율과 폐업률 분리)
- *    (5) 지역 수요 및 비용 지표 결합
- *    (6) 데이터의 지역 단위·기준 기간 비교 가능성 검사 (comparability_check)
- *    (7) 결측 데이터 임의 대체 금지 + 확보 지표 기반 가중치 재정규화 + 데이터 신뢰도 산출
- *    (8) 추천 순위 TOP 10과 장단점·위험요인·추천 근거 생성
- */
-
-const {
-  DATA_SOURCES,
-  INDUSTRY_CODES,
-  REGIONS_TREE,
-  buildRegionalZoneCandidates,
-  INDUSTRY_BASE_SURVIVAL_STATS,
-  COMMERCIAL_ZONES
-} = require('../data/publicDatasetStore');
-
-// 전국 시·군·구별 생성된 상권 후보를 캐싱하여 후보 비교(compareCandidateZones)에서도 즉시 조회 지원
-const runtimeZoneMap = new Map();
-COMMERCIAL_ZONES.forEach((z) => runtimeZoneMap.set(z.zone_id, z));
-
-const DEFAULT_WEIGHTS = {
-  survival: 0.40,
-  competition: 0.25,
-  demand: 0.20,
-  cost: 0.15
-};
-
-function clamp(val, min, max) {
-  return Math.max(min, Math.min(max, val));
-}
-
-function round1(val) {
-  return Math.round(val * 10) / 10;
-}
-
-/**
- * 1단계: 사용자 입력 업종(코드 또는 검색어)을 표준 업종 코드로 변환
- */
-function resolveIndustry(industryInput) {
-  if (!industryInput) return INDUSTRY_CODES[0];
-  const normalized = String(industryInput).trim().toLowerCase();
-
-  // 1) 정확히 표준 코드와 일치하는 경우
-  const byCode = INDUSTRY_CODES.find(
-    (item) => item.industry_code.toLowerCase() === normalized || item.semas_code.toLowerCase() === normalized
-  );
-  if (byCode) return byCode;
-
-  // 2) 업종명 또는 유의어(keywords) 매칭
-  const byKeyword = INDUSTRY_CODES.find(
-    (item) =>
-      item.industry_name.toLowerCase().includes(normalized) ||
-      item.keywords.some((kw) => kw.toLowerCase().includes(normalized) || normalized.includes(kw.toLowerCase()))
-  );
-  return byKeyword || INDUSTRY_CODES[0];
-}
-
-/**
- * 두 위·경도 좌표 간 거리 계산 (Haversine, 단위: 미터)
- */
-function distanceMeters(lat1, lng1, lat2, lng2) {
-  const R = 6371000;
-  const toRad = (deg) => (deg * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
-  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-/**
- * 후보 상권 내 실제 경쟁 점포 분포 목록 생성 (결정론적 좌표 분포, 과거 폐업 이력 임의 생성 금지 원칙 준수)
- */
-function buildNearbyCompetitorStores(zone, industryObj, scaledStoreCount, radiusMeters) {
-  const sampleCount = Math.min(scaledStoreCount, 18);
-  const stores = [];
-  const brandPrefixes = {
-    IND_CAFE: ['스페셜티로스터스', '어반커피랩', '브루잉컴퍼니', '데일리빈', '포레스트카페', '모닝에스프레소'],
-    IND_KOREAN: ['정담한식당', '서울국밥집', '참숯구이관', '미가백반', '온기식탁', '전통솥밥'],
-    IND_MEAT: ['숙성삼겹살관', '한우명가숯불', '서울돈구이', '정통갈비회관', '프리미엄육류식당'],
-    IND_CHICKEN: ['크리스피치킨호프', '황금맥주치킨', '바삭통닭', '오븐로스트치킨', '동네호프공방'],
-    IND_BAKERY: ['아티장베이커리', '고메브레드', '밀밭제과점', '르뱅구움과자', '메종드파티세리'],
-    IND_SNACK: ['바른김밥분식', '서울떡볶이연구소', '정성김밥앤라면', '모두의분식당'],
-    IND_JAPANESE: ['스시타쿠미', '도쿄라멘공방', '프리미엄돈카츠', '사케앤사시미'],
-    IND_CHINESE: ['북경반점', '사천마라탕하우스', '청담중화요리', '황제양꼬치마라'],
-    IND_WESTERN: ['트attoria파스타', '어반브런치키친', '화덕피자앤스테이크', '비스트로서울'],
-    IND_FASTFOOD: ['크래프트수제버거', '프레시그린샐러드', '뉴욕피자슬라이스', '데일리포케샌드위치'],
-    IND_PUB: ['심야요리포차', '이자카야하루', '어반와인앤하이볼', '청춘맥주주점'],
-    IND_CONV: ['24시편의점', '데일리마트CVS', '스마일편의점', '시티익스프레스'],
-    IND_SUPER: ['프레시식자재마트', '우리동네청과슈퍼', '정성반찬마켓', '그린로컬푸드'],
-    IND_PHARMACY: ['온누리건강약국', '케어플러스약국', '메디컬프라자약국', '헬스앤뷰티약국'],
-    IND_FLOWER: ['블룸플라워샵', '보타닉가든화원', '플로리스트아뜰리에', '그린플랜트스튜디오'],
-    IND_CLOTHING: ['모던셀렉트샵', '어반어패럴스토어', '트렌드부티크', '데일리룩쇼룸'],
-    IND_UNMANNED: ['24시무인아이스크림', '프레시무인밀키트', '스마트무인스토어', '해피무인간식방'],
-    IND_BEAUTY: ['아뜰리에헤어', '살롱드뷰티', '더클래식바버', '루미에르헤어샵'],
-    IND_NAIL_SKIN: ['블랑네일앤래쉬', '에스테틱더퓨어', '살롱드스킨케어', '글로우네일스튜디오'],
-    IND_LAUNDRY: ['24시코인워시', '크린세탁편의점', '스마트런드리존', '에코클리닝샵'],
-    IND_PET: ['해피독애견미용', '프리미엄펫부티크', '포우즈펫살롱', '러블리펫마트'],
-    IND_CLINIC: ['바른케어의원', '서울디지털치과의원', '경희보감한의원', '더맑은피부과의원'],
-    IND_FITNESS: ['코어필라테스스튜디오', '바디랩피트니스', '짐앤모어PT', '밸런스요가앤짐'],
-    IND_ACADEMY: ['미래에듀학원', '탑클래스영어수학', '시너지입시연구소', '글로벌어학원'],
-    IND_ARTS_EDU: ['클랑피아노음악학원', '아뜰리에미술교습소', '용인대석사태권도', '키즈발레아카데미'],
-    IND_STUDYCAFE: ['집중스터디카페24', '포커스프리미엄독서실', '워크앤스터디라운지', '스마트공유오피스'],
-    IND_SCREEN_GOLF: ['프렌즈스크린골프존', '더스윙GDR아카데미', '어반실내테니스장', '스트라이크볼링라운지'],
-    IND_PC_KARAOKE: ['이스포츠아레나PC방', '스타코인노래연습장', '히어로보드게임카페', '포토시그니처부스']
-  };
-  const prefixes = brandPrefixes[industryObj.industry_code] || ['표준상가'];
-
-  for (let i = 0; i < sampleCount; i++) {
-    const angle = (i * 137.5 * Math.PI) / 180; // 황금각 분포
-    const ratio = 0.18 + ((i % 7) / 7) * 0.72;
-    const distM = Math.round(radiusMeters * ratio);
-    const dLat = (distM * Math.cos(angle)) / 111320;
-    const dLng = (distM * Math.sin(angle)) / (111320 * Math.cos((zone.lat * Math.PI) / 180));
-
-    stores.push({
-      store_id: `${zone.zone_id}_${industryObj.semas_code}_${String(i + 1).padStart(3, '0')}`,
-      store_name: `${prefixes[i % prefixes.length]} ${zone.emd_name.replace(/\(.*\)/, '')}${i + 1}호점`,
-      industry_name: industryObj.industry_name,
-      semas_code: industryObj.semas_code,
-      lat: Number((zone.lat + dLat).toFixed(6)),
-      lng: Number((zone.lng + dLng).toFixed(6)),
-      distance_m: distM,
-      floor_info: i % 3 === 0 ? '1층 전면' : i % 3 === 1 ? '1층 이면' : '2층',
-      observed_status: '영업중 (상가정보 2026-Q1 기준)',
-      individual_survival_history_note: '개별 업체의 과거 생존·폐업 이력은 추정 표시하지 않음 (원칙 준수)'
-    });
-  }
-  return stores;
-}
-
-/**
- * 개별 후보 상권에 대한 4대 영역 점수, 결측치 검사, 신뢰도, 장단점·위험요인 산출
- */
-function evaluateZoneCandidate(zone, industryObj, params) {
-  const {
-    radiusMeters = 500,
-    budgetLimitManwon = 10000, // 기본 1억 원 (10,000만 원)
-    rentLimitManwon = 350,     // 기본 월 350만 원
-    storeType = 'GENERAL',
-    weights = DEFAULT_WEIGHTS
-  } = params;
-
-  const baseSurvival = INDUSTRY_BASE_SURVIVAL_STATS[industryObj.industry_code];
-  const areaPyeong = industryObj.typical_area_pyeong[storeType] || industryObj.typical_area_pyeong.GENERAL;
-
-  // 반경 보정 계수 (기본 500m 기준)
-  const radiusFactor = clamp(Math.pow(radiusMeters / 500, 1.35), 0.35, 2.8);
-
-  // --------------------------------------------------------------------------
-  // [A] 업종별 생존·폐업 관련 통계 (가중치 40%)
-  // --------------------------------------------------------------------------
-  const mod = zone.survival_modifier || { s1: 0, s3: 0, s5: 0, closure: 0 };
-  const survival1yr = baseSurvival.survival_rate_1yr != null && mod.s1 != null
-    ? round1(clamp(baseSurvival.survival_rate_1yr + mod.s1, 30, 94))
-    : null;
-  const survival3yr = baseSurvival.survival_rate_3yr != null && mod.s3 != null
-    ? round1(clamp(baseSurvival.survival_rate_3yr + mod.s3, 18, 86))
-    : null;
-  const survival5yr = baseSurvival.survival_rate_5yr != null && mod.s5 != null
-    ? round1(clamp(baseSurvival.survival_rate_5yr + mod.s5, 10, 78))
-    : null; // 세곡동 등 5년 코호트 미확보 시 null 유지 (임의 숫자 생성 금지)
-
-  const annualClosureRate = baseSurvival.annual_closure_rate != null && mod.closure != null
-    ? round1(clamp(baseSurvival.annual_closure_rate + mod.closure, 3.5, 28.0))
-    : null;
-
-  // 확보된 생존·폐업 세부 지표만 사용하여 100점 만점 점수 계산
-  const survivalSubScores = [];
-  if (survival1yr != null) survivalSubScores.push({ val: survival1yr, weight: 0.25 });
-  if (survival3yr != null) survivalSubScores.push({ val: clamp(survival3yr * 1.35, 0, 100), weight: 0.35 });
-  if (survival5yr != null) survivalSubScores.push({ val: clamp(survival5yr * 1.65, 0, 100), weight: 0.20 });
-  if (annualClosureRate != null) {
-    // 폐업률 5% 이하면 95점, 20% 이상이면 35점 수준
-    const closureSafetyScore = clamp(108 - annualClosureRate * 3.6, 25, 98);
-    survivalSubScores.push({ val: closureSafetyScore, weight: 0.20 });
-  }
-
-  let survivalScore = null;
-  if (survivalSubScores.length > 0) {
-    const totalW = survivalSubScores.reduce((acc, s) => acc + s.weight, 0);
-    survivalScore = round1(survivalSubScores.reduce((acc, s) => acc + s.val * (s.weight / totalW), 0));
-  }
-
-  // --------------------------------------------------------------------------
-  // [B] 동일 업종 경쟁 강도 (가중치 25%)
-  // --------------------------------------------------------------------------
-  const explicitCount = zone.store_counts_by_industry && zone.store_counts_by_industry[industryObj.industry_code];
-  const fallbackBaseCount = Math.max(
-    4,
-    Math.round(
-      ((zone.store_counts_by_industry && zone.store_counts_by_industry.IND_CAFE) || 40) *
-        (industryObj.store_density_ratio || 0.45)
-    )
-  );
-  const baseCount500m = explicitCount != null ? explicitCount : fallbackBaseCount;
-  const storeCountInRadius = Math.max(1, Math.round(baseCount500m * radiusFactor));
-  const areaKm2 = Math.PI * Math.pow(radiusMeters / 1000, 2);
-  const densityPerKm2 = round1(storeCountInRadius / areaKm2);
-  const explicitYoy = zone.store_trend_yoy_pct && zone.store_trend_yoy_pct[industryObj.industry_code];
-  const yoyChangePct =
-    explicitYoy !== undefined
-      ? explicitYoy
-      : round1((baseSurvival.new_entry_rate - baseSurvival.annual_closure_rate) * 0.85);
-
-  // 유효 배후수요(상주인구 + 직장인구*1.2) 대비 점포당 잠재 고객 수
-  const effectivePop = (zone.resident_population || 0) + (zone.worker_population || 0) * 1.2;
-  const demandPerStore = Math.round(effectivePop / Math.max(1, baseCount500m));
-
-  // 점포당 배후수요가 많고 과밀도가 낮을수록 경쟁 점수 우수
-  const rawCompScore = clamp(42 + (demandPerStore / 45) - (baseCount500m * 0.28), 32, 95);
-  const competitionScore = round1(rawCompScore);
-
-  // --------------------------------------------------------------------------
-  // [C] 지역 수요·인구 (가중치 20%)
-  // --------------------------------------------------------------------------
-  const demandSubScores = [];
-  if (zone.resident_population != null && zone.worker_population != null) {
-    const popVolumeScore = clamp(38 + (zone.resident_population + zone.worker_population * 1.15) / 1950, 35, 96);
-    demandSubScores.push({ val: popVolumeScore, weight: 0.50 });
-  }
-  if (zone.floating_pop_daily != null) {
-    const floatingScore = clamp(35 + zone.floating_pop_daily / 1650, 35, 97);
-    demandSubScores.push({ val: floatingScore, weight: 0.35 });
-  }
-  if (zone.age_20_39_ratio != null) {
-    const familyOr4059Focused = ['IND_ACADEMY', 'IND_ARTS_EDU', 'IND_SUPER', 'IND_LAUNDRY', 'IND_PHARMACY', 'IND_CLINIC', 'IND_SCREEN_GOLF'];
-    const targetAgeBonus = familyOr4059Focused.includes(industryObj.industry_code)
-      ? clamp(40 + (zone.age_40_59_ratio || 35) * 1.25, 45, 95)
-      : clamp(40 + zone.age_20_39_ratio * 1.1, 45, 95);
-    demandSubScores.push({ val: targetAgeBonus, weight: 0.15 });
-  }
-
-  let demandScore = null;
-  if (demandSubScores.length > 0) {
-    const totalW = demandSubScores.reduce((acc, s) => acc + s.weight, 0);
-    demandScore = round1(demandSubScores.reduce((acc, s) => acc + s.val * (s.weight / totalW), 0));
-  }
-
-  // --------------------------------------------------------------------------
-  // [D] 임대료 및 창업비용 부담 (가중치 15%)
-  // --------------------------------------------------------------------------
-  let costScore = null;
-  let estimatedMonthlyRentManwon = null;
-  let estimatedDepositManwon = null;
-  let estimatedTotalStartupCostManwon = null;
-  let isWithinBudget = null;
-  let isWithinRent = null;
-
-  if (zone.avg_monthly_rent_per_py != null && zone.avg_deposit_per_py != null) {
-    estimatedMonthlyRentManwon = Math.round(zone.avg_monthly_rent_per_py * areaPyeong);
-    estimatedDepositManwon = Math.round(zone.avg_deposit_per_py * areaPyeong);
-    const interiorCost = Math.round((zone.estimated_interior_per_py || 200) * areaPyeong);
-    estimatedTotalStartupCostManwon = estimatedDepositManwon + interiorCost;
-
-    isWithinBudget = budgetLimitManwon ? estimatedTotalStartupCostManwon <= budgetLimitManwon : true;
-    isWithinRent = rentLimitManwon ? estimatedMonthlyRentManwon <= rentLimitManwon : true;
-
-    const budgetRatio = budgetLimitManwon ? estimatedTotalStartupCostManwon / budgetLimitManwon : 0.85;
-    const rentRatio = rentLimitManwon ? estimatedMonthlyRentManwon / rentLimitManwon : 0.85;
-
-    // 예산 및 임대료 한도 대비 적합도 점수
-    const bScore = clamp(105 - budgetRatio * 42, 25, 96);
-    const rScore = clamp(105 - rentRatio * 42, 25, 96);
-    costScore = round1(bScore * 0.55 + rScore * 0.45);
-  }
-
-  // --------------------------------------------------------------------------
-  // [E] 결측 데이터 점검 및 확보 지표 기반 가중치 재정규화
-  // --------------------------------------------------------------------------
-  const missingMetrics = [];
-  if (survival5yr == null) missingMetrics.push('5년 장기 생존율 (세부 코호트 표본 부족)');
-  if (zone.floating_pop_daily == null) missingMetrics.push('일평균 유동인구 (공공 센서 비표본 구역)');
-  if (zone.avg_monthly_rent_per_py == null) missingMetrics.push('상업용 부동산 표본 임대료 시세');
-
-  const availablePillars = [];
-  if (survivalScore != null) availablePillars.push({ key: 'survival', score: survivalScore, rawWeight: weights.survival });
-  if (competitionScore != null) availablePillars.push({ key: 'competition', score: competitionScore, rawWeight: weights.competition });
-  if (demandScore != null) availablePillars.push({ key: 'demand', score: demandScore, rawWeight: weights.demand });
-  if (costScore != null) availablePillars.push({ key: 'cost', score: costScore, rawWeight: weights.cost });
-
-  const sumAvailableWeight = availablePillars.reduce((acc, p) => acc + p.rawWeight, 0);
-  const normalizedWeights = {};
-  let totalScore = 0;
-
-  availablePillars.forEach((p) => {
-    const normW = p.rawWeight / sumAvailableWeight;
-    normalizedWeights[p.key] = Number(normW.toFixed(3));
-    totalScore += p.score * normW;
-  });
-  totalScore = round1(totalScore);
-
-  // 데이터 신뢰도 산출 (확보 지표 비율 및 품질 상태 반영)
-  const totalCheckItems = 9; // 1년생존, 3년생존, 5년생존, 연간폐업률, 경쟁점포수, 상주/직장인구, 유동인구, 연령비중, 임대료시세
-  const availableCheckItems = totalCheckItems - missingMetrics.length;
-  const coveragePct = Math.round((availableCheckItems / totalCheckItems) * 100);
-
-  let reliabilityGrade = 'HIGH';
-  let reliabilityLabel = '높음 (공식 통계·표본 확보)';
-  if (missingMetrics.length === 1) {
-    reliabilityGrade = 'MEDIUM';
-    reliabilityLabel = '보통 (일부 세부 지표 미확보 안내)';
-    totalScore = round1(totalScore - 2.5);
-  } else if (missingMetrics.length >= 2) {
-    reliabilityGrade = 'LOW';
-    reliabilityLabel = '주의 (통계 부족 지역 · 순위 신뢰도 낮음)';
-    totalScore = round1(totalScore - 6.5);
-  }
-
-  // --------------------------------------------------------------------------
-  // [F] 후보 상권별 장점(Strengths) 및 위험 요인(Risk Factors) 도출
-  // --------------------------------------------------------------------------
-  const strengths = [];
-  const risks = [];
-
-  if (survival3yr != null && survival3yr >= baseSurvival.survival_rate_3yr + 3) {
-    strengths.push(
-      `동일 업종 전국 평균(3년 생존율 ${baseSurvival.survival_rate_3yr}%) 대비 우수한 생존 지표(${survival3yr}%)를 보입니다.`
-    );
-  }
-  if (annualClosureRate != null && annualClosureRate <= baseSurvival.annual_closure_rate - 1.5) {
-    strengths.push(
-      `연간 폐업(소멸)률이 ${annualClosureRate}%로 업종 평균(${baseSurvival.annual_closure_rate}%)보다 낮아 사업 안정성이 양호합니다.`
-    );
-  }
-  if (demandPerStore >= 1300) {
-    strengths.push(
-      `동일 업종 점포 1개당 유효 배후수요(상주+직장인구 가중)가 약 ${demandPerStore.toLocaleString()}명으로 수요 대비 경쟁 여유가 있습니다.`
-    );
-  }
-  if (isWithinBudget && isWithinRent && estimatedTotalStartupCostManwon != null) {
-    strengths.push(
-      `기준 면적(${areaPyeong}평, ${storeType === 'TAKEOUT' ? '테이크아웃형' : storeType === 'LARGE' ? '대형 매장' : '일반 매장'}) 추정 초기 투자비(${estimatedTotalStartupCostManwon.toLocaleString()}만 원)와 월 임대료(${estimatedMonthlyRentManwon.toLocaleString()}만 원)가 설정 한도 내에 부합합니다.`
-    );
-  }
-  if (strengths.length === 0) {
-    strengths.push(
-      `${zone.district_type_label} 특성상 ${zone.worker_population > zone.resident_population ? '주간 직장인 고정 수요' : '거주 세대 생활 밀착 수요'}가 형성되어 있습니다.`
-    );
-  }
-
-  // 위험 요인 도출
-  if (storeCountInRadius >= 65) {
-    risks.push(
-      `반경 ${radiusMeters}m 내 동일 업종 점포가 ${storeCountInRadius}곳(밀집도 ${densityPerKm2}개/km²)으로 과밀 경쟁 위험이 높습니다.`
-    );
-  }
-  if (isWithinBudget === false && estimatedTotalStartupCostManwon != null) {
-    risks.push(
-      `추정 초기 비용(보증금+시설비 약 ${estimatedTotalStartupCostManwon.toLocaleString()}만 원)이 입력 예산(${budgetLimitManwon.toLocaleString()}만 원)을 초과하므로 소형 평수 또는 테이크아웃형 전환 검토가 필요합니다.`
-    );
-  }
-  if (isWithinRent === false && estimatedMonthlyRentManwon != null) {
-    risks.push(
-      `추정 월 임대료(약 ${estimatedMonthlyRentManwon.toLocaleString()}만 원)가 희망 한도(${rentLimitManwon.toLocaleString()}만 원)를 초과하여 고정비 부담이 큽니다.`
-    );
-  }
-  if (annualClosureRate != null && annualClosureRate >= baseSurvival.annual_closure_rate + 1) {
-    risks.push(
-      `상권 내 트렌드 교체 주기가 빨라 연간 폐업률(${annualClosureRate}%)이 업종 평균(${baseSurvival.annual_closure_rate}%)보다 높습니다.`
-    );
-  }
-  if (missingMetrics.length > 0) {
-    risks.push(
-      `미확보 통계 항목(${missingMetrics.join(', ')})이 존재하므로 현장 실사 및 인근 공인중개사 시세 교차 확인이 필수적입니다.`
-    );
-  }
-  if (risks.length === 0) {
-    risks.push(
-      `인접 상권(${zone.adjacent_zones.join(', ')})으로의 고객 분산 가능성과 층별·전면 가시성 편차를 현장 확인해야 합니다.`
-    );
-  }
-
-  return {
-    zone_id: zone.zone_id,
-    zone_name: zone.zone_name,
-    sido_name: zone.sido_name,
-    sigungu_name: zone.sigungu_name,
-    emd_name: zone.emd_name,
-    region_code: zone.region_code,
-    lat: zone.lat,
-    lng: zone.lng,
-    district_type: zone.district_type,
-    district_type_label: zone.district_type_label,
-    total_score: totalScore,
-    pillar_scores: {
-      survival: survivalScore,
-      competition: competitionScore,
-      demand: demandScore,
-      cost: costScore
-    },
-    weights_applied: normalizedWeights,
-    reliability: {
-      grade: reliabilityGrade,
-      label: reliabilityLabel,
-      coverage_pct: coveragePct,
-      missing_metrics: missingMetrics,
-      quality_status: zone.quality_status
-    },
-    survival_closure_stats: {
-      survival_rate_1yr: survival1yr,
-      survival_rate_3yr: survival3yr,
-      survival_rate_5yr: survival5yr,
-      annual_closure_rate: annualClosureRate,
-      new_entry_rate: baseSurvival.new_entry_rate,
-      avg_operating_years: baseSurvival.avg_operating_years,
-      national_benchmark: {
-        survival_rate_1yr: baseSurvival.survival_rate_1yr,
-        survival_rate_3yr: baseSurvival.survival_rate_3yr,
-        survival_rate_5yr: baseSurvival.survival_rate_5yr,
-        annual_closure_rate: baseSurvival.annual_closure_rate
-      },
-      metric_definition: baseSurvival.metric_definition,
-      source_name: '통계청 KOSIS 기업생멸행정통계 · 지자체 상권분석 통계',
-      base_year: baseSurvival.base_year,
-      observation_period: baseSurvival.observation_period,
-      published_at: baseSurvival.published_at
-    },
-    competition_stats: {
-      same_industry_store_count: storeCountInRadius,
-      density_per_km2: densityPerKm2,
-      yoy_store_change_pct: yoyChangePct,
-      demand_per_store: demandPerStore,
-      adjacent_zones: zone.adjacent_zones,
-      source_name: '소상공인시장진흥공단 상가(상권)정보 OpenAPI',
-      observation_period: zone.store_data_period,
-      nearby_stores: buildNearbyCompetitorStores(zone, industryObj, storeCountInRadius, radiusMeters)
-    },
-    demand_stats: {
-      resident_population: zone.resident_population,
-      household_count: zone.household_count,
-      worker_population: zone.worker_population,
-      floating_pop_daily: zone.floating_pop_daily,
-      age_20_39_ratio: zone.age_20_39_ratio,
-      age_40_59_ratio: zone.age_40_59_ratio,
-      total_biz_count: zone.total_biz_count,
-      source_name: '통계청·행정안전부 주민등록인구 및 전국사업체조사',
-      observation_period: zone.pop_data_period
-    },
-    cost_stats: {
-      reference_area_pyeong: areaPyeong,
-      store_type: storeType,
-      avg_monthly_rent_per_py: zone.avg_monthly_rent_per_py,
-      avg_deposit_per_py: zone.avg_deposit_per_py,
-      estimated_monthly_rent_manwon: estimatedMonthlyRentManwon,
-      estimated_deposit_manwon: estimatedDepositManwon,
-      estimated_total_startup_cost_manwon: estimatedTotalStartupCostManwon,
-      budget_limit_manwon: budgetLimitManwon,
-      rent_limit_manwon: rentLimitManwon,
-      is_within_budget: isWithinBudget,
-      is_within_rent: isWithinRent,
-      source_name: '한국부동산원 상업용부동산 임대동향조사 표본 시세',
-      observation_period: '2026-Q1 기준'
-    },
-    strengths,
-    risk_factors: risks
-  };
-}
-
-/**
- * 전체 상권 분석 및 TOP 10 입지 추천 실행
- */
-function runRecommendationAnalysis(queryParams = {}) {
-  const startedAt = Date.now();
-  const industryObj = resolveIndustry(queryParams.industry || 'IND_CAFE');
-  const sidoName = queryParams.sido || '서울특별시';
-  const sigunguName = queryParams.sigungu || '강남구';
-  const emdName = queryParams.emd || '';
-  const radiusMeters = Number(queryParams.radius) || 500;
-  const budgetLimitManwon = Number(queryParams.budget) || 10000;
-  const rentLimitManwon = Number(queryParams.rent) || 350;
-  const storeType = queryParams.storeType || 'GENERAL';
-  const centerLat = queryParams.lat ? Number(queryParams.lat) : null;
-  const centerLng = queryParams.lng ? Number(queryParams.lng) : null;
-
-  // 사용자 지정 가중치 또는 기획서 8장 초기 가중치(40/25/20/15) 적용
-  const weights = {
-    survival: queryParams.wSurvival != null ? Number(queryParams.wSurvival) : DEFAULT_WEIGHTS.survival,
-    competition: queryParams.wCompetition != null ? Number(queryParams.wCompetition) : DEFAULT_WEIGHTS.competition,
-    demand: queryParams.wDemand != null ? Number(queryParams.wDemand) : DEFAULT_WEIGHTS.demand,
-    cost: queryParams.wCost != null ? Number(queryParams.wCost) : DEFAULT_WEIGHTS.cost
-  };
-
-  // 2단계: 전국 17개 시·도 및 모든 시·군·구·읍·면·동 후보 상권 추출/생성
-  const primaryZones = buildRegionalZoneCandidates(sidoName, sigunguName, COMMERCIAL_ZONES);
-  primaryZones.forEach((z) => runtimeZoneMap.set(z.zone_id, z));
-
-  const scopeNotice = emdName
-    ? `${sidoName} ${sigunguName} [${emdName}]을(를) 최우선 반영하여 권역 내 후보 상권 ${primaryZones.length}곳을 정밀 분석했습니다.`
-    : `${sidoName} ${sigunguName} 내 주요 행정동·읍면 후보 상권 ${primaryZones.length}곳을 정밀 분석했습니다.`;
-
-  // 지도에서 특정 좌표를 직접 클릭한 경우 거리 정보 추가
-  const evaluated = primaryZones.map((zone) => {
-    const item = evaluateZoneCandidate(zone, industryObj, {
-      radiusMeters,
-      budgetLimitManwon,
-      rentLimitManwon,
-      storeType,
-      weights
-    });
-
-    if (centerLat != null && centerLng != null) {
-      item.distance_from_selected_point_m = Math.round(distanceMeters(centerLat, centerLng, zone.lat, zone.lng));
-    }
-    if (emdName && zone.emd_name.includes(emdName)) {
-      item.is_exact_emd_match = true;
-    }
-    return item;
-  });
-
-  // 종합 점수 내림차순 정렬 후 TOP 10 부여
-  evaluated.sort((a, b) => {
-    if (a.is_exact_emd_match && !b.is_exact_emd_match) return -1;
-    if (!a.is_exact_emd_match && b.is_exact_emd_match) return 1;
-    return b.total_score - a.total_score;
-  });
-
-  const top10 = evaluated.slice(0, 10).map((item, idx) => ({
-    rank: idx + 1,
-    ...item
-  }));
-
-  // 6단계: 데이터의 지역 단위와 기준 기간 비교 가능성 검증 결과
-  const comparabilityCheck = {
-    is_comparable: true,
-    industry_standard_mapping: `${industryObj.industry_name} (상가정보 코드: ${industryObj.semas_code} ↔ 통계청 KSIC: ${industryObj.kosis_ksic_code})`,
-    spatial_alignment_note:
-      '점포 분포는 반경 기반 좌표 집계(상가정보 API)이며, 생존·폐업 통계는 통계청 KOSIS 기업생멸행정통계(시·도/시·군·구 산업분류) 및 지자체 상권 생멸 지표를 결합한 값입니다.',
-    temporal_alignment_note:
-      '상가 점포(2026-Q1), 주민등록인구(2026.02), 기업생멸통계(2025년 연간 코호트 공표분) 간 기준 시점 차이를 각 지표 하단에 명시했습니다.',
-    missing_data_policy:
-      '미확보 지표(예: 비표본 지역의 유동인구·5년 생존율·임대료)는 임의의 숫자로 채우지 않고 NULL로 유지하며, 확보된 항목만으로 가중치를 재정규화하여 평가했습니다.'
-  };
-
-  return {
-    analysis_id: `ANL_${Date.now()}`,
-    generated_at: new Date().toISOString(),
-    execution_ms: Date.now() - startedAt,
-    disclaimer:
-      '본 서비스는 창업 성공을 보장하는 예측기가 아니라, 공개 통계와 확보된 상권 데이터를 이용한 의사결정 지원 도구입니다. 초기 가중치(40/25/20/15%)는 초기 테스트 제안 기준이며 실제 계약 전 현장 실사가 필수입니다.',
-    query_summary: {
-      industry_code: industryObj.industry_code,
-      industry_name: industryObj.industry_name,
-      category_large: industryObj.category_large,
-      category_middle: industryObj.category_middle,
-      semas_code: industryObj.semas_code,
-      kosis_ksic_code: industryObj.kosis_ksic_code,
-      sido_name: sidoName,
-      sigungu_name: sigunguName,
-      emd_name: emdName || '전체',
-      radius_meters: radiusMeters,
-      budget_limit_manwon: budgetLimitManwon,
-      rent_limit_manwon: rentLimitManwon,
-      store_type: storeType,
-      reference_area_pyeong: industryObj.typical_area_pyeong[storeType] || industryObj.typical_area_pyeong.GENERAL,
-      scope_notice: scopeNotice
-    },
-    weights_config: {
-      initial_proposal: DEFAULT_WEIGHTS,
-      applied: weights,
-      note: '기획서 8장 초기 평가 가중치 (생존·폐업 40%, 경쟁 강도 25%, 지역 수요 20%, 비용 부담 15%)'
-    },
-    comparability_check: comparabilityCheck,
-    top_recommendations: top10,
-    data_sources_used: DATA_SOURCES
-  };
-}
-
-/**
- * 선택한 2~3개 후보 상권 정밀 비교 분석
- */
-function compareCandidateZones(zoneIds = [], queryParams = {}) {
-  const industryObj = resolveIndustry(queryParams.industry || 'IND_CAFE');
-  const radiusMeters = Number(queryParams.radius) || 500;
-  const budgetLimitManwon = Number(queryParams.budget) || 10000;
-  const rentLimitManwon = Number(queryParams.rent) || 350;
-  const storeType = queryParams.storeType || 'GENERAL';
-
-  const allKnownZones = Array.from(runtimeZoneMap.values());
-  const targetZones = allKnownZones.filter((z) => zoneIds.includes(z.zone_id));
-  const evaluated = targetZones.map((zone) =>
-    evaluateZoneCandidate(zone, industryObj, {
-      radiusMeters,
-      budgetLimitManwon,
-      rentLimitManwon,
-      storeType
-    })
-  );
-
-  evaluated.sort((a, b) => b.total_score - a.total_score);
-
-  const highest = evaluated[0] || null;
-  const lowest = evaluated[evaluated.length - 1] || null;
-
-  return {
-    compared_at: new Date().toISOString(),
-    industry: industryObj,
-    candidates: evaluated,
-    comparison_summary: highest && lowest && highest.zone_id !== lowest.zone_id
-      ? {
-          leader_zone_name: highest.zone_name,
-          score_gap: round1(highest.total_score - lowest.total_score),
-          key_difference: `${highest.zone_name}(종합 ${highest.total_score}점)은 ${lowest.zone_name}(종합 ${lowest.total_score}점) 대비 3년 생존율(${highest.survival_closure_stats.survival_rate_3yr}% vs ${lowest.survival_closure_stats.survival_rate_3yr}%) 및 점포당 유효수요(${highest.competition_stats.demand_per_store.toLocaleString()}명 vs ${lowest.competition_stats.demand_per_store.toLocaleString()}명) 지표에서 우위를 보입니다.`,
-          uncertainty_warnings: evaluated
-            .filter((e) => e.reliability.missing_metrics.length > 0)
-            .map((e) => `${e.zone_name}: 미확보 데이터(${e.reliability.missing_metrics.join(', ')})로 인해 신뢰도 등급이 '${e.reliability.label}'입니다.`)
-        }
-      : null
-  };
-}
-
-module.exports = {
-  DEFAULT_WEIGHTS,
-  resolveIndustry,
-  runRecommendationAnalysis,
-  compareCandidateZones
-};
-
-},{"../data/publicDatasetStore":"store"}],
-"demo":[function(require,module,exports){
-'use strict';
-const { runRecommendationAnalysis } = require('./recommendationEngine');
-const { INDUSTRY_CODES, REGIONS_TREE } = require('../data/publicDatasetStore');
-function demoAnalysis(input = {}) {
-  const industry = INDUSTRY_CODES.find(i => i.industry_code === input.industry);
-  const region = REGIONS_TREE.find(s => s.sido_name === input.sido);
-  const district = region?.sigungu_list.find(s => s.sigungu_name === input.sigungu);
-  if (!industry || !district || input.emd && !district.emd_list.includes(input.emd)) throw new Error('INVALID_DEMO_SELECTION');
-  const p = { ...input, industry: industry.industry_code, radius: Math.max(100, Math.min(2000, Number(input.radius) || 500)) };
-  const weightKeys = ['wSurvival', 'wCompetition', 'wDemand', 'wCost'];
-  if (weightKeys.some(k => input[k] != null && (!Number.isFinite(Number(input[k])) || Number(input[k]) < 0))) throw new Error('INVALID_WEIGHTS');
-  if (weightKeys.every(k => input[k] != null) && weightKeys.every(k => Number(input[k]) === 0)) throw new Error('INVALID_WEIGHTS');
-  const result = runRecommendationAnalysis(p);
-  return { mode: 'DEMO', generated_at: result.generated_at, query: result.query_summary, weights: result.weights_config.applied,
-    notice: '모든 점수·점포·인구·비용은 기능 체험용 가상 데이터입니다. 실제 공식 통계·입지 추천으로 사용할 수 없습니다.',
-    candidates: result.top_recommendations.map(c => ({ id: c.zone_id, rank: c.rank, name: c.zone_name.replace(/\s*\(일부 통계 미확보 검증용\)/, ''),
-      region: `${c.sido_name} ${c.sigungu_name}`, emd: c.emd_name, type: c.district_type_label, lat: c.lat, lng: c.lng,
-      score: c.total_score, scores: c.pillar_scores, weights: c.weights_applied,
-      stores: c.competition_stats.same_industry_store_count, population: c.demand_stats.resident_population,
-      workers: c.demand_stats.worker_population, rent: c.cost_stats.estimated_monthly_rent_manwon,
-      startup: c.cost_stats.estimated_total_startup_cost_manwon,
-      survival: [c.survival_closure_stats.survival_rate_1yr, c.survival_closure_stats.survival_rate_3yr, c.survival_closure_stats.survival_rate_5yr],
-      closure: c.survival_closure_stats.annual_closure_rate, missing: c.reliability.missing_metrics,
-      source: '가상 시뮬레이션', quality: 'DEMO', observed_at: null })) };
-}
-module.exports = { demoAnalysis };
-
-},{"./recommendationEngine":"engine","../data/publicDatasetStore":"store"}]};const cache={};function load(id){if(cache[id])return cache[id].exports;const [factory,deps]=modules[id];const module={exports:{}};cache[id]=module;factory(name=>load(deps[name]),module,module.exports);return module.exports;}const s=load('store');return {meta:{industries:s.INDUSTRY_CODES,regions:s.REGIONS_TREE},providers:[{"id":"semas","name":"상가·상권정보","provider":"소상공인시장진흥공단","env":"DATA_GO_KR_SERVICE_KEY","url":"https://www.data.go.kr/data/15012005/openapi.do","description":"반경·행정구역별 점포, 업종, 주소와 좌표"},{"id":"nts","name":"사업자등록 상태","provider":"국세청","env":"NTS_SERVICE_KEY","url":"https://www.data.go.kr/data/15081808/openapi.do","description":"입력한 사업자번호의 현재 상태·진위 확인"},{"id":"kosis","name":"기업생멸 통계","provider":"KOSIS 국가통계포털","env":"KOSIS_API_KEY","url":"https://kosis.kr/openapi/index/index.jsp","description":"선택한 통계표의 원래 분류·단위·시점을 보존"},{"id":"region","name":"지역 인구·수요","provider":"KOSIS / 공공데이터포털","env":"KOSIS_API_KEY","url":"https://www.data.go.kr/","description":"별도로 지정한 KOSIS 지역 통계표 조회"},{"id":"kakao","name":"주소·장소 검색","provider":"Kakao Local","env":"KAKAO_REST_API_KEY","url":"https://developers.kakao.com/","description":"장소 검색, 주소 및 좌표 → 행정구역 변환"}],analyze:load('demo').demoAnalysis};})();
+},{"./koreaRegionsFull":"regions"}]};const cache={};function load(id){if(cache[id])return cache[id].exports;const [factory,deps]=modules[id];const module={exports:{}};cache[id]=module;factory(name=>load(deps[name]),module,module.exports);return module.exports;}const s=load('store');return {meta:{industries:s.INDUSTRY_CODES,regions:s.REGIONS_TREE,kakao_js_key:"cb5f900c0cf6007bf8a612dda652fdcd"},providers:[{"id":"semas","name":"상가·상권정보","provider":"소상공인시장진흥공단","env":"DATA_GO_KR_SERVICE_KEY","url":"https://www.data.go.kr/data/15012005/openapi.do","description":"반경·행정구역별 점포, 업종, 주소와 좌표"},{"id":"nts","name":"사업자등록 상태","provider":"국세청","env":"NTS_SERVICE_KEY","url":"https://www.data.go.kr/data/15081808/openapi.do","description":"입력한 사업자번호의 현재 상태·진위 확인"},{"id":"kosis","name":"기업생멸 통계","provider":"KOSIS 국가통계포털","env":"KOSIS_API_KEY","url":"https://kosis.kr/openapi/index/index.jsp","description":"선택한 통계표의 원래 분류·단위·시점을 보존"},{"id":"region","name":"지역 인구·수요","provider":"KOSIS / 공공데이터포털","env":"KOSIS_API_KEY","url":"https://www.data.go.kr/","description":"별도로 지정한 KOSIS 지역 통계표 조회"},{"id":"kakao","name":"주소·장소 검색","provider":"Kakao Local","env":"KAKAO_REST_API_KEY","url":"https://developers.kakao.com/","description":"장소 검색, 주소 및 좌표 → 행정구역 변환"}]};})();
 'use strict';
 const $ = id => document.getElementById(id);
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = (v, suffix = '') => v == null ? '미확보' : `${Number(v).toLocaleString('ko-KR')}${suffix}`;
-const state = { mode: 'LIVE', meta: null, result: null, live: null, selected: null, compared: new Set(), map: null, layers: null, center: [37.5006, 127.0334], requestId: 0, token: '', view: 'explore', providers: [], liveQuery: null };
+const state = { mode: 'LIVE', meta: null, result: null, live: null, selected: null, compared: new Set(), map: null, mapEngine: null, layers: null, daumOverlays: [], daumCircle: null, roadview: null, roadviewClient: null, center: [37.5006, 127.0334], requestId: 0, token: '', view: 'explore', providers: [], liveQuery: null };
 const labels = { survival: '생존·폐업 지표', competition: '경쟁 환경', demand: '배후 수요', cost: '비용 부담' };
 let toastTimer;
 function toast(message) { $('toast').textContent = message; $('toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').hidden = true, 6000); }
@@ -3251,8 +2638,8 @@ async function api(route, data, admin = false) {
   if (window.APP_STATIC) {
     if (route === '/api/meta') return window.APP_DEMO.meta;
     if (route === '/api/external/catalog') return { providers: window.APP_DEMO.providers.map(p => ({ ...p, status: 'SERVER_REQUIRED', configured: false })) };
-    if (route === '/api/recommend' && data?.mode === 'DEMO') return window.APP_DEMO.analyze(data);
-    throw new Error('정적 데모에서는 실제 API를 호출하지 않습니다. Node.js 서버에서 실행해 주세요.');
+  
+    throw new Error('서버에 연결해야 실제 API를 호출할 수 있습니다. Node.js 서버에서 실행해 주세요.');
   }
   const response = await fetch(route, { method: data ? 'POST' : 'GET', headers: { ...(data ? { 'Content-Type': 'application/json' } : {}), ...(admin ? { Authorization: `Bearer ${state.token || $('adminToken').value}` } : {}) }, body: data ? JSON.stringify(data) : undefined, signal: AbortSignal.timeout(20000) });
   let json;
@@ -3267,19 +2654,86 @@ async function perform(button, fn, output) {
   finally { if (button) { button.disabled = false; button.textContent = old; } }
 }
 function switchView(view) {
-  if (!['explore', 'compare', 'report', 'sources'].includes(view)) return;
+  if (!['explore', 'compare', 'sales', 'report', 'sources', 'account', 'auth', 'admin', 'guide'].includes(view)) return;
   state.view = view;
   document.querySelectorAll('.view').forEach(el => el.hidden = el.id !== `view-${view}`);
   document.querySelectorAll('.nav').forEach(el => { el.classList.toggle('active', el.dataset.view === view); el.setAttribute('aria-current', el.dataset.view === view ? 'page' : 'false'); });
-  $('pageTitle').textContent = { explore: '상권 탐색', compare: '후보 비교', report: '분석 리포트', sources: '데이터 연결' }[view];
-  if (view === 'explore') setTimeout(() => state.map?.invalidateSize(), 50);
+  $('pageTitle').textContent = { explore: '상권 탐색', compare: '후보 비교', sales: '카드매출 분석', report: '분석 리포트', sources: '데이터 연결', account: '내 워크스페이스', auth: '로그인 / 회원가입', admin: '관리자', guide: '시작 가이드' }[view];
+  if (view === 'explore') setTimeout(resizeMap, 50);
   if (view === 'compare') renderComparison();
+  if (view === 'sales' && typeof openSalesView === 'function') openSalesView();
   if (view === 'report') renderReport();
   if (view === 'sources') refreshProviders();
+  if (view === 'account') renderAccount();
+  history.replaceState(null, '', `#${view}`);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-function initMap() {
+const loadedScripts = new Map();
+function loadScriptOnce(src) {
+  if (loadedScripts.has(src)) return loadedScripts.get(src);
+  const p = new Promise(resolve => {
+    const s = document.createElement('script');
+    s.src = src; s.async = true;
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.head.append(s);
+  });
+  loadedScripts.set(src, p);
+  return p;
+}
+function resizeMap() {
+  if (!state.map) return;
+  if (state.mapEngine === 'DAUM') {
+    state.map.relayout();
+    state.map.setCenter(new window.daum.maps.LatLng(state.center[0], state.center[1]));
+  } else state.map.invalidateSize();
+}
+function moveMap(lat, lng, leafletZoom = 14) {
+  state.center = [lat, lng];
+  if (!state.map) return;
+  if (state.mapEngine === 'DAUM') {
+    const levelMap = { 13: 5, 14: 4, 15: 3, 16: 2 };
+    state.map.setLevel(levelMap[leafletZoom] || 4);
+    state.map.panTo(new window.daum.maps.LatLng(lat, lng));
+  } else {
+    state.map.setView([lat, lng], leafletZoom);
+  }
+  if (!$('roadviewWrap').hidden && state.mapEngine === 'DAUM') refreshRoadview();
+}
+async function initMap() {
+  const jsKey = state.meta?.kakao_js_key;
+  if (jsKey) {
+    const loaded = await loadScriptOnce(`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${encodeURIComponent(jsKey)}&libraries=services&autoload=false`);
+    if (loaded && window.kakao?.maps?.load) {
+      const ready = await new Promise(resolve => { try { window.kakao.maps.load(() => resolve(Boolean(window.daum?.maps?.Map))); } catch { resolve(false); } });
+      if (ready) {
+        state.mapEngine = 'DAUM';
+        $('map').innerHTML = '';
+        state.map = new window.daum.maps.Map($('map'), { center: new window.daum.maps.LatLng(state.center[0], state.center[1]), level: 4 });
+        state.map.addControl(new window.daum.maps.ZoomControl(), window.daum.maps.ControlPosition.RIGHT);
+        $('mapEngineBadge').textContent = '다음지도 LIVE';
+        $('mapEngineBadge').className = 'tag live';
+        $('mapDomainHint').hidden = true;
+        window.daum.maps.event.addListener(state.map, 'click', mouseEvent => {
+          const latlng = mouseEvent.latLng;
+          state.center = [latlng.getLat(), latlng.getLng()];
+          updateCoordinates();
+          if (!$('roadviewWrap').hidden) refreshRoadview();
+          if (state.mode === 'LIVE') { state.live = null; state.liveQuery = null; drawMap(); renderLiveEmpty(); }
+          else drawMap();
+        });
+        updateCoordinates();
+        drawMap();
+        return;
+      }
+    }
+    $('mapDomainHint').hidden = false;
+    $('mapDomainHint').textContent = `카카오 디벨로퍼스 [플랫폼 → Web]에 현재 주소(${location.origin})를 추가하면 내장 다음지도·스카이뷰·로드뷰가 즉시 활성화됩니다. (다음 주소찾기·새창 로드뷰는 바로 사용 가능)`;
+  }
   if (!window.L) { $('map').innerHTML = '<div class="map-fallback">지도 라이브러리를 불러오지 못했습니다.<br>네트워크 연결을 확인하세요. 검색 목록은 계속 이용할 수 있습니다.</div>'; return; }
+  state.mapEngine = 'LEAFLET';
+  $('mapEngineBadge').textContent = '기본지도 · 다음 주소연동';
+  $('mapEngineBadge').className = 'tag ready';
   state.map = L.map('map', { zoomControl: false }).setView(state.center, 14);
   L.control.zoom({ position: 'bottomright' }).addTo(state.map);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(state.map);
@@ -3287,11 +2741,140 @@ function initMap() {
   state.map.on('click', e => { state.center = [e.latlng.lat, e.latlng.lng]; updateCoordinates(); if (state.mode === 'LIVE') { state.live = null; state.liveQuery = null; drawMap(); renderLiveEmpty(); } });
   updateCoordinates();
 }
-function updateCoordinates() { $('coordinates').textContent = `${state.center[0].toFixed(5)}, ${state.center[1].toFixed(5)} · ${$('radius').value}m`; }
+function setDaumMapType(skyview) {
+  $('btnMapNormal').classList.toggle('selected', !skyview);
+  $('btnMapSkyview').classList.toggle('selected', skyview);
+  if (state.mapEngine === 'DAUM' && state.map) {
+    state.map.setMapTypeId(skyview ? window.daum.maps.MapTypeId.HYBRID : window.daum.maps.MapTypeId.ROADMAP);
+  } else if (skyview) {
+    toast('스카이뷰 위성지도는 내장 다음지도 활성화 도메인 또는 [다음지도 크게보기]에서 확인할 수 있습니다.');
+    $('btnMapNormal').classList.add('selected');
+    $('btnMapSkyview').classList.remove('selected');
+  }
+}
+function refreshRoadview() {
+  if (state.mapEngine !== 'DAUM' || !window.daum?.maps?.Roadview) return;
+  if (!state.roadview) {
+    state.roadview = new window.daum.maps.Roadview($('roadview'));
+    state.roadviewClient = new window.daum.maps.RoadviewClient();
+  }
+  const pos = new window.daum.maps.LatLng(state.center[0], state.center[1]);
+  state.roadviewClient.getNearestPanoId(pos, 100, panoId => {
+    if (!panoId) { $('roadviewStatus').textContent = '반경 100m 내 도로 파노라마가 없는 위치입니다.'; return; }
+    $('roadviewStatus').textContent = `${state.center[0].toFixed(5)}, ${state.center[1].toFixed(5)} 현장 거리뷰`;
+    state.roadview.setPanoId(panoId, pos);
+  });
+}
+function toggleRoadview() {
+  if (state.mapEngine === 'DAUM') {
+    const nextHidden = !$('roadviewWrap').hidden;
+    $('roadviewWrap').hidden = nextHidden;
+    if (!nextHidden) refreshRoadview();
+  } else {
+    window.open(`https://map.kakao.com/link/roadview/${state.center[0]},${state.center[1]}`, '_blank', 'noopener');
+  }
+}
+async function openDaumPostcode() {
+  const ok = await loadScriptOnce('https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js');
+  if (!ok || !window.daum?.Postcode) return toast('다음 우편번호 서비스를 불러오지 못했습니다.');
+  $('postcodeEmbed').innerHTML = '';
+  $('postcodeDialog').showModal();
+  new window.daum.Postcode({
+    width: '100%',
+    height: '100%',
+    oncomplete: async data => {
+      $('postcodeDialog').close();
+      const addr = data.roadAddress || data.jibunAddress || data.address;
+      if (!addr) return;
+      $('placeQuery').value = addr;
+      $('placeType').value = 'address';
+      try {
+        const docs = await searchPlacesClientOrServer(addr, 'address');
+        if (docs[0]?.lat != null && docs[0]?.lng != null) {
+          moveMap(docs[0].lat, docs[0].lng, 16);
+          updateCoordinates(); drawMap();
+          toast(`다음 주소 선택 완료: ${addr}`);
+          return;
+        }
+      } catch { /* fallback below */ }
+      try {
+        const nom = await (await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=kr&q=${encodeURIComponent(addr)}`)).json();
+        if (nom[0]) {
+          moveMap(Number(nom[0].lat), Number(nom[0].lon), 16);
+          updateCoordinates(); drawMap();
+          toast(`다음 주소 이동 완료: ${addr}`);
+          return;
+        }
+      } catch { /* ignore */ }
+      toast(`주소가 입력되었습니다: ${addr}`);
+    }
+  }).embed($('postcodeEmbed'));
+}
+async function searchPlacesClientOrServer(q, action) {
+  if (window.daum?.maps?.services) {
+    return new Promise((resolve, reject) => {
+      if (action === 'address') {
+        new window.daum.maps.services.Geocoder().addressSearch(q, (res, status) => {
+          if (status === window.daum.maps.services.Status.ZERO_RESULT) return resolve([]);
+          if (status !== window.daum.maps.services.Status.OK) return reject(new Error('다음 주소 좌표 변환에 실패했습니다.'));
+          resolve(res.map(r => ({ name: r.address_name, address: r.road_address?.address_name || r.address_name, lat: Number(r.y), lng: Number(r.x) })));
+        });
+      } else {
+        new window.daum.maps.services.Places().keywordSearch(q, (res, status) => {
+          if (status === window.daum.maps.services.Status.ZERO_RESULT) return resolve([]);
+          if (status !== window.daum.maps.services.Status.OK) return reject(new Error('다음 장소 검색에 실패했습니다.'));
+          resolve(res.map(r => ({ name: r.place_name, address: r.road_address_name || r.address_name, lat: Number(r.y), lng: Number(r.x) })));
+        });
+      }
+    });
+  }
+  const data = await api('/api/external/kakao', { query: q, action });
+  return data.documents || [];
+}
+function updateCoordinates() {
+  $('coordinates').textContent = `${state.center[0].toFixed(5)}, ${state.center[1].toFixed(5)} · ${$('radius').value}m`;
+  if ($('linkDaumMap')) {
+    const label = encodeURIComponent($('mapTitle').textContent || '탐색 위치');
+    $('linkDaumMap').href = `https://map.kakao.com/link/map/${label},${state.center[0]},${state.center[1]}`;
+  }
+}
 function drawMap() {
   if (!state.map) return;
-  state.layers.clearLayers();
   const list = state.mode === 'DEMO' ? state.result?.candidates || [] : state.live?.items || [];
+  if (state.mapEngine === 'DAUM') {
+    if (state.daumCircle) { state.daumCircle.setMap(null); state.daumCircle = null; }
+    state.daumOverlays.forEach(o => o.setMap(null));
+    state.daumOverlays = [];
+    const centerLatLng = new window.daum.maps.LatLng(state.center[0], state.center[1]);
+    state.daumCircle = new window.daum.maps.Circle({
+      center: centerLatLng, radius: Number($('radius').value),
+      strokeWeight: 2, strokeColor: '#197266', strokeOpacity: 0.85,
+      fillColor: '#197266', fillOpacity: 0.1
+    });
+    state.daumCircle.setMap(state.map);
+    list.forEach(c => {
+      if (!Number.isFinite(c.lat) || !Number.isFinite(c.lng)) return;
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `<div class="pin ${state.selected === c.id ? 'chosen' : ''}" title="${escapeHtml(c.name || c.store_name || '')}"><span>${state.mode === 'DEMO' ? c.rank : '•'}</span></div>`;
+      const el = wrap.firstElementChild;
+      el.style.cursor = 'pointer';
+      el.onclick = ev => {
+        ev.stopPropagation();
+        if (state.mode === 'DEMO') showDetail(c.id);
+        else toast(`${c.store_name || ''} · ${c.address || '주소 미제공'}`);
+      };
+      const overlay = new window.daum.maps.CustomOverlay({
+        position: new window.daum.maps.LatLng(c.lat, c.lng),
+        content: el,
+        yAnchor: 1
+      });
+      overlay.setMap(state.map);
+      state.daumOverlays.push(overlay);
+    });
+    return;
+  }
+  if (!state.layers) return;
+  state.layers.clearLayers();
   L.circle(state.center, { radius: Number($('radius').value), color: '#438568', fillOpacity: .07, weight: 1.5 }).addTo(state.layers);
   list.forEach(c => {
     if (!Number.isFinite(c.lat) || !Number.isFinite(c.lng)) return;
@@ -3300,6 +2883,14 @@ function drawMap() {
     marker.bindPopup(`<strong>${escapeHtml(c.name || c.store_name)}</strong><br>${escapeHtml(state.mode === 'DEMO' ? '가상 후보 위치 · 데모 전용' : c.address)}`);
     if (state.mode === 'DEMO') marker.on('click', () => showDetail(c.id));
   });
+}
+function syncOfficialIndustry() {
+  const selected = state.meta?.industries.find(i => i.industry_code === $('industry').value);
+  const code = selected?.semas_code;
+  $('officialIndustry').value = /^[A-Z]\d{5}$/.test(code || '') ? code : '';
+  $('officialIndustryHelp').textContent = code && $('officialIndustry').value
+    ? `선택한 업종의 기본 코드 ${code}가 입력되었습니다. 제공기관의 분류와 다를 수 있으니 확인 후 수정할 수 있습니다.`
+    : '연결된 코드가 없습니다. 코드를 입력하거나 비워두면 전체 업종을 조회합니다.';
 }
 function populateIndustries(query = '') {
   const previous = $('industry').value;
@@ -3310,7 +2901,8 @@ function populateIndustries(query = '') {
   $('industry').innerHTML = [...groups].map(([group, items]) => `<optgroup label="${escapeHtml(group)}">${items.map(i => `<option value="${i.industry_code}">${escapeHtml(i.industry_name)}</option>`).join('')}</optgroup>`).join('');
   if (filtered.some(i => i.industry_code === previous)) $('industry').value = previous;
   $('analyze').disabled = !filtered.length;
-  $('industryHint').textContent = filtered.length ? `${filtered.length}개 업종 · 세부 코드 매핑은 제공기관 분류 확인이 필요합니다.` : '일치하는 업종이 없습니다. 검색어를 바꿔 주세요.';
+  syncOfficialIndustry();
+  $('industryHint').textContent = filtered.length ? `${filtered.length}개 업종 · 선택하면 기본 소분류 코드가 입력됩니다.` : '일치하는 업종이 없습니다. 검색어를 바꿔 주세요.';
 }
 function populateDistricts() {
   const r = state.meta.regions.find(r => r.sido_name === $('sido').value);
@@ -3323,9 +2915,10 @@ function populateEmd() {
   const d = r.sigungu_list.find(d => d.sigungu_name === $('sigungu').value);
   $('emd').innerHTML = '<option value="">전체 읍·면·동</option>' + d.emd_list.map(e => `<option>${escapeHtml(e)}</option>`).join('');
   state.center = [...d.center]; state.live = null; state.result = null; state.compared.clear(); state.liveQuery = null;
-  $('compareCount').textContent = '0'; state.map?.setView(state.center, 13); updateCoordinates(); drawMap(); renderLiveEmpty();
+  $('compareCount').textContent = '0'; moveMap(state.center[0], state.center[1], 13); updateCoordinates(); drawMap(); renderLiveEmpty();
 }
 function setMode(mode) {
+  mode = 'LIVE';
   state.requestId++;
   state.mode = mode; state.result = null; state.live = null; state.liveQuery = null; state.compared.clear(); state.selected = null;
   $('compareCount').textContent = '0';
@@ -3360,16 +2953,16 @@ async function analyze(page = 1) {
       if (id !== state.requestId) return;
       state.result = data; state.compared = new Set([...state.compared].filter(id => data.candidates.some(c => c.id === id)));
       renderCandidates();
-      const first = data.candidates[0]; if (first) { state.center = [first.lat, first.lng]; state.map?.setView(state.center, 13); }
+      const first = data.candidates[0]; if (first) moveMap(first.lat, first.lng, 13);
     } else {
       // Broad UI categories are not asserted to be verified official small-industry codes.
-      const p = page === 1 ? { cx: state.center[1], cy: state.center[0], radius: Number($('radius').value), numOfRows: 100, pageNo: 1 } : { ...state.liveQuery, pageNo: page };
+      const p = page === 1 ? { cx: state.center[1], cy: state.center[0], radius: Number($('radius').value), numOfRows: 100, pageNo: 1, ...($('officialIndustry').value.trim() ? { indsSclsCd: $('officialIndustry').value.trim() } : {}) } : { ...state.liveQuery, pageNo: page };
       const data = await api('/api/external/semas', p);
       if (id !== state.requestId) return;
       state.live = data; state.liveQuery = p; renderStores();
     }
     renderMetrics(); drawMap(); updateCoordinates();
-    $('filterFeedback').textContent = state.mode === 'DEMO' ? '가상 데이터 분석 완료 · 실제 추천이 아닙니다.' : '공식 API 응답을 조회했습니다. 선택 업종별 분류는 아래 점포의 원본 업종명을 확인하세요.';
+    $('filterFeedback').textContent = state.mode === 'DEMO' ? '가상 데이터 분석 완료 · 실제 추천이 아닙니다.' : '공식 API 응답을 조회했습니다. 업종명과 관측 시점을 함께 확인하세요.';
   }, $('filterFeedback'));
 }
 function renderMetrics() {
@@ -3397,7 +2990,7 @@ function renderStores() {
   $('resultsTitle').textContent = `실제 점포 ${data.items.length}곳 · ${data.page}페이지`;
   $('mapTitle').textContent = '선택 위치 주변의 실제 점포';
   $('resultNotice').hidden = false;
-  $('resultNotice').textContent = `${data.mode === 'STALE' ? '갱신 실패 · 마지막 실제 수집 캐시' : data.mode === 'CACHED' ? '최근 실제 수집 캐시' : '공식 API 조회'} · 수집 ${new Date(data.collected_at).toLocaleString('ko-KR')} · 전체 업종 조회입니다. 업종명은 제공기관 원본 분류입니다.`;
+  $('resultNotice').textContent = `${data.mode === 'STALE' ? '갱신 실패 · 마지막 실제 수집 캐시' : data.mode === 'CACHED' ? '최근 실제 수집 캐시' : '공식 API 조회'} · 수집 ${new Date(data.collected_at).toLocaleString('ko-KR')} · ${state.liveQuery?.indsSclsCd ? state.liveQuery.indsSclsCd + ' 업종 조회' : '전체 업종 조회'} · 제공기관 원본 분류 기준`;
   $('cards').innerHTML = data.items.map(c => `<article class="candidate panel"><div class="card-top"><span class="tag live">실제 API 응답</span><span class="location">${escapeHtml(c.industry_code || '분류 없음')}</span></div><h3>${escapeHtml(c.store_name)} ${escapeHtml(c.branch_name || '')}</h3><p class="location">${escapeHtml(c.address || '주소 미제공')}</p><div class="card-bottom"><span>${escapeHtml(c.industry_name || '업종 미제공')}</span><span class="location">${escapeHtml(c.floor || '층 미제공')}</span></div></article>`).join('') || '<div class="empty panel"><h3>조회된 점포가 없습니다.</h3><p>위치 또는 반경을 바꿔 다시 조회해 보세요.</p></div>';
   $('moreStores').hidden = data.total_count == null || data.page * data.page_size >= data.total_count;
 }
@@ -3410,7 +3003,7 @@ function showDetail(id) {
 function renderComparison() {
   const list = state.result?.candidates.filter(c => state.compared.has(c.id)) || [];
   const host = $('comparison');
-  if (list.length < 2) { host.className = 'panel empty'; host.innerHTML = '<span>▥</span><h3>비교할 후보를 2~3곳 선택해 주세요</h3><p>데모 체험 결과에서 비교 담기를 선택하면 같은 분석 조건으로 나란히 볼 수 있습니다.</p>'; return; }
+  if (list.length < 2) { host.className = 'panel empty'; host.innerHTML = '<span>▥</span><h3>비교할 후보를 2~3곳 선택해 주세요</h3><p>비교 가능한 공식 데이터가 확보되면 이용할 수 있습니다.</p>'; return; }
   host.className = 'panel padded';
   const rows = [['데모 점수', c => fmt(c.score)], ['가상 경쟁 점포', c => fmt(c.stores, '곳')], ['가상 상주 인구', c => fmt(c.population, '명')], ['가상 직장 인구', c => fmt(c.workers, '명')], ['가상 월세', c => fmt(c.rent, '만원')], ['가상 초기 비용', c => fmt(c.startup, '만원')], ['3년 가상 생존율', c => fmt(c.survival[1], '%')], ['결측 항목', c => c.missing.join(', ') || '없음']];
   host.innerHTML = `<div class="inline-notice">모든 비교 수치는 데모입니다. 현재 분석에서 산출한 동일한 가중치의 결과를 사용합니다.</div><div class="table-wrap"><table><thead><tr><th>비교 항목</th>${list.map(c => `<th>${escapeHtml(c.name)}</th>`).join('')}</tr></thead><tbody>${rows.map(([label, fn]) => `<tr><th>${label}</th>${list.map(c => `<td>${escapeHtml(fn(c))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
@@ -3436,24 +3029,35 @@ function download(content, extension, mime) {
 async function refreshProviders() {
   try {
     state.providers = (await api('/api/external/catalog')).providers;
-    const names = { NOT_CONFIGURED: '인증키 필요', READY: '설정됨 · 미검증', NEEDS_TABLE: '통계표 지정 필요', CONNECTED: '응답 확인', ERROR: '최근 호출 오류', SERVER_REQUIRED: '서버 필요' };
-    $('providerCards').innerHTML = state.providers.map(p => `<article class="panel provider-card"><div class="provider-state"><span class="provider-icon">${{ semas: '⌂', nts: '✓', kosis: '▥', region: '◎', kakao: '⌖' }[p.id]}</span><span class="tag ${p.status === 'CONNECTED' ? 'live' : ''}">${names[p.status] || p.status}</span></div><h3>${escapeHtml(p.name)}</h3><p>${escapeHtml(p.description)}</p><small>${escapeHtml(p.provider)} · ${p.last_success_at ? new Date(p.last_success_at).toLocaleString('ko-KR') : '실제 수집 성공 이력 없음'}</small><a href="${escapeHtml(p.url)}" target="_blank" rel="noopener">공식 안내 및 활용 신청 ↗</a></article>`).join('');
+    const names = { NOT_CONFIGURED: '인증키 필요', READY: '설정됨 · 조회 대기', NEEDS_TABLE: '통계표 지정 필요', CONNECTED: '실시간 응답 확인', ERROR: '기관 확인 필요', SERVER_REQUIRED: '서버 필요' };
+    $('providerCards').innerHTML = state.providers.map(p => `<article class="panel provider-card"><div class="provider-state"><span class="provider-icon">${{ semas: '⌂', nts: '✓', kosis: '▥', region: '◎', kakao: '⌖' }[p.id]}</span><span class="tag ${p.status === 'CONNECTED' ? 'live' : p.status === 'READY' ? 'ready' : p.status === 'ERROR' ? 'demo' : ''}">${names[p.status] || p.status}</span></div><h3>${escapeHtml(p.name)}</h3><p>${escapeHtml(p.description)}</p>${p.last_message ? `<div class="inline-notice" style="margin:0 0 12px;padding:8px 11px;font-size:10.5px">${escapeHtml(p.last_message)}</div>` : ''}<small>${escapeHtml(p.provider)} · ${p.last_success_at ? '최근 응답 ' + new Date(p.last_success_at).toLocaleString('ko-KR') : p.configured ? '인증키 적용됨 · 호출 시 실서버 검증' : '실제 수집 성공 이력 없음'}</small><a href="${escapeHtml(p.url)}" target="_blank" rel="noopener">공식 안내 및 활용 신청 ↗</a></article>`).join('');
     const count = state.providers.filter(p => p.status === 'CONNECTED').length;
-    $('serverStatus').textContent = window.APP_STATIC ? '정적 데모 · 서버 미연결' : `서버 연결 · API 응답 확인 ${count}/5`;
+    const configuredCount = state.providers.filter(p => p.configured).length;
+    $('serverStatus').textContent = window.APP_STATIC ? '정적 데모 · 서버 미연결' : `서버 연결 · 키 설정 ${configuredCount}/5 · 응답 확인 ${count}/5`;
   } catch (err) { $('serverStatus').textContent = '서버 연결 확인 필요'; toast(err.message); }
 }
 async function init() {
   document.querySelectorAll('[data-view]').forEach(b => b.onclick = () => switchView(b.dataset.view));
   $('closeDetail').onclick = () => $('detail').close();
+  $('closePostcode').onclick = () => $('postcodeDialog').close();
   $('detail').addEventListener('click', e => { if (e.target === $('detail')) { const r = $('detail').getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) $('detail').close(); } });
+  $('postcodeDialog').addEventListener('click', e => { if (e.target === $('postcodeDialog')) { const r = $('postcodeDialog').getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) $('postcodeDialog').close(); } });
   state.meta = await api('/api/meta');
   populateIndustries();
   $('sido').innerHTML = state.meta.regions.map(r => `<option>${escapeHtml(r.sido_name)}</option>`).join('');
-  populateDistricts(); initMap();
+  populateDistricts(); await initMap(); drawMap();
+  $('btnMapNormal').onclick = () => setDaumMapType(false);
+  $('btnMapSkyview').onclick = () => setDaumMapType(true);
+  $('btnRoadview').onclick = toggleRoadview;
+  $('closeRoadview').onclick = () => { $('roadviewWrap').hidden = true; };
+  $('btnDaumPostcode').onclick = openDaumPostcode;
   $('industrySearch').oninput = e => populateIndustries(e.target.value);
   $('sido').onchange = populateDistricts; $('sigungu').onchange = populateEmd;
-  $('emd').onchange = () => { state.requestId++; state.result = null; state.live = null; state.compared.clear(); renderLiveEmpty(); drawMap(); toast('읍·면·동 중심 좌표는 주소 검색으로 확인해 주세요.'); };
-  $('radius').onchange = () => { state.requestId++; state.live = null; state.result = null; renderLiveEmpty(); drawMap(); updateCoordinates(); };
+  const clearResults = () => { state.requestId++; state.result = null; state.live = null; state.liveQuery = null; state.compared.clear(); $('compareCount').textContent = '0'; renderLiveEmpty(); drawMap(); };
+  $('emd').onchange = () => { clearResults(); toast('읍·면·동 중심 좌표는 주소 검색으로 확인해 주세요.'); };
+  $('radius').onchange = () => { clearResults(); updateCoordinates(); };
+  $('industry').onchange = () => { syncOfficialIndustry(); clearResults(); };
+  $('officialIndustry').onchange = clearResults;
   $('modeLive').onclick = () => setMode('LIVE'); $('modeDemo').onclick = () => setMode('DEMO');
   if ($('tryDemo')) $('tryDemo').onclick = () => setMode('DEMO');
   const defaults = [40, 25, 20, 15];
@@ -3464,21 +3068,21 @@ async function init() {
   $('searchForm').onsubmit = e => { e.preventDefault(); analyze(); };
   $('moreStores').onclick = () => analyze(state.live.page + 1);
   $('placeForm').onsubmit = e => { e.preventDefault(); perform(e.submitter, async () => {
-    const data = await api('/api/external/kakao', { query: $('placeQuery').value, action: $('placeType').value });
+    const docs = await searchPlacesClientOrServer($('placeQuery').value, $('placeType').value);
     $('placeResults').hidden = false;
-    $('placeResults').innerHTML = data.documents.map((d, i) => `<button type="button" data-place="${i}">${escapeHtml(d.name)}<small>${escapeHtml(d.address)}</small></button>`).join('') || '<p class="hint">검색 결과가 없습니다.</p>';
-    $('placeResults').querySelectorAll('[data-place]').forEach(b => b.onclick = () => { const d = data.documents[Number(b.dataset.place)]; if (d.lat == null || d.lng == null) return toast('좌표가 제공되지 않은 장소입니다.'); state.center = [d.lat, d.lng]; state.map?.setView(state.center, 16); $('placeResults').hidden = true; setMode('LIVE'); updateCoordinates(); });
+    $('placeResults').innerHTML = docs.map((d, i) => `<button type="button" data-place="${i}">${escapeHtml(d.name)}<small>${escapeHtml(d.address)}</small></button>`).join('') || '<p class="hint">검색 결과가 없습니다.</p>';
+    $('placeResults').querySelectorAll('[data-place]').forEach(b => b.onclick = () => { const d = docs[Number(b.dataset.place)]; if (d.lat == null || d.lng == null) return toast('좌표가 제공되지 않은 장소입니다.'); moveMap(d.lat, d.lng, 16); $('placeResults').hidden = true; setMode('LIVE'); updateCoordinates(); drawMap(); });
   }); };
   $('print').onclick = () => { renderReport(); window.print(); };
   $('csv').onclick = () => { const rows = exportRows(); if (!rows.length) return toast('먼저 분석 또는 조회를 실행하세요.');
     const cell = v => { let s = String(v ?? ''); if (/^[=+@\-\t\r]/.test(s)) s = `'${s}`; return `"${s.replaceAll('"', '""')}"`; };
     download('\uFEFF' + [Object.keys(rows[0]), ...rows.map(Object.values)].map(row => row.map(cell).join(',')).join('\r\n'), 'csv', 'text/csv;charset=utf-8'); };
   $('exportJson').onclick = () => { const data = state.mode === 'DEMO' ? state.result : state.live; if (!data) return toast('먼저 분석 또는 조회를 실행하세요.'); download(JSON.stringify(data, null, 2), 'json', 'application/json'); };
-  const keyNames = ['DATA_GO_KR_SERVICE_KEY', 'NTS_SERVICE_KEY', 'KOSIS_API_KEY', 'KAKAO_REST_API_KEY'];
+  const keyNames = ['DATA_GO_KR_SERVICE_KEY', 'NTS_SERVICE_KEY', 'KOSIS_API_KEY', 'KAKAO_REST_API_KEY', 'SEOUL_DATA_API_KEY', 'KAKAO_CLIENT_SECRET', 'KAKAO_JAVASCRIPT_KEY', 'KAKAO_NATIVE_APP_KEY', 'KAKAO_BIZ_SECRET'];
   $('keyFields').innerHTML = keyNames.map(k => `<label>${k}<input type="password" data-key="${k}" autocomplete="off" placeholder="변경할 키만 입력"></label>`).join('');
   if (window.APP_STATIC) { $('keysForm').querySelectorAll('input,button').forEach(el => el.disabled = true); $('keyMessage').textContent = '정적 데모에서는 인증키를 입력·보관하지 않습니다. 서버 환경변수를 설정하세요.'; }
   $('keysForm').onsubmit = e => { e.preventDefault(); perform(e.submitter, async () => {
-    state.token = $('adminToken').value;
+    state.token = $('adminToken').value || state.token;
     const keys = Object.fromEntries([...document.querySelectorAll('[data-key]')].filter(el => el.value.trim()).map(el => [el.dataset.key, el.value.trim()]));
     if (!Object.keys(keys).length) throw new Error('변경할 인증키를 입력하세요.');
     const r = await api('/api/external/keys', keys, true); document.querySelectorAll('[data-key]').forEach(el => el.value = ''); $('keyMessage').textContent = r.message; await refreshProviders();
@@ -3486,14 +3090,287 @@ async function init() {
   $('statsForm').onsubmit = e => { e.preventDefault(); perform(e.submitter, async () => {
     let p; try { p = JSON.parse($('statsQuery').value || '{}'); } catch { throw new Error('조회 조건 JSON 형식을 확인하세요.'); }
     const r = await api(`/api/external/${$('statsProvider').value}`, p);
-    $('statsOutput').innerHTML = `<p class="hint">${escapeHtml(r.mode)} · ${escapeHtml(r.collected_at)} · ${r.records.length}개 항목</p>${dataTable(r.records.map(v => ({ 통계표: v.table_name, 분류: v.classifications.map(c => c.name).join(' / '), 항목: v.item_name, 시점: v.period, 값: v.value, 단위: v.unit })))}<p class="hint">${escapeHtml(r.notice)}</p>`; await refreshProviders();
+    const allRows = r.records.map(v => ({ 통계표: v.table_name, 분류: v.classifications.map(c => c.name).join(' / '), 항목: v.item_name, 시점: v.period, 값: v.value, 단위: v.unit }));
+    const renderFiltered = (kw = '') => {
+      const term = kw.trim().toLowerCase();
+      const matched = term ? allRows.filter(row => Object.values(row).some(val => String(val ?? '').toLowerCase().includes(term))) : allRows;
+      $('statsTableWrap').innerHTML = dataTable(matched.slice(0, 150)) + (matched.length > 150 ? `<p class="hint">검색 결과 ${matched.length}건 중 상위 150건을 표시합니다. 검색어로 좁혀 보세요.</p>` : '');
+    };
+    $('statsOutput').innerHTML = `<p class="hint">${escapeHtml(r.mode)} · 수집 ${new Date(r.collected_at).toLocaleString('ko-KR')} · 총 ${r.records.length}개 항목</p><label>결과 내 빠른 필터<input id="statsFilter" type="search" placeholder="예: 숙박, 음식점, 서울, 강남구, 3년 생존율"></label><div id="statsTableWrap"></div><p class="hint">${escapeHtml(r.notice)}</p>`;
+    renderFiltered();
+    $('statsFilter').oninput = ev => renderFiltered(ev.target.value);
+    await refreshProviders();
   }, $('statsOutput')); };
-  $('ntsForm').onsubmit = e => { e.preventDefault(); perform(e.submitter, async () => { state.token = $('adminToken').value; const r = await api('/api/nts/verify', { bizNo: $('bizNo').value }, true); $('ntsOutput').innerHTML = dataTable(r.items.map(v => ({ 사업자번호: v.number_masked, 현재상태: v.status, 과세유형: v.tax_type, 확인된폐업일: v.closed_on }))) + `<p class="hint">${escapeHtml(r.notice)}</p>`; await refreshProviders(); }, $('ntsOutput')); };
-  $('viewLogs').onclick = e => perform(e.currentTarget, async () => { state.token = $('adminToken').value; const r = await api('/api/admin/logs', null, true); $('logOutput').innerHTML = dataTable(r.logs.map(l => ({ 제공처: l.provider, 상태: l.status, 수집건수: l.records_fetched, 완료: l.finished_at }))); }, $('logOutput'));
+  $('ntsAction').onchange = () => {
+    const isValidate = $('ntsAction').value === 'validate';
+    $('ntsValidateFields').hidden = !isValidate;
+    $('ntsOwner').required = isValidate;
+    $('ntsStartDt').required = isValidate;
+  };
+  $('ntsForm').onsubmit = e => { e.preventDefault(); perform(e.submitter, async () => {
+    state.token = $('adminToken').value || state.token;
+    const action = $('ntsAction').value;
+    const payload = action === 'validate'
+      ? { action: 'validate', bizNo: $('bizNo').value, p_nm: $('ntsOwner').value, start_dt: $('ntsStartDt').value, b_nm: $('ntsBizName').value, corp_no: $('ntsCorpNo').value, b_sector: $('ntsSector').value, b_type: $('ntsType').value, b_adr: $('ntsAddress').value, p_nm2: $('ntsOwner2').value }
+      : { action: 'status', bizNo: $('bizNo').value };
+    const r = await api('/api/nts/verify', payload, true);
+    $('ntsOutput').innerHTML = dataTable(r.items.map(v => ({
+      사업자번호: v.number_masked,
+      ...(action === 'validate' ? { 진위확인: v.validity === '01' ? '일치 (01)' : `${v.valid_msg || '불일치'} (${v.validity || '—'})` } : {}),
+      현재상태: v.status,
+      과세유형: v.tax_type,
+      직전과세유형: v.prev_tax_type,
+      폐업일: v.closed_on
+    }))) + `<p class="hint">${escapeHtml(r.notice)}</p>`;
+    await refreshProviders();
+  }, $('ntsOutput')); };
+  $('viewLogs').onclick = e => perform(e.currentTarget, async () => { state.token = $('adminToken').value || state.token; const r = await api('/api/admin/logs', null, true); $('logOutput').innerHTML = dataTable(r.logs.map(l => ({ 제공처: l.provider, 상태: l.status, 수집건수: l.records_fetched, 완료: l.finished_at }))); }, $('logOutput'));
   await refreshProviders(); renderMetrics(); renderReport();
-  if (window.APP_STATIC) setMode('DEMO');
+  if (window.APP_STATIC) setMode('LIVE');
+  await initWorkspace();
 }
 window.addEventListener('DOMContentLoaded', () => init().catch(err => { toast(err.message); $('serverStatus').textContent = '초기화 실패 · 새로고침 필요'; }));
+</script>
+  <script>'use strict';
+let member = null, registering = false, currentSalesTab = 'approval', salesInitialized = false;
+
+function renderBarGroup(title, entries, suffix = '') {
+  const valid = entries.filter(([, v]) => Number.isFinite(v) && v >= 0);
+  const max = Math.max(...valid.map(([, v]) => v), 1);
+  return `<div><strong style="font-size:12px;display:block;margin-bottom:8px">${escapeHtml(title)}</strong>${valid.map(([k, v]) => `<div class="bar-row" style="margin-bottom:9px"><div><span>${escapeHtml(k)}</span><b>${fmt(v, suffix)}</b></div><section class="track"><i style="width:${Math.max(2, Math.round(v / max * 100))}%"></i></section></div>`).join('') || '<p class="hint">표시할 수치가 없습니다.</p>'}</div>`;
+}
+
+async function loadKosisSales(btn) {
+  if (window.APP_STATIC) return;
+  await perform(btn, async () => {
+    const r = await api('/api/card-sales/kosis', {
+      type: currentSalesTab,
+      sido: $('salesSidoFilter').value,
+      keyword: $('salesKeyword').value
+    });
+    if (currentSalesTab === 'approval' && r.records.length) {
+      const periods = [...new Set(r.records.map(x => x.period))].sort();
+      const latest = periods[periods.length - 1];
+      $('metricApproval').textContent = `${latest.slice(0, 4)}.${latest.slice(4)} 실적`;
+      const latestRows = r.records.filter(x => x.period === latest && Number.isFinite(x.value)).sort((a, b) => b.value - a.value);
+      $('kosisSalesChart').innerHTML = renderBarGroup(`${latest} 업종별 국내 카드승인실적 (단위: ${latestRows[0]?.unit || '백억원'})`, latestRows.map(x => [x.classifications[0]?.name || x.item_name, x.value]), ` ${latestRows[0]?.unit || ''}`);
+    } else if (currentSalesTab === 'payment_share' && r.records.length) {
+      const cardRow = r.records.find(x => x.item_name?.includes('카드'));
+      if (cardRow && Number.isFinite(cardRow.value)) $('metricCardShare').textContent = `${cardRow.value}%`;
+      const sampleGroup = r.records.filter(x => x.item_name !== '기업체 수' && Number.isFinite(x.value)).slice(0, 6);
+      $('kosisSalesChart').innerHTML = renderBarGroup('결제수단별 구성비 상위 항목 (%)', sampleGroup.map(x => [`${x.classifications.map(c => c.name).join('·')} — ${x.item_name}`, x.value]), '%');
+    } else {
+      const topRows = r.records.filter(x => Number.isFinite(x.value)).sort((a, b) => b.value - a.value).slice(0, 6);
+      $('kosisSalesChart').innerHTML = renderBarGroup(`소상공인 매출 상위 항목 (단위: ${topRows[0]?.unit || '억원'})`, topRows.map(x => [x.classifications.slice(0, 2).map(c => c.name).join(' · '), x.value]), ` ${topRows[0]?.unit || ''}`);
+    }
+    $('kosisSalesOutput').innerHTML = `<p class="hint">${escapeHtml(r.provider_label)} · ${escapeHtml(r.mode)} · 총 ${r.total_records}건 (최대 500건 표시)</p>` + dataTable(r.records.slice(0, 120).map(v => ({
+      분류: v.classifications.map(c => c.name).join(' / '),
+      항목: v.item_name,
+      기준시점: v.period,
+      수치: v.value != null ? Number(v.value).toLocaleString('ko-KR') : v.raw_value,
+      단위: v.unit
+    }))) + `<p class="hint">${escapeHtml(r.notice)}</p>`;
+  }, $('kosisSalesOutput'));
+}
+
+async function loadSeoulSales(useSample, btn) {
+  if (window.APP_STATIC) return;
+  await perform(btn, async () => {
+    const r = await api('/api/card-sales/seoul', {
+      useSample,
+      quarter: $('seoulQuarter').value.trim(),
+      keyword: $('seoulKeyword').value.trim()
+    });
+    $('seoulKeyBadge').textContent = r.seoul_key_configured ? 'SEOUL LIVE' : '공식 샘플 모드';
+    $('seoulKeyBadge').className = `tag ${r.seoul_key_configured ? 'live' : 'demo'}`;
+    if (r.items.length) {
+      const renderItemBreakdown = item => {
+        $('seoulBreakdown').hidden = false;
+        $('seoulBreakdown').innerHTML = `<div class="section-title"><h3>${escapeHtml(item.district_name)} · ${escapeHtml(item.industry_name)}</h3><span class="tag">${escapeHtml(item.quarter_label || '')}</span></div><p class="hint">분기 추정매출 <strong>${fmt(item.sales_amount, '원')}</strong> · 승인 <strong>${fmt(item.sales_count, '건')}</strong> · 건당 평균 <strong>${fmt(item.avg_ticket, '원')}</strong></p><div class="breakdown-grid">${renderBarGroup('시간대별 카드매출', Object.entries(item.by_time), '원')}${renderBarGroup('연령대별 카드매출', Object.entries(item.by_age), '원')}${renderBarGroup('요일별 카드매출', Object.entries(item.by_day), '원')}${renderBarGroup('성별 카드매출', Object.entries(item.by_gender), '원')}</div>`;
+      };
+      renderItemBreakdown(r.items[0]);
+      $('seoulSalesOutput').innerHTML = `<p class="hint">${escapeHtml(r.mode)} · 전체 ${fmt(r.total_count, '건')} 중 ${r.items.length}건 조회 (행을 클릭하면 시간대·연령대 차트가 전환됩니다)</p><div class="table-wrap"><table><thead><tr><th>분기</th><th>상권구분</th><th>상권명</th><th>업종</th><th>카드 추정매출</th><th>승인건수</th><th>건당단가</th></tr></thead><tbody>${r.items.map((it, idx) => `<tr data-seoul-idx="${idx}" style="cursor:pointer"><td>${escapeHtml(it.quarter_label)}</td><td>${escapeHtml(it.district_type)}</td><td><strong>${escapeHtml(it.district_name)}</strong></td><td>${escapeHtml(it.industry_name)}</td><td>${fmt(it.sales_amount, '원')}</td><td>${fmt(it.sales_count, '건')}</td><td>${fmt(it.avg_ticket, '원')}</td></tr>`).join('')}</tbody></table></div><p class="hint">${escapeHtml(r.notice)}</p>`;
+      $('seoulSalesOutput').querySelectorAll('[data-seoul-idx]').forEach(tr => tr.onclick = () => renderItemBreakdown(r.items[Number(tr.dataset.seoulIdx)]));
+    } else {
+      $('seoulBreakdown').hidden = true;
+      $('seoulSalesOutput').innerHTML = `<p class="hint">일치하는 상권 카드매출 항목이 없습니다. ${escapeHtml(r.notice)}</p>`;
+    }
+  }, $('seoulSalesOutput'));
+}
+
+async function loadLocalDatasets() {
+  if (window.APP_STATIC) return;
+  try {
+    const r = await api(`/api/card-sales/datasets?keyword=${encodeURIComponent($('localSalesQuery').value.trim())}`);
+    $('metricImportedSales').textContent = `${r.total_count.toLocaleString('ko-KR')}건`;
+    $('seoulKeyBadge').textContent = r.seoul_key_configured ? 'SEOUL LIVE · 키 설정됨' : '서울 열린데이터광장 · 샘플 가능';
+    $('localSalesOutput').innerHTML = r.items.length
+      ? dataTable(r.items.map(x => ({ 지역: x.region, 상권_행정동: x.district, 업종: x.industry, 기준시점: x.period, 카드매출금액: fmt(x.sales_amount, '원'), 승인건수: x.sales_count != null ? fmt(x.sales_count, '건') : '미제공', 출처: x.source })))
+      : '<div class="empty" style="padding:24px"><h3>적재된 외부 카드매출 파일이 없습니다.</h3><p>관리자 콘솔의 [카드매출 CSV 적재]에서 금융데이터거래소·지자체·카드사 CSV를 업로드하면 이곳에 표시됩니다.</p></div>';
+  } catch (err) {
+    $('localSalesOutput').textContent = err.message;
+  }
+}
+
+async function openSalesView() {
+  if (window.APP_STATIC) {
+    $('salesStaticNotice').hidden = false;
+    return;
+  }
+  await loadLocalDatasets();
+  if (!salesInitialized) {
+    salesInitialized = true;
+    const kosisReady = state.providers.some(p => p.id === 'kosis' && p.configured);
+    if (kosisReady) await loadKosisSales();
+  }
+}
+function authTab(register) {
+  registering = register;
+  $('tabLogin').classList.toggle('selected', !register); $('tabRegister').classList.toggle('selected', register);
+  $('nameLabel').hidden = !register; $('consentLabel').hidden = !register; $('passwordHint').hidden = !register;
+  $('authName').required = register; $('authConsent').required = register;
+  $('authPassword').minLength = register ? 12 : 1;
+  $('authPassword').autocomplete = register ? 'new-password' : 'current-password';
+  $('authTitle').textContent = register ? '당신의 시작을 응원해요.' : '다시 만나 반가워요.';
+  $('authSubtitle').textContent = register ? '계정을 만들고 나만의 탐색 조건을 저장하세요.' : '이메일로 나의 워크스페이스에 로그인하세요.';
+  $('authSubmit').textContent = register ? '내 워크스페이스 만들기 →' : '로그인 →';
+  $('authMessage').textContent = '';
+}
+function updateMember() {
+  $('accountButton').textContent = member ? `${member.name} 님 ↗` : '로그인 / 가입 ↗';
+  $('accountButton').onclick = () => switchView(member ? 'account' : 'auth');
+}
+async function renderAccount() {
+  if (!member) {
+    $('accountContent').innerHTML = '<div class="empty"><span>♡</span><h3>당신의 다음 시작을 기록하세요.</h3><p>로그인하면 창업 조건을 저장하고 다시 불러올 수 있어요.</p><button class="primary" id="accountJoin">나의 워크스페이스 만들기 →</button></div>';
+    $('accountJoin').onclick = () => { authTab(true); switchView('auth'); }; return;
+  }
+  $('accountContent').innerHTML = '<p class="hint">저장한 조건을 불러오는 중…</p>';
+  try {
+    const { searches } = await api('/api/account/searches');
+    $('accountContent').innerHTML = `<div class="account-profile"><span class="avatar">${escapeHtml(member.name[0])}</span><div><p>WELCOME BACK</p><h2>${escapeHtml(member.name)} 님의 워크스페이스</h2><p>${escapeHtml(member.email)}</p></div><button id="memberLogout" class="secondary">로그아웃</button></div><div class="section-title"><h2>저장한 창업 조건</h2><span class="tag">${searches.length} / 30</span></div><div class="saved-grid">${searches.length ? searches.map(s => `<article class="saved-search"><span class="tag">상권 탐색 조건</span><h3>${escapeHtml(s.title)}</h3><p>${escapeHtml(s.data.sido)} ${escapeHtml(s.data.sigungu)} · 반경 ${escapeHtml(s.data.radius)}m<br>${new Date(s.created_at).toLocaleDateString('ko-KR')} 저장</p><div class="button-row"><button class="primary" data-load-search="${s.id}">조건 불러오기 ↗</button><button class="quiet" data-delete-search="${s.id}">삭제</button></div></article>`).join('') : '<div class="empty"><span>⌖</span><h3>첫 번째 탐색을 저장해 보세요.</h3><p>상권 탐색에서 업종·지역을 선택한 뒤 ‘조건 저장’을 눌러주세요.</p><button class="secondary" id="startSaved">상권 탐색하기 →</button></div>'}</div>`;
+    $('memberLogout').onclick = e => perform(e.currentTarget, async () => { await api('/api/auth/logout', {}); member = null; updateMember(); await renderAccount(); toast('로그아웃했습니다.'); });
+    if ($('startSaved')) $('startSaved').onclick = () => switchView('explore');
+    document.querySelectorAll('[data-delete-search]').forEach(b => b.onclick = () => perform(b, async () => { await api('/api/account/searches/delete', { id: b.dataset.deleteSearch }); await renderAccount(); }));
+    document.querySelectorAll('[data-load-search]').forEach(b => b.onclick = () => {
+      const d = searches.find(s => s.id === b.dataset.loadSearch).data;
+      $('industrySearch').value = ''; populateIndustries(); $('industry').value = d.industry;
+      if (![...$('sido').options].some(o => o.value === d.sido)) return toast('지역 목록이 변경되어 조건을 불러올 수 없습니다.');
+      $('sido').value = d.sido; populateDistricts();
+      if (![...$('sigungu').options].some(o => o.value === d.sigungu)) return toast('지역 목록이 변경되어 조건을 불러올 수 없습니다.');
+      $('sigungu').value = d.sigungu; populateEmd();
+      for (const id of ['emd', 'radius', 'budget', 'rent', 'storeType']) if (d[id] != null) $(id).value = d[id];
+      ['Survival', 'Competition', 'Demand', 'Cost'].forEach(k => { if (Number.isFinite(d[`w${k}`])) $(`weight-${k.toLowerCase()}`).value = Math.round(d[`w${k}`] * 100); });
+      $('weight-survival').dispatchEvent(new Event('input')); setMode('LIVE'); if (Number.isFinite(d.lat) && Number.isFinite(d.lng)) { moveMap(d.lat, d.lng, 16); updateCoordinates(); } $('officialIndustry').value = d.officialIndustry || ''; switchView('explore'); toast('저장한 탐색 조건을 불러왔습니다.');
+    });
+  } catch (err) { $('accountContent').innerHTML = `<div class="empty"><h3>워크스페이스를 불러오지 못했습니다.</h3><p>${escapeHtml(err.message)}</p><button id="retryAccount" class="secondary">다시 로그인</button></div>`; $('retryAccount').onclick = () => { member = null; updateMember(); switchView('auth'); }; }
+}
+async function refreshAdmin() {
+  const r = await api('/api/admin/overview', null, true);
+  $('adminContent').hidden = false; document.querySelector('.admin-gate').hidden = true;
+  $('adminMetrics').innerHTML = [['가입 회원', `${r.count}명`, '이 서버에 등록된 계정'], ['API 응답 확인', `${r.providers.filter(p => p.status === 'CONNECTED').length} / 5`, `키 설정 ${r.providers.filter(p => p.configured).length}/5`], ['기록된 호출', `${r.logs.length}건`, '최근 최대 100건'], ['서버 가동', `${Math.floor(r.uptime / 60)}분`, '현재 프로세스 기준']].map(([title, value, sub]) => `<article><span>${title}</span><strong>${value}</strong><small>${sub}</small></article>`).join('');
+  if (r.kakao_channels) {
+    const channelLabels = [['REST / 로컬', r.kakao_channels.oauth], ['카카오 로그인 Secret', r.kakao_channels.client_secret], ['JavaScript SDK', r.kakao_channels.js_sdk], ['네이티브 앱', r.kakao_channels.native_app], ['비즈니스 인증', r.kakao_channels.biz_auth]];
+    let strip = $('kakaoChannelStrip');
+    if (!strip) { strip = document.createElement('div'); strip.id = 'kakaoChannelStrip'; strip.className = 'channel-badges'; $('adminMetrics').after(strip); }
+    strip.innerHTML = channelLabels.map(([label, ok]) => `<span class="tag ${ok ? 'live' : ''}">Kakao ${label}: ${ok ? '설정됨' : '미설정'}</span>`).join('');
+  }
+  $('memberTable').innerHTML = r.users.length ? dataTable(r.users.map(u => ({ 이름: u.name, 이메일: u.email, 가입일: new Date(u.created_at).toLocaleString('ko-KR') }))) : '<div class="empty"><h3>아직 가입한 회원이 없습니다.</h3><p>실제 서버에 가입한 계정만 표시됩니다.</p></div>';
+  $('logOutput').innerHTML = dataTable(r.logs.map(l => ({ 제공처: l.provider, 상태: l.status, 건수: l.records_fetched, 완료: l.finished_at })));
+  await refreshProviders();
+}
+async function initWorkspace() {
+  // Keep credential and identity tools inside the authenticated console.
+  for (const id of ['keysForm', 'ntsForm']) $('adminTools').append($(id).closest('section'));
+  const logSection = document.createElement('section'); logSection.className = 'panel padded';
+  logSection.innerHTML = '<div class="section-title"><h2>실제 API 호출 이력</h2><span class="tag">최근 100건</span></div>';
+  logSection.append($('viewLogs'), $('logOutput')); $('adminTools').append(logSection);
+  const csvSection = document.createElement('section'); csvSection.className = 'panel padded';
+  csvSection.innerHTML = '<div class="section-title"><h2>카드매출 데이터셋 적재</h2><span class="tag">CSV · 관리자</span></div><p class="hint">금융데이터거래소(FinDX), 경기데이터드림, 지자체 상권포털 등의 카드매출 CSV를 서버 SQLite에 적재합니다.</p><form id="csvImportForm"><label>데이터 출처명<input id="csvSource" placeholder="예: 경기도시장상권진흥원 카드매출" value="외부 카드매출 CSV"></label><label>CSV 파일 선택 (선택)<input id="csvFile" type="file" accept=".csv,text/csv"></label><label>CSV 내용 (헤더: 지역,상권명,업종,기준년월,카드매출금액,승인건수)<textarea id="csvText" rows="5" spellcheck="false" placeholder="지역,상권명,업종,기준년월,카드매출금액,승인건수&#10;서울특별시 강남구,역삼역상권,커피전문점,202609,485000000,41200"></textarea></label><div class="button-row"><button class="primary" type="submit">카드매출 CSV 적재</button><button class="quiet" type="button" id="clearSalesDb">적재 데이터 초기화</button></div><p id="csvImportMsg" class="hint" aria-live="polite"></p></form>';
+  $('adminTools').append(csvSection);
+  if ($('salesSidoFilter') && state.meta?.regions) {
+    $('salesSidoFilter').innerHTML = '<option value="">전국 전체</option>' + state.meta.regions.map(r => `<option value="${escapeHtml(r.sido_name)}">${escapeHtml(r.sido_name)}</option>`).join('');
+  }
+  document.querySelectorAll('[data-sales-tab]').forEach(btn => btn.onclick = () => {
+    currentSalesTab = btn.dataset.salesTab;
+    document.querySelectorAll('[data-sales-tab]').forEach(b => b.classList.toggle('selected', b === btn));
+    loadKosisSales();
+  });
+  $('kosisSalesForm').onsubmit = e => { e.preventDefault(); loadKosisSales(e.submitter); };
+  $('seoulSalesForm').onsubmit = e => { e.preventDefault(); loadSeoulSales(false, e.submitter); };
+  $('btnSeoulSample').onclick = e => loadSeoulSales(true, e.currentTarget);
+  $('localSalesForm').onsubmit = e => { e.preventDefault(); loadLocalDatasets(); };
+  $('csvFile').onchange = async e => { const f = e.target.files?.[0]; if (f) $('csvText').value = await f.text(); };
+  $('csvImportForm').onsubmit = e => { e.preventDefault(); perform(e.submitter, async () => {
+    const r = await api('/api/admin/card-sales/import', { source: $('csvSource').value, csv: $('csvText').value }, true);
+    $('csvImportMsg').textContent = `${r.inserted}건 적재 완료 · 현재 총 ${r.total}건 보관 중`;
+    $('csvText').value = ''; $('csvFile').value = '';
+  }, $('csvImportMsg')); };
+  $('clearSalesDb').onclick = e => perform(e.currentTarget, async () => {
+    await api('/api/admin/card-sales/clear', {}, true);
+    $('csvImportMsg').textContent = '적재된 외부 카드매출 데이터를 모두 비웠습니다.';
+  }, $('csvImportMsg'));
+  if (window.APP_STATIC) {
+    $('kosisSalesForm').querySelectorAll('input,select,button').forEach(el => el.disabled = true);
+    $('seoulSalesForm').querySelectorAll('input,button').forEach(el => el.disabled = true);
+    $('localSalesForm').querySelectorAll('input,button').forEach(el => el.disabled = true);
+    $('csvImportForm').querySelectorAll('input,textarea,button').forEach(el => el.disabled = true);
+  }
+  $('adminToken').closest('label').hidden = true; $('adminToken').required = false;
+  for (const [key, label] of [['KOSIS_SURVIVAL_QUERY', '기업생멸 기본 통계표'], ['KOSIS_REGION_QUERY', '지역 수요 기본 통계표']]) {
+    const host = document.createElement('label'); host.textContent = label;
+    const input = document.createElement('textarea'); input.dataset.key = key; input.rows = 3; input.spellcheck = false; input.placeholder = '{"orgId":"기관 코드","tblId":"통계표 코드","objL1":"분류 코드","itmId":"항목 코드","prdSe":"Y"}';
+    if (window.APP_STATIC) input.disabled = true;
+    host.append(input); $('keyFields').append(host);
+  }
+  $('heroExplore').onclick = () => { $('industrySearch').focus({ preventScroll: true }); $('searchForm').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+  $('tabLogin').onclick = () => authTab(false); $('tabRegister').onclick = () => authTab(true);
+  $('togglePassword').onclick = () => { const show = $('authPassword').type === 'password'; $('authPassword').type = show ? 'text' : 'password'; $('togglePassword').textContent = show ? '숨김' : '보기'; $('togglePassword').setAttribute('aria-label', show ? '비밀번호 숨김' : '비밀번호 표시'); };
+  $('privacyOpen').onclick = () => { $('detailBody').innerHTML = '<p class="eyebrow">ACCOUNT DATA</p><h2>계정 정보 저장 안내</h2><p>저장 항목: 이름, 이메일, 비밀번호 해시, 가입 시각, 로그인 세션, 직접 저장한 분석 조건.</p><p>이용 목적: 로그인과 개인 워크스페이스 제공. 데이터는 이 서비스를 실행하는 서버의 SQLite 파일에 저장됩니다. 비밀번호 원문이나 외부 API 키는 회원 정보에 저장되지 않습니다.</p><p>이메일 소유 확인과 비밀번호 재설정 메일은 아직 지원하지 않습니다. 실제 운영자는 서비스 개설 전에 개인정보 처리방침, 보관 기간 및 문의·삭제 창구를 등록해야 합니다.</p>'; $('detail').showModal(); };
+  $('authForm').onsubmit = e => { e.preventDefault(); perform(e.submitter, async () => {
+    $('authMessage').textContent = '';
+    const r = await api(`/api/auth/${registering ? 'register' : 'login'}`, { name: $('authName').value, email: $('authEmail').value, password: $('authPassword').value, consent: $('authConsent').checked });
+    member = r.user; $('authForm').reset(); updateMember(); switchView('account'); toast(registering ? '가입이 완료되었습니다. 나만의 탐색을 시작해 보세요.' : '로그인했습니다.');
+  }, $('authMessage')); };
+  $('saveSearch').onclick = e => {
+    if (!member) { authTab(true); switchView('auth'); return; }
+    if (!$('industry').value) return toast('저장할 업종을 선택해 주세요.');
+    perform(e.currentTarget, async () => { const d = { industry: $('industry').value, sido: $('sido').value, sigungu: $('sigungu').value, emd: $('emd').value, radius: Number($('radius').value), lat: state.center[0], lng: state.center[1], officialIndustry: $('officialIndustry').value }; await api('/api/account/searches', { title: `${$('industry').selectedOptions[0].textContent} · ${d.sigungu}`, data: d }); toast('내 워크스페이스에 조건을 저장했습니다.'); });
+  };
+  $('adminLoginForm').onsubmit = e => { e.preventDefault(); perform(e.submitter, async () => {
+    state.token = $('adminLoginToken').value;
+    try { await refreshAdmin(); $('adminLoginToken').value = ''; $('adminMessage').textContent = ''; $('toast').hidden = true; }
+    catch (err) { state.token = ''; throw err; }
+  }, $('adminMessage')); };
+  $('adminRefresh').onclick = e => perform(e.currentTarget, refreshAdmin);
+  $('adminLogout').onclick = () => { state.token = ''; $('adminToken').value = ''; $('adminContent').hidden = true; document.querySelector('.admin-gate').hidden = false; $('memberTable').textContent = ''; $('connectionResults').textContent = ''; $('logOutput').textContent = ''; $('ntsOutput').textContent = ''; $('bizNo').value = ''; document.querySelectorAll('[data-key]').forEach(el => el.value = ''); toast('관리자 인증을 종료했습니다.'); };
+  $('checkConnections').onclick = e => perform(e.currentTarget, async () => { $('connectionResults').textContent = '기관별 연결을 확인합니다…'; const r = await api('/api/admin/check', { bizNo: $('bizNo').value }, true); const names = Object.fromEntries(state.providers.map(p => [p.id, p.name])); $('connectionResults').innerHTML = dataTable(r.results.map(c => ({ 기관: names[c.id] || c.id, 상태: c.status, 결과: c.message, 수집시각: c.collected_at || '—' }))); await refreshAdmin(); }, $('connectionResults'));
+  if (window.APP_STATIC) {
+    $('authStaticNotice').hidden = false;
+    $('authForm').querySelectorAll('input,button').forEach(el => el.disabled = true);
+    $('adminLoginForm').querySelectorAll('input,button').forEach(el => el.disabled = true);
+    $('adminMessage').textContent = '정적 데모입니다. 관리자 기능은 서버 배포 후 사용할 수 있습니다.';
+  } else {
+    try {
+      const me = await api('/api/auth/me');
+      member = me.user;
+      if (me.kakao_login) {
+        $('kakaoAuthBox').hidden = false;
+        $('kakaoRedirectHint').textContent = `${location.origin}/api/auth/kakao/callback`;
+        $('kakaoLoginBtn').onclick = () => { location.href = '/api/auth/kakao/start'; };
+      }
+      const oauthError = new URLSearchParams(location.search).get('oauth_error');
+      if (oauthError) {
+        const msg = { state: '카카오 인증 세션이 만료되었습니다. 다시 시도해 주세요.', token: '카카오 토큰 발급에 실패했습니다. 카카오 디벨로퍼스 Redirect URI 및 Client Secret 설정을 확인하세요.', profile: '카카오 사용자 정보를 불러오지 못했습니다.', network: '카카오 인증 서버에 연결하지 못했습니다.' }[oauthError] || '카카오 로그인에 실패했습니다.';
+        $('authMessage').textContent = msg;
+        history.replaceState(null, '', location.pathname + location.hash);
+      }
+    } catch (err) { toast(err.message); }
+  }
+  updateMember();
+  const initial = location.hash.slice(1); if (initial) switchView(initial);
+  window.addEventListener('hashchange', () => switchView(location.hash.slice(1) || 'explore'));
+}
 </script>
 </body>
 </html>
