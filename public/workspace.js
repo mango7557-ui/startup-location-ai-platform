@@ -1,5 +1,6 @@
 'use strict';
 let member = null, registering = false, currentSalesTab = 'approval', salesInitialized = false;
+let kosisRequestId = 0, seoulRequestId = 0, localSalesRequestId = 0;
 
 function renderBarGroup(title, entries, suffix = '') {
   const valid = entries.filter(([, v]) => Number.isFinite(v) && v >= 0);
@@ -9,19 +10,28 @@ function renderBarGroup(title, entries, suffix = '') {
 
 async function loadKosisSales(btn) {
   if (window.APP_STATIC) return;
+  if (btn && busyButtons.has(btn)) return;
+  const id = ++kosisRequestId, requestedTab = currentSalesTab;
+  $('kosisSalesChart').textContent = '';
+  $('kosisSalesOutput').textContent = '공식 통계를 불러오는 중…';
+  $('kosisSalesBadge').textContent = '조회 중'; $('kosisSalesBadge').className = 'tag ready';
   await perform(btn, async () => {
-    const r = await api('/api/card-sales/kosis', {
-      type: currentSalesTab,
+    let r;
+    try { r = await api('/api/card-sales/kosis', {
+      type: requestedTab,
       sido: $('salesSidoFilter').value,
       keyword: $('salesKeyword').value
-    });
-    if (currentSalesTab === 'approval' && r.records.length) {
+    }); } catch (err) { if (id !== kosisRequestId) return; $('kosisSalesBadge').textContent = '조회 실패'; throw err; }
+    if (id !== kosisRequestId) return;
+    $('kosisSalesBadge').textContent = r.mode === 'STALE' ? '이전 실제 응답' : 'KOSIS 응답 확인';
+    $('kosisSalesBadge').className = `tag ${r.mode === 'STALE' ? 'ready' : 'live'}`;
+    if (requestedTab === 'approval' && r.records.length) {
       const periods = [...new Set(r.records.map(x => x.period))].sort();
       const latest = periods[periods.length - 1];
       $('metricApproval').textContent = `${latest.slice(0, 4)}.${latest.slice(4)} 실적`;
       const latestRows = r.records.filter(x => x.period === latest && Number.isFinite(x.value)).sort((a, b) => b.value - a.value);
       $('kosisSalesChart').innerHTML = renderBarGroup(`${latest} 업종별 국내 카드승인실적 (단위: ${latestRows[0]?.unit || '백억원'})`, latestRows.map(x => [x.classifications[0]?.name || x.item_name, x.value]), ` ${latestRows[0]?.unit || ''}`);
-    } else if (currentSalesTab === 'payment_share' && r.records.length) {
+    } else if (requestedTab === 'payment_share' && r.records.length) {
       const cardRow = r.records.find(x => x.item_name?.includes('카드'));
       if (cardRow && Number.isFinite(cardRow.value)) $('metricCardShare').textContent = `${cardRow.value}%`;
       const sampleGroup = r.records.filter(x => x.item_name !== '기업체 수' && Number.isFinite(x.value)).slice(0, 6);
@@ -30,24 +40,31 @@ async function loadKosisSales(btn) {
       const topRows = r.records.filter(x => Number.isFinite(x.value)).sort((a, b) => b.value - a.value).slice(0, 6);
       $('kosisSalesChart').innerHTML = renderBarGroup(`소상공인 매출 상위 항목 (단위: ${topRows[0]?.unit || '억원'})`, topRows.map(x => [x.classifications.slice(0, 2).map(c => c.name).join(' · '), x.value]), ` ${topRows[0]?.unit || ''}`);
     }
-    $('kosisSalesOutput').innerHTML = `<p class="hint">${escapeHtml(r.provider_label)} · ${escapeHtml(r.mode)} · 총 ${r.total_records}건 (최대 500건 표시)</p>` + dataTable(r.records.slice(0, 120).map(v => ({
+    $('kosisSalesOutput').innerHTML = `<p class="hint">${escapeHtml(r.provider_label)} · ${escapeHtml(r.mode)} · 총 ${r.total_records}건 중 ${Math.min(r.records.length, 120)}건 표시</p>` + dataTable(r.records.slice(0, 120).map(v => ({
       분류: v.classifications.map(c => c.name).join(' / '),
       항목: v.item_name,
       기준시점: v.period,
       수치: v.value != null ? Number(v.value).toLocaleString('ko-KR') : v.raw_value,
       단위: v.unit
     }))) + `<p class="hint">${escapeHtml(r.notice)}</p>`;
+    refreshProviders();
   }, $('kosisSalesOutput'));
 }
 
 async function loadSeoulSales(useSample, btn) {
   if (window.APP_STATIC) return;
+  if (btn && busyButtons.has(btn)) return;
+  const id = ++seoulRequestId;
+  $('seoulBreakdown').hidden = true;
+  $('seoulSalesOutput').textContent = '상권 카드매출을 불러오는 중…';
   await perform(btn, async () => {
-    const r = await api('/api/card-sales/seoul', {
+    let r;
+    try { r = await api('/api/card-sales/seoul', {
       useSample,
       quarter: $('seoulQuarter').value.trim(),
       keyword: $('seoulKeyword').value.trim()
-    });
+    }); } catch (err) { if (id !== seoulRequestId) return; throw err; }
+    if (id !== seoulRequestId) return;
     $('seoulKeyBadge').textContent = r.seoul_key_configured ? 'SEOUL LIVE' : '공식 샘플 모드';
     $('seoulKeyBadge').className = `tag ${r.seoul_key_configured ? 'live' : 'demo'}`;
     if (r.items.length) {
@@ -57,7 +74,11 @@ async function loadSeoulSales(useSample, btn) {
       };
       renderItemBreakdown(r.items[0]);
       $('seoulSalesOutput').innerHTML = `<p class="hint">${escapeHtml(r.mode)} · 전체 ${fmt(r.total_count, '건')} 중 ${r.items.length}건 조회 (행을 클릭하면 시간대·연령대 차트가 전환됩니다)</p><div class="table-wrap"><table><thead><tr><th>분기</th><th>상권구분</th><th>상권명</th><th>업종</th><th>카드 추정매출</th><th>승인건수</th><th>건당단가</th></tr></thead><tbody>${r.items.map((it, idx) => `<tr data-seoul-idx="${idx}" style="cursor:pointer"><td>${escapeHtml(it.quarter_label)}</td><td>${escapeHtml(it.district_type)}</td><td><strong>${escapeHtml(it.district_name)}</strong></td><td>${escapeHtml(it.industry_name)}</td><td>${fmt(it.sales_amount, '원')}</td><td>${fmt(it.sales_count, '건')}</td><td>${fmt(it.avg_ticket, '원')}</td></tr>`).join('')}</tbody></table></div><p class="hint">${escapeHtml(r.notice)}</p>`;
-      $('seoulSalesOutput').querySelectorAll('[data-seoul-idx]').forEach(tr => tr.onclick = () => renderItemBreakdown(r.items[Number(tr.dataset.seoulIdx)]));
+      $('seoulSalesOutput').querySelectorAll('[data-seoul-idx]').forEach(tr => {
+        tr.tabIndex = 0; tr.setAttribute('role', 'button'); tr.setAttribute('aria-label', `${r.items[Number(tr.dataset.seoulIdx)].district_name} 상세 매출 보기`);
+        tr.onclick = () => renderItemBreakdown(r.items[Number(tr.dataset.seoulIdx)]);
+        tr.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); tr.click(); } };
+      });
     } else {
       $('seoulBreakdown').hidden = true;
       $('seoulSalesOutput').innerHTML = `<p class="hint">일치하는 상권 카드매출 항목이 없습니다. ${escapeHtml(r.notice)}</p>`;
@@ -67,14 +88,18 @@ async function loadSeoulSales(useSample, btn) {
 
 async function loadLocalDatasets() {
   if (window.APP_STATIC) return;
+  const id = ++localSalesRequestId;
+  $('localSalesOutput').textContent = '저장된 매출 자료를 불러오는 중…';
   try {
     const r = await api(`/api/card-sales/datasets?keyword=${encodeURIComponent($('localSalesQuery').value.trim())}`);
+    if (id !== localSalesRequestId) return;
     $('metricImportedSales').textContent = `${r.total_count.toLocaleString('ko-KR')}건`;
-    $('seoulKeyBadge').textContent = r.seoul_key_configured ? 'SEOUL LIVE · 키 설정됨' : '서울 열린데이터광장 · 샘플 가능';
+    $('seoulKeyBadge').textContent = r.seoul_key_configured ? '서울 API · 키 설정됨' : '서울 열린데이터광장 · 샘플 가능';
     $('localSalesOutput').innerHTML = r.items.length
       ? dataTable(r.items.map(x => ({ 지역: x.region, 상권_행정동: x.district, 업종: x.industry, 기준시점: x.period, 카드매출금액: fmt(x.sales_amount, '원'), 승인건수: x.sales_count != null ? fmt(x.sales_count, '건') : '미제공', 출처: x.source })))
       : '<div class="empty" style="padding:24px"><h3>적재된 외부 카드매출 파일이 없습니다.</h3><p>관리자 콘솔의 [카드매출 CSV 적재]에서 금융데이터거래소·지자체·카드사 CSV를 업로드하면 이곳에 표시됩니다.</p></div>';
   } catch (err) {
+    if (id !== localSalesRequestId) return;
     $('localSalesOutput').textContent = err.message;
   }
 }
@@ -86,14 +111,14 @@ async function openSalesView() {
   }
   await loadLocalDatasets();
   if (!salesInitialized) {
-    salesInitialized = true;
     const kosisReady = state.providers.some(p => p.id === 'kosis' && p.configured);
-    if (kosisReady) await loadKosisSales();
+    if (kosisReady) { salesInitialized = true; await loadKosisSales(); }
   }
 }
 function authTab(register) {
   registering = register;
   $('tabLogin').classList.toggle('selected', !register); $('tabRegister').classList.toggle('selected', register);
+  $('tabLogin').setAttribute('aria-pressed', String(!register)); $('tabRegister').setAttribute('aria-pressed', String(register));
   $('nameLabel').hidden = !register; $('consentLabel').hidden = !register; $('passwordHint').hidden = !register;
   $('authName').required = register; $('authConsent').required = register;
   $('authPassword').minLength = register ? 12 : 1;
@@ -153,14 +178,14 @@ async function initWorkspace() {
   logSection.innerHTML = '<div class="section-title"><h2>실제 API 호출 이력</h2><span class="tag">최근 100건</span></div>';
   logSection.append($('viewLogs'), $('logOutput')); $('adminTools').append(logSection);
   const csvSection = document.createElement('section'); csvSection.className = 'panel padded';
-  csvSection.innerHTML = '<div class="section-title"><h2>카드매출 데이터셋 적재</h2><span class="tag">CSV · 관리자</span></div><p class="hint">금융데이터거래소(FinDX), 경기데이터드림, 지자체 상권포털 등의 카드매출 CSV를 서버 SQLite에 적재합니다.</p><form id="csvImportForm"><label>데이터 출처명<input id="csvSource" placeholder="예: 경기도시장상권진흥원 카드매출" value="외부 카드매출 CSV"></label><label>CSV 파일 선택 (선택)<input id="csvFile" type="file" accept=".csv,text/csv"></label><label>CSV 내용 (헤더: 지역,상권명,업종,기준년월,카드매출금액,승인건수)<textarea id="csvText" rows="5" spellcheck="false" placeholder="지역,상권명,업종,기준년월,카드매출금액,승인건수&#10;서울특별시 강남구,역삼역상권,커피전문점,202609,485000000,41200"></textarea></label><div class="button-row"><button class="primary" type="submit">카드매출 CSV 적재</button><button class="quiet" type="button" id="clearSalesDb">적재 데이터 초기화</button></div><p id="csvImportMsg" class="hint" aria-live="polite"></p></form>';
+  csvSection.innerHTML = '<div class="section-title"><h2>카드매출 데이터셋 적재</h2><span class="tag">CSV · 관리자</span></div><p class="hint">금융데이터거래소(FinDX), 경기데이터드림, 지자체 상권포털 등의 카드매출 CSV를 서버 SQLite에 적재합니다.</p><p class="inline-notice">업로드한 지역·상권별 매출 자료는 사이트 방문자에게 공개됩니다. 개인·회원 정보는 포함하지 마세요.</p><form id="csvImportForm"><label>데이터 출처명<input id="csvSource" placeholder="예: 경기도시장상권진흥원 카드매출" value="외부 카드매출 CSV"></label><label>CSV 파일 선택 (선택)<input id="csvFile" type="file" accept=".csv,text/csv"></label><label>CSV 내용 (헤더: 지역,상권명,업종,기준년월,카드매출금액,승인건수)<textarea id="csvText" rows="5" spellcheck="false" placeholder="지역,상권명,업종,기준년월,카드매출금액,승인건수&#10;서울특별시 강남구,역삼역상권,커피전문점,202609,485000000,41200"></textarea></label><div class="button-row"><button class="primary" type="submit">카드매출 CSV 적재</button><button class="quiet" type="button" id="clearSalesDb">적재 데이터 초기화</button></div><p id="csvImportMsg" class="hint" aria-live="polite"></p></form>';
   $('adminTools').append(csvSection);
   if ($('salesSidoFilter') && state.meta?.regions) {
     $('salesSidoFilter').innerHTML = '<option value="">전국 전체</option>' + state.meta.regions.map(r => `<option value="${escapeHtml(r.sido_name)}">${escapeHtml(r.sido_name)}</option>`).join('');
   }
   document.querySelectorAll('[data-sales-tab]').forEach(btn => btn.onclick = () => {
     currentSalesTab = btn.dataset.salesTab;
-    document.querySelectorAll('[data-sales-tab]').forEach(b => b.classList.toggle('selected', b === btn));
+    document.querySelectorAll('[data-sales-tab]').forEach(b => { b.classList.toggle('selected', b === btn); b.setAttribute('aria-pressed', String(b === btn)); });
     loadKosisSales();
   });
   $('kosisSalesForm').onsubmit = e => { e.preventDefault(); loadKosisSales(e.submitter); };
@@ -173,10 +198,13 @@ async function initWorkspace() {
     $('csvImportMsg').textContent = `${r.inserted}건 적재 완료 · 현재 총 ${r.total}건 보관 중`;
     $('csvText').value = ''; $('csvFile').value = '';
   }, $('csvImportMsg')); };
-  $('clearSalesDb').onclick = e => perform(e.currentTarget, async () => {
+  $('clearSalesDb').onclick = e => {
+    if (!window.confirm('적재한 카드매출 자료를 모두 삭제할까요? 삭제 후 복구하려면 원본 CSV를 다시 적재해야 합니다.')) return;
+    perform(e.currentTarget, async () => {
     await api('/api/admin/card-sales/clear', {}, true);
     $('csvImportMsg').textContent = '적재된 외부 카드매출 데이터를 모두 비웠습니다.';
-  }, $('csvImportMsg'));
+    await loadLocalDatasets();
+  }, $('csvImportMsg')); };
   if (window.APP_STATIC) {
     $('kosisSalesForm').querySelectorAll('input,select,button').forEach(el => el.disabled = true);
     $('seoulSalesForm').querySelectorAll('input,button').forEach(el => el.disabled = true);
@@ -228,7 +256,7 @@ async function initWorkspace() {
       }
       const oauthError = new URLSearchParams(location.search).get('oauth_error');
       if (oauthError) {
-        const msg = { state: '카카오 인증 세션이 만료되었습니다. 다시 시도해 주세요.', token: '카카오 토큰 발급에 실패했습니다. 카카오 디벨로퍼스 Redirect URI 및 Client Secret 설정을 확인하세요.', profile: '카카오 사용자 정보를 불러오지 못했습니다.', network: '카카오 인증 서버에 연결하지 못했습니다.' }[oauthError] || '카카오 로그인에 실패했습니다.';
+        const msg = { state: '카카오 인증 세션이 만료되었습니다. 다시 시도해 주세요.', token: '카카오 토큰 발급에 실패했습니다. 카카오 디벨로퍼스 Redirect URI 및 Client Secret 설정을 확인하세요.', profile: '카카오 사용자 정보를 불러오지 못했습니다.', account: '같은 이메일의 계정이 있습니다. 이메일과 비밀번호로 로그인해 주세요.', network: '카카오 인증 서버에 연결하지 못했습니다.' }[oauthError] || '카카오 로그인에 실패했습니다.';
         $('authMessage').textContent = msg;
         history.replaceState(null, '', location.pathname + location.hash);
       }

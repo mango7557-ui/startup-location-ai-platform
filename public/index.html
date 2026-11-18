@@ -52,9 +52,10 @@
                 <label>매장 형태<select id="storeType"><option value="GENERAL">일반 매장</option><option value="TAKEOUT">소형 / 테이크아웃</option><option value="LARGE">대형 매장</option></select></label>
                 <details><summary>평가 가중치 조정 <span>↗</span></summary><div id="weightControls"></div><button type="button" id="resetWeights" class="quiet">기본값으로 초기화</button><p class="hint">초기 제안 가중치이며 검증된 예측 모델이 아닙니다.</p></details>
               </div>
-              <label class="official-code">공식 소분류 코드 <span class="muted">선택</span><input id="officialIndustry" placeholder="예: I21201 · 제공기관 코드" pattern="[A-Z][0-9]{5}" maxlength="6"><small id="officialIndustryHelp">업종을 선택하면 기본 코드가 자동 입력됩니다. 코드는 직접 수정할 수 있습니다.</small></label>
+              <label class="official-code">공식 소분류 코드 <span class="muted">선택</span><input id="officialIndustry" placeholder="예: I21201 · 제공기관 코드" pattern="[A-Z][0-9]{5}" maxlength="6" aria-describedby="officialIndustryHelp"><small id="officialIndustryHelp">업종을 선택하면 대표 소분류 코드가 자동 입력됩니다. 이 코드에 해당하는 점포만 조회합니다.</small></label>
               <button class="primary full" id="analyze" type="submit">이 위치의 점포 조회 <span>→</span></button>
               <p id="filterFeedback" class="hint" aria-live="polite"></p>
+              <div id="kakaoFallback" class="official-code" hidden><p class="hint">공식 상가 조회를 완료하지 못했습니다. 카카오 장소검색에서 주변 장소를 별도로 확인할 수 있습니다. 검색 결과는 전체 점포 현황이 아닙니다.</p><label>카카오 검색어<input id="kakaoStoreQuery" maxlength="80" placeholder="예: 카페, 한식" autocomplete="off"></label><button type="button" class="secondary full" id="searchKakaoStores">카카오 장소검색으로 보기</button></div>
             </form>
           </aside>
           <div class="results-area">
@@ -80,9 +81,9 @@
         <div class="metrics" id="salesMetrics"><article><span>전국 카드승인</span><strong id="metricApproval">조회 대기</strong><small>여신금융협회 · KOSIS</small></article><article><span>소상공인 매출통계</span><strong id="metricSmeSales">17개 시도</strong><small>중소벤처기업부 · 산업중분류</small></article><article><span>카드결제 비중</span><strong id="metricCardShare">신용·체크</strong><small>중소벤처기업부 실태조사</small></article><article><span>적재된 외부 매출</span><strong id="metricImportedSales">0건</strong><small>관리자 CSV 데이터셋</small></article></div>
         <div class="sources-grid">
           <section class="panel padded">
-            <div class="section-title"><h2>전국 공식 카드승인 · 소상공인 매출</h2><span class="tag live">KOSIS LIVE</span></div>
+            <div class="section-title"><h2>전국 공식 카드승인 · 소상공인 매출</h2><span class="tag ready" id="kosisSalesBadge">조회 대기</span></div>
             <p class="hint">인증된 KOSIS API를 통해 여신금융협회 월간 카드승인실적과 중소벤처기업부 시도·업종별 매출·결제수단 통계를 실시간 수집합니다.</p>
-            <div class="segment sales-tabs" role="tablist"><button type="button" class="selected" data-sales-tab="approval">월간 카드승인실적</button><button type="button" data-sales-tab="sido_sales">시도·업종 매출액</button><button type="button" data-sales-tab="payment_share">카드·현금 결제비중</button></div>
+            <div class="segment sales-tabs" role="group" aria-label="매출 통계 선택"><button type="button" class="selected" data-sales-tab="approval" aria-pressed="true">월간 카드승인실적</button><button type="button" data-sales-tab="sido_sales" aria-pressed="false">시도·업종 매출액</button><button type="button" data-sales-tab="payment_share" aria-pressed="false">카드·현금 결제비중</button></div>
             <form id="kosisSalesForm" class="two-cols"><label>시·도 필터<select id="salesSidoFilter"><option value="">전국 전체</option></select></label><label>업종·항목 검색<input id="salesKeyword" type="search" placeholder="예: 음식점, 소매, 교육, 카드"></label><button class="primary" type="submit" style="grid-column:1/-1;margin-top:10px">공식 카드·매출 통계 조회 →</button></form>
             <div id="kosisSalesChart" class="score-bars"></div>
             <div id="kosisSalesOutput" class="output" aria-live="polite"></div>
@@ -125,7 +126,6 @@
   <dialog id="detail"><button class="dialog-close" id="closeDetail" aria-label="상세 창 닫기">×</button><div id="detailBody"></div></dialog>
   <dialog id="postcodeDialog"><button class="dialog-close" id="closePostcode" aria-label="주소 검색창 닫기">×</button><p class="eyebrow">DAUM POSTCODE SERVICE</p><h2 style="margin-bottom:14px">다음 도로명·지번 주소 검색</h2><div id="postcodeEmbed" style="height:420px;border:1px solid var(--line);border-radius:10px;overflow:hidden"></div></dialog>
   <div id="toast" role="status" aria-live="polite" hidden></div>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="/app.js"></script>
   <script src="/workspace.js"></script>
 </body>

@@ -3,7 +3,7 @@ const { DatabaseSync } = require('node:sqlite');
 const { randomBytes } = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
-const { ApiError, number } = require('./externalApiConnectors');
+const { ApiError, number, limitedResponseText } = require('./externalApiConnectors');
 
 const KOSIS_CARD_TABLES = {
   approval: {
@@ -41,21 +41,29 @@ const KOSIS_CARD_TABLES = {
   }
 };
 
-function parseCsvLine(line) {
-  const cells = [];
-  let cur = '', inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
+function parseCsv(input) {
+  const rows = [];
+  let cells = [], cur = '', inQuotes = false;
+  function finishRow() {
+    cells.push(cur.trim());
+    if (cells.some(Boolean)) rows.push(cells);
+    if (rows.length > 2001) throw new ApiError('INVALID_INPUT', '1회 업로드 건수는 1~2,000건입니다. 파일을 나누어 업로드하세요.');
+    cells = []; cur = '';
+  }
+  for (let i = 0; i < input.length; i++) {
+    const ch = input[i];
     if (inQuotes) {
-      if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; }
+      if (ch === '"' && input[i + 1] === '"') { cur += '"'; i++; }
       else if (ch === '"') inQuotes = false;
       else cur += ch;
-    } else if (ch === '"') inQuotes = true;
+    } else if (ch === '"' && !cur.trim()) inQuotes = true;
     else if (ch === ',') { cells.push(cur.trim()); cur = ''; }
+    else if (ch === '\n' || ch === '\r') { finishRow(); if (ch === '\r' && input[i + 1] === '\n') i++; }
     else cur += ch;
   }
-  cells.push(cur.trim());
-  return cells;
+  if (inQuotes) throw new ApiError('INVALID_INPUT', 'CSV의 닫히지 않은 따옴표를 확인하세요.');
+  finishRow();
+  return rows;
 }
 
 function formatQuarter(code) {
@@ -69,7 +77,7 @@ function createCardSalesService({ connectors, env = process.env, fetchImpl = (..
     if (database) return database;
     if (dbFile !== ':memory:') fs.mkdirSync(path.dirname(dbFile), { recursive: true });
     database = new DatabaseSync(dbFile);
-    database.exec(`PRAGMA journal_mode=WAL;
+    database.exec(`PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000;
       CREATE TABLE IF NOT EXISTS card_sales_records (
         id TEXT PRIMARY KEY,
         region TEXT NOT NULL,
@@ -136,13 +144,16 @@ function createCardSalesService({ connectors, env = process.env, fetchImpl = (..
     const endpoint = `http://openapi.seoul.go.kr:8088/${encodeURIComponent(key)}/json/VwsmTrdarSelngQq/${start}/${end}${quarter}`;
     let res;
     try {
-      res = await fetchImpl(endpoint, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(timeout) });
+      res = await fetchImpl(endpoint, { headers: { Accept: 'application/json' }, redirect: 'error', signal: AbortSignal.timeout(timeout) });
     } catch {
       throw new ApiError('UPSTREAM_UNAVAILABLE', '서울 열린데이터광장 상권 추정매출 서버에 연결할 수 없습니다.', 502);
     }
     if (!res.ok) throw new ApiError('PROVIDER_REJECTED', `서울 상권 추정매출 응답 오류 (${res.status})`, 502);
     let json;
-    try { json = await res.json(); } catch { throw new ApiError('INVALID_RESPONSE', '서울 열린데이터광장이 JSON 응답을 반환하지 않았습니다.', 502); }
+    try { json = JSON.parse(await limitedResponseText(res)); } catch (err) {
+      if (err instanceof ApiError) throw err;
+      throw new ApiError('INVALID_RESPONSE', '서울 열린데이터광장이 JSON 응답을 반환하지 않았습니다.', 502);
+    }
     const root = json?.VwsmTrdarSelngQq;
     const code = root?.RESULT?.CODE || json?.RESULT?.CODE;
     if (!root || (code && code !== 'INFO-000')) {
@@ -205,21 +216,20 @@ function createCardSalesService({ connectors, env = process.env, fetchImpl = (..
     if (Array.isArray(p.rows)) {
       rows = p.rows;
     } else if (typeof p.csv === 'string' && p.csv.trim()) {
-      const lines = p.csv.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l => l.trim());
+      const lines = parseCsv(p.csv.replace(/^\uFEFF/, ''));
       if (lines.length < 2) throw new ApiError('INVALID_INPUT', '헤더와 1행 이상의 데이터가 포함된 CSV를 입력하세요.');
-      const headers = parseCsvLine(lines[0]).map(h => h.toLowerCase());
+      const headers = lines[0].map(h => h.toLowerCase());
       const idx = names => headers.findIndex(h => names.some(n => h.includes(n)));
       const iRegion = idx(['시도', '시군구', '지역', 'region']);
       const iDistrict = idx(['상권', '행정동', '읍면동', 'district', 'dong']);
       const iIndustry = idx(['업종', '산업', 'industry']);
       const iPeriod = idx(['기준', '년월', '분기', '연도', 'period', 'date']);
-      const iAmount = idx(['매출', '승인금액', '금액', 'amount', 'sales']);
+      const iAmount = headers.findIndex(h => !/건수|count|비중|비율|share/.test(h) && ['매출', '승인금액', '금액', 'amount', 'sales'].some(n => h.includes(n)));
       const iCount = idx(['건수', '승인건수', '결제건수', 'count']);
       if (iAmount === -1 || (iRegion === -1 && iDistrict === -1) || iIndustry === -1) {
         throw new ApiError('INVALID_INPUT', 'CSV 헤더에 지역(또는 상권명), 업종, 매출금액 컬럼이 필요합니다.');
       }
-      rows = lines.slice(1, 2001).map(line => {
-        const c = parseCsvLine(line);
+      rows = lines.slice(1).map(c => {
         return {
           region: iRegion >= 0 ? c[iRegion] : '미지정',
           district: iDistrict >= 0 ? c[iDistrict] : (iRegion >= 0 ? c[iRegion] : '미지정'),
@@ -233,14 +243,15 @@ function createCardSalesService({ connectors, env = process.env, fetchImpl = (..
       throw new ApiError('INVALID_INPUT', '업로드할 CSV 텍스트 또는 rows 배열을 전달하세요.');
     }
     if (!rows.length || rows.length > 2000) throw new ApiError('INVALID_INPUT', '1회 업로드 건수는 1~2,000건입니다.');
+    if (rows.some(r => !r || typeof r !== 'object' || Array.isArray(r))) throw new ApiError('INVALID_INPUT', '매출 자료의 각 행은 객체여야 합니다.');
     const now = new Date().toISOString();
     const stmt = db().prepare('INSERT INTO card_sales_records (id, region, district, industry, period, sales_amount, sales_count, card_share, source, imported_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     let inserted = 0;
     db().exec('BEGIN');
     try {
-      for (const r of rows) {
+      for (const [index, r] of rows.entries()) {
         const amount = number(r.sales_amount);
-        if (amount == null) continue;
+        if (amount == null) throw new ApiError('INVALID_INPUT', `${index + 1}번째 데이터 행의 매출금액을 확인하세요. 자료는 저장되지 않았습니다.`);
         const count = number(r.sales_count);
         stmt.run(
           randomBytes(12).toString('hex'),

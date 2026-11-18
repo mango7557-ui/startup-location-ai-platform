@@ -10,20 +10,27 @@ async function api(route, data, admin = false) {
   if (window.APP_STATIC) {
     if (route === '/api/meta') return window.APP_DEMO.meta;
     if (route === '/api/external/catalog') return { providers: window.APP_DEMO.providers.map(p => ({ ...p, status: 'SERVER_REQUIRED', configured: false })) };
-  
+
     throw new Error('서버에 연결해야 실제 API를 호출할 수 있습니다. Node.js 서버에서 실행해 주세요.');
   }
-  const response = await fetch(route, { method: data ? 'POST' : 'GET', headers: { ...(data ? { 'Content-Type': 'application/json' } : {}), ...(admin ? { Authorization: `Bearer ${state.token || $('adminToken').value}` } : {}) }, body: data ? JSON.stringify(data) : undefined, signal: AbortSignal.timeout(20000) });
+  let response;
+  try {
+    response = await fetch(route, { method: data ? 'POST' : 'GET', headers: { ...(data ? { 'Content-Type': 'application/json' } : {}), ...(admin ? { Authorization: `Bearer ${state.token || $('adminToken').value}` } : {}) }, body: data ? JSON.stringify(data) : undefined, signal: AbortSignal.timeout(20000) });
+  } catch (err) {
+    throw new Error(['TimeoutError', 'AbortError'].includes(err.name) ? '응답 시간이 초과되었습니다. 잠시 후 다시 조회해 주세요.' : '서버에 연결하지 못했습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.');
+  }
   let json;
   try { json = await response.json(); } catch { throw new Error('서버 응답을 읽을 수 없습니다. Node.js 서버 실행 상태를 확인하세요.'); }
-  if (!response.ok) throw new Error(json.error || '요청 처리에 실패했습니다.');
+  if (!response.ok) { const err = new Error(json.error || '요청 처리에 실패했습니다.'); err.status = response.status; err.code = json.code; throw err; }
   return json;
 }
+const busyButtons = new WeakSet();
 async function perform(button, fn, output) {
+  if (button && busyButtons.has(button)) return;
   const old = button?.textContent;
-  if (button) { button.disabled = true; button.textContent = '조회 중…'; }
-  try { await fn(); } catch (err) { if (output) output.textContent = err.message; toast(err.message); }
-  finally { if (button) { button.disabled = false; button.textContent = old; } }
+  if (button) { busyButtons.add(button); button.disabled = true; button.setAttribute('aria-busy', 'true'); button.textContent = '처리 중…'; }
+  try { return await fn(); } catch (err) { if (output) output.textContent = err.message; toast(err.message); }
+  finally { if (button) { busyButtons.delete(button); button.disabled = button.id === 'analyze' && !$('industry').value; button.removeAttribute('aria-busy'); button.textContent = old; } }
 }
 function switchView(view) {
   if (!['explore', 'compare', 'sales', 'report', 'sources', 'account', 'auth', 'admin', 'guide'].includes(view)) return;
@@ -46,8 +53,11 @@ function loadScriptOnce(src) {
   const p = new Promise(resolve => {
     const s = document.createElement('script');
     s.src = src; s.async = true;
-    s.onload = () => resolve(true);
-    s.onerror = () => resolve(false);
+    let timer;
+    const finish = ok => { clearTimeout(timer); if (!ok) { loadedScripts.delete(src); s.remove(); } resolve(ok); };
+    s.onload = () => finish(true);
+    s.onerror = () => finish(false);
+    timer = setTimeout(() => finish(false), 8000);
     document.head.append(s);
   });
   loadedScripts.set(src, p);
@@ -77,7 +87,11 @@ async function initMap() {
   if (jsKey) {
     const loaded = await loadScriptOnce(`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${encodeURIComponent(jsKey)}&libraries=services&autoload=false`);
     if (loaded && window.kakao?.maps?.load) {
-      const ready = await new Promise(resolve => { try { window.kakao.maps.load(() => resolve(Boolean(window.daum?.maps?.Map))); } catch { resolve(false); } });
+      const ready = await new Promise(resolve => {
+        const timer = setTimeout(() => resolve(false), 8000);
+        try { window.kakao.maps.load(() => { clearTimeout(timer); resolve(Boolean(window.daum?.maps?.Map)); }); }
+        catch { clearTimeout(timer); resolve(false); }
+      });
       if (ready) {
         state.mapEngine = 'DAUM';
         $('map').innerHTML = '';
@@ -91,7 +105,7 @@ async function initMap() {
           state.center = [latlng.getLat(), latlng.getLng()];
           updateCoordinates();
           if (!$('roadviewWrap').hidden) refreshRoadview();
-          if (state.mode === 'LIVE') { state.live = null; state.liveQuery = null; drawMap(); renderLiveEmpty(); }
+          if (state.mode === 'LIVE') invalidateExploreResults();
           else drawMap();
         });
         updateCoordinates();
@@ -100,9 +114,10 @@ async function initMap() {
       }
     }
     $('mapDomainHint').hidden = false;
-    $('mapDomainHint').textContent = `카카오 디벨로퍼스 [플랫폼 → Web]에 현재 주소(${location.origin})를 추가하면 내장 다음지도·스카이뷰·로드뷰가 즉시 활성화됩니다. (다음 주소찾기·새창 로드뷰는 바로 사용 가능)`;
+    $('mapDomainHint').textContent = '다음지도를 연결하지 못해 기본지도를 표시합니다. 잠시 후 새로고침하거나 다음지도 크게보기를 이용해 주세요. 운영자는 지도 API 사용 설정과 허용 도메인을 확인해 주세요.';
   }
-  if (!window.L) { $('map').innerHTML = '<div class="map-fallback">지도 라이브러리를 불러오지 못했습니다.<br>네트워크 연결을 확인하세요. 검색 목록은 계속 이용할 수 있습니다.</div>'; return; }
+  if (!window.L) await loadScriptOnce('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
+  if (!window.L) { $('mapEngineBadge').textContent = '지도 연결 확인 필요'; $('map').innerHTML = '<div class="map-fallback">지도 라이브러리를 불러오지 못했습니다.<br>네트워크 연결을 확인하세요. 검색 목록은 계속 이용할 수 있습니다.</div>'; return; }
   state.mapEngine = 'LEAFLET';
   $('mapEngineBadge').textContent = '기본지도 · 다음 주소연동';
   $('mapEngineBadge').className = 'tag ready';
@@ -110,7 +125,7 @@ async function initMap() {
   L.control.zoom({ position: 'bottomright' }).addTo(state.map);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(state.map);
   state.layers = L.layerGroup().addTo(state.map);
-  state.map.on('click', e => { state.center = [e.latlng.lat, e.latlng.lng]; updateCoordinates(); if (state.mode === 'LIVE') { state.live = null; state.liveQuery = null; drawMap(); renderLiveEmpty(); } });
+  state.map.on('click', e => { state.center = [e.latlng.lat, e.latlng.lng]; updateCoordinates(); if (state.mode === 'LIVE') invalidateExploreResults(); });
   updateCoordinates();
 }
 function setDaumMapType(skyview) {
@@ -147,10 +162,12 @@ function toggleRoadview() {
   }
 }
 async function openDaumPostcode() {
+  if (!$('postcodeDialog').open) $('postcodeDialog').showModal();
+  $('postcodeEmbed').textContent = '주소 검색을 불러오는 중…';
   const ok = await loadScriptOnce('https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js');
-  if (!ok || !window.daum?.Postcode) return toast('다음 우편번호 서비스를 불러오지 못했습니다.');
+  if (!$('postcodeDialog').open) return;
+  if (!ok || !window.daum?.Postcode) { $('postcodeEmbed').textContent = '주소 검색 서비스를 불러오지 못했습니다. 창을 닫고 다시 시도하거나 주소·장소 검색을 이용해 주세요.'; return; }
   $('postcodeEmbed').innerHTML = '';
-  $('postcodeDialog').showModal();
   new window.daum.Postcode({
     width: '100%',
     height: '100%',
@@ -164,16 +181,16 @@ async function openDaumPostcode() {
         const docs = await searchPlacesClientOrServer(addr, 'address');
         if (docs[0]?.lat != null && docs[0]?.lng != null) {
           moveMap(docs[0].lat, docs[0].lng, 16);
-          updateCoordinates(); drawMap();
+          updateCoordinates(); invalidateExploreResults();
           toast(`다음 주소 선택 완료: ${addr}`);
           return;
         }
       } catch { /* fallback below */ }
       try {
-        const nom = await (await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=kr&q=${encodeURIComponent(addr)}`)).json();
+        const nom = await (await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=kr&q=${encodeURIComponent(addr)}`, { signal: AbortSignal.timeout(8000) })).json();
         if (nom[0]) {
           moveMap(Number(nom[0].lat), Number(nom[0].lon), 16);
-          updateCoordinates(); drawMap();
+          updateCoordinates(); invalidateExploreResults();
           toast(`다음 주소 이동 완료: ${addr}`);
           return;
         }
@@ -184,23 +201,26 @@ async function openDaumPostcode() {
 }
 async function searchPlacesClientOrServer(q, action) {
   if (window.daum?.maps?.services) {
-    return new Promise((resolve, reject) => {
+    try { return await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error('지도 검색 응답 시간이 초과되었습니다.')), 6000);
+      const done = (err, records) => { clearTimeout(timer); if (err) reject(err); else resolve(records); };
       if (action === 'address') {
         new window.daum.maps.services.Geocoder().addressSearch(q, (res, status) => {
-          if (status === window.daum.maps.services.Status.ZERO_RESULT) return resolve([]);
-          if (status !== window.daum.maps.services.Status.OK) return reject(new Error('다음 주소 좌표 변환에 실패했습니다.'));
-          resolve(res.map(r => ({ name: r.address_name, address: r.road_address?.address_name || r.address_name, lat: Number(r.y), lng: Number(r.x) })));
+          if (status === window.daum.maps.services.Status.ZERO_RESULT) return done(null, []);
+          if (status !== window.daum.maps.services.Status.OK) return done(new Error('다음 주소 좌표 변환에 실패했습니다.'));
+          done(null, res.map(r => ({ name: r.address_name, address: r.road_address?.address_name || r.address_name, lat: Number(r.y), lng: Number(r.x) })));
         });
       } else {
         new window.daum.maps.services.Places().keywordSearch(q, (res, status) => {
-          if (status === window.daum.maps.services.Status.ZERO_RESULT) return resolve([]);
-          if (status !== window.daum.maps.services.Status.OK) return reject(new Error('다음 장소 검색에 실패했습니다.'));
-          resolve(res.map(r => ({ name: r.place_name, address: r.road_address_name || r.address_name, lat: Number(r.y), lng: Number(r.x) })));
+          if (status === window.daum.maps.services.Status.ZERO_RESULT) return done(null, []);
+          if (status !== window.daum.maps.services.Status.OK) return done(new Error('다음 장소 검색에 실패했습니다.'));
+          done(null, res.map(r => ({ name: r.place_name, address: r.road_address_name || r.address_name, lat: Number(r.y), lng: Number(r.x) })));
         });
       }
-    });
+    }); } catch (err) { if (window.APP_STATIC) throw err; }
   }
   const data = await api('/api/external/kakao', { query: q, action });
+  refreshProviders();
   return data.documents || [];
 }
 function updateCoordinates() {
@@ -260,9 +280,17 @@ function syncOfficialIndustry() {
   const selected = state.meta?.industries.find(i => i.industry_code === $('industry').value);
   const code = selected?.semas_code;
   $('officialIndustry').value = /^[A-Z]\d{5}$/.test(code || '') ? code : '';
-  $('officialIndustryHelp').textContent = code && $('officialIndustry').value
-    ? `선택한 업종의 기본 코드 ${code}가 입력되었습니다. 제공기관의 분류와 다를 수 있으니 확인 후 수정할 수 있습니다.`
-    : '연결된 코드가 없습니다. 코드를 입력하거나 비워두면 전체 업종을 조회합니다.';
+  updateOfficialIndustryHelp();
+}
+function updateOfficialIndustryHelp() {
+  const code = $('officialIndustry').value.trim();
+  const selected = state.meta?.industries.find(i => i.industry_code === $('industry').value);
+  const classification = state.meta?.industries.find(i => i.semas_code === code);
+  $('officialIndustryHelp').textContent = !code
+    ? '코드를 비워 두면 선택한 업종과 관계없이 전체 업종을 조회합니다.'
+    : code === selected?.semas_code && selected.semas_name
+      ? `대표 소분류: ${selected.semas_name} (${code}). 이 분류의 점포만 조회하며, 선택한 업종의 다른 세부 업종은 포함하지 않습니다. 코드를 직접 수정할 수 있습니다.`
+      : `직접 지정한 소분류: ${classification?.semas_name ? `${classification.semas_name} (${code})` : code}. 이 코드에 해당하는 점포만 조회합니다.`;
 }
 function populateIndustries(query = '') {
   const previous = $('industry').value;
@@ -272,9 +300,15 @@ function populateIndustries(query = '') {
   filtered.forEach(i => { if (!groups.has(i.category_large)) groups.set(i.category_large, []); groups.get(i.category_large).push(i); });
   $('industry').innerHTML = [...groups].map(([group, items]) => `<optgroup label="${escapeHtml(group)}">${items.map(i => `<option value="${i.industry_code}">${escapeHtml(i.industry_name)}</option>`).join('')}</optgroup>`).join('');
   if (filtered.some(i => i.industry_code === previous)) $('industry').value = previous;
-  $('analyze').disabled = !filtered.length;
+  $('analyze').disabled = !filtered.length || busyButtons.has($('analyze'));
   syncOfficialIndustry();
-  $('industryHint').textContent = filtered.length ? `${filtered.length}개 업종 · 선택하면 기본 소분류 코드가 입력됩니다.` : '일치하는 업종이 없습니다. 검색어를 바꿔 주세요.';
+  $('industryHint').textContent = filtered.length ? `${filtered.length}개 업종 · 선택하면 대표 소분류 코드가 입력됩니다.` : '일치하는 업종이 없습니다. 검색어를 바꿔 주세요.';
+}
+function invalidateExploreResults() {
+  state.requestId++; state.result = null; state.live = null; state.liveQuery = null; state.compared.clear();
+  $('compareCount').textContent = '0'; $('filterFeedback').textContent = '';
+  $('kakaoFallback').hidden = true;
+  renderLiveEmpty(); drawMap();
 }
 function populateDistricts() {
   const r = state.meta.regions.find(r => r.sido_name === $('sido').value);
@@ -294,6 +328,7 @@ function setMode(mode) {
   state.requestId++;
   state.mode = mode; state.result = null; state.live = null; state.liveQuery = null; state.compared.clear(); state.selected = null;
   $('compareCount').textContent = '0';
+  $('kakaoFallback').hidden = true;
   $('modeLive').classList.toggle('selected', mode === 'LIVE'); $('modeDemo').classList.toggle('selected', mode === 'DEMO');
   $('demoFilters').hidden = mode !== 'DEMO'; $('moreStores').hidden = true;
   $('modeNotice').textContent = mode === 'DEMO' ? '체험용 가상 데이터입니다. 통계·점포·좌표·점수는 실제 입지 판단에 사용할 수 없습니다.' : '공식 API의 실제 응답만 표시합니다. 데이터 연결 상태를 먼저 확인하세요.';
@@ -304,6 +339,8 @@ function setMode(mode) {
   if (mode === 'DEMO') analyze();
 }
 function renderLiveEmpty() {
+  $('kakaoFallback').hidden = true;
+  $('mapLegend').textContent = '조회된 실제 점포';
   $('cards').innerHTML = `<div class="empty panel"><span>⌖</span><h3>${state.mode === 'DEMO' ? '선택한 조건으로 데모를 실행하세요' : '위치를 정하고 실제 점포를 조회하세요'}</h3><p>${state.mode === 'DEMO' ? '가상 데이터로 분석·비교·보고서 기능을 체험합니다.' : '지도에서 클릭하거나 주소 검색으로 위치를 지정해 주세요.<br>인증키 설정은 데이터 연결 화면에서 확인할 수 있습니다.'}</p></div>`;
   $('resultsTitle').textContent = state.mode === 'DEMO' ? '데모 추천 후보' : '조회 결과';
   $('resultNotice').hidden = true; $('moreStores').hidden = true; renderMetrics();
@@ -319,6 +356,7 @@ async function analyze(page = 1) {
   const id = ++state.requestId;
   const button = page === 1 ? $('analyze') : $('moreStores');
   await perform(button, async () => {
+    $('kakaoFallback').hidden = true;
     $('filterFeedback').textContent = '데이터를 확인하고 있습니다…';
     if (state.mode === 'DEMO') {
       const data = await api('/api/recommend', query());
@@ -329,18 +367,50 @@ async function analyze(page = 1) {
     } else {
       // Broad UI categories are not asserted to be verified official small-industry codes.
       const p = page === 1 ? { cx: state.center[1], cy: state.center[0], radius: Number($('radius').value), numOfRows: 100, pageNo: 1, ...($('officialIndustry').value.trim() ? { indsSclsCd: $('officialIndustry').value.trim() } : {}) } : { ...state.liveQuery, pageNo: page };
-      const data = await api('/api/external/semas', p);
+      let data;
+      try { data = await api('/api/external/semas', p); }
+      catch (err) {
+        if (id !== state.requestId) return;
+        $('kakaoFallback').hidden = false;
+        const industry = state.meta.industries.find(item => item.industry_code === $('industry').value);
+        $('kakaoStoreQuery').value = industry?.keywords?.[0] || industry?.industry_name || '';
+        refreshProviders();
+        throw err;
+      }
       if (id !== state.requestId) return;
       state.live = data; state.liveQuery = p; renderStores();
     }
     renderMetrics(); drawMap(); updateCoordinates();
     $('filterFeedback').textContent = state.mode === 'DEMO' ? '가상 데이터 분석 완료 · 실제 추천이 아닙니다.' : '공식 API 응답을 조회했습니다. 업종명과 관측 시점을 함께 확인하세요.';
+    refreshProviders();
+  }, $('filterFeedback'));
+}
+async function searchKakaoStores(page = 1) {
+  const button = page === 1 ? $('searchKakaoStores') : $('moreStores');
+  if (busyButtons.has(button)) return;
+  const p = page === 1 ? { action: 'keyword', query: $('kakaoStoreQuery').value.trim(), x: state.center[1], y: state.center[0], radius: Number($('radius').value), page: 1 } : { ...state.liveQuery, page };
+  if (!p.query) return toast('카카오에서 검색할 업종이나 장소명을 입력해 주세요.');
+  const id = ++state.requestId;
+  if (page === 1) { state.live = null; state.liveQuery = null; renderLiveEmpty(); drawMap(); $('kakaoFallback').hidden = false; }
+  await perform(button, async () => {
+    $('filterFeedback').textContent = '카카오 장소검색 응답을 확인하고 있습니다…';
+    let data;
+    try { data = await api('/api/external/kakao', p); }
+    catch (err) { if (id !== state.requestId) return; throw err; }
+    if (id !== state.requestId) return;
+    state.liveQuery = p;
+    state.live = { ...data, provider: 'kakao', page, page_size: 15, total_count: null, has_more: data.meta?.is_end === false && page < 45, observation_period: '카카오 응답 시점',
+      items: data.documents.map((place, index) => ({ id: `kakao-${page}-${index}`, store_name: place.name, address: place.address, industry_name: place.category, lat: place.lat, lng: place.lng, observation_period: data.collected_at })) };
+    renderStores(); renderMetrics(); drawMap(); updateCoordinates();
+    $('filterFeedback').textContent = '카카오 장소검색 결과입니다. 공식 상가 API 승인 상태와는 별개이며 전체 점포 현황이 아닙니다.';
+    refreshProviders();
   }, $('filterFeedback'));
 }
 function renderMetrics() {
   const demo = state.mode === 'DEMO';
+  const kakao = state.live?.provider === 'kakao';
   const values = demo ? [['데이터 모드', 'DEMO', '체험용 가상 데이터'], ['비교 가능 후보', `${state.result?.candidates.length || 0}곳`, '선택 조건에 따른 가상 결과'], ['평가 기준', '4개 지표', '초기 제안 가중치'], ['분석 반경', `${$('radius').value}m`, '가상 후보 중심 기준']]
-    : [['데이터 모드', '실데이터', '공식 API 응답'], ['조회 점포', state.live ? fmt(state.live.items.length, '곳') : '—', state.live ? `전체 ${fmt(state.live.total_count, '곳')} · 페이지 ${state.live.page}` : '조회 후 표시'], ['데이터 기준', state.live?.observation_period || '—', '제공기관 기준시점'], ['분석 반경', `${$('radius').value}m`, '선택 좌표 중심']];
+    : [['데이터 모드', '실데이터', kakao ? '카카오 장소검색 응답' : '공식 API 응답'], [kakao ? '검색된 장소' : '조회 점포', state.live ? fmt(state.live.items.length, '곳') : '—', state.live ? kakao ? `일부 검색 결과 · ${state.live.page}페이지` : `전체 ${fmt(state.live.total_count, '곳')} · 페이지 ${state.live.page}` : '조회 후 표시'], ['데이터 기준', state.live?.observation_period || '—', '제공기관 기준시점'], ['분석 반경', `${$('radius').value}m`, '선택 좌표 중심']];
   $('metrics').innerHTML = values.map(v => `<article><span>${v[0]}</span><strong>${escapeHtml(v[1])}</strong><small>${escapeHtml(v[2])}</small></article>`).join('');
 }
 function renderCandidates() {
@@ -359,12 +429,20 @@ function renderCandidates() {
 }
 function renderStores() {
   const data = state.live;
-  $('resultsTitle').textContent = `실제 점포 ${data.items.length}곳 · ${data.page}페이지`;
-  $('mapTitle').textContent = '선택 위치 주변의 실제 점포';
+  const kakao = data.provider === 'kakao';
+  $('resultsTitle').textContent = `${kakao ? '카카오 장소' : '실제 점포'} ${data.items.length}곳 · ${data.page}페이지`;
+  $('mapTitle').textContent = kakao ? '선택 위치 주변의 카카오 검색 결과' : '선택 위치 주변의 실제 점포';
+  $('mapLegend').textContent = kakao ? '카카오 장소검색 결과 · 일부 장소' : '조회된 실제 점포';
   $('resultNotice').hidden = false;
   $('resultNotice').textContent = `${data.mode === 'STALE' ? '갱신 실패 · 마지막 실제 수집 캐시' : data.mode === 'CACHED' ? '최근 실제 수집 캐시' : '공식 API 조회'} · 수집 ${new Date(data.collected_at).toLocaleString('ko-KR')} · ${state.liveQuery?.indsSclsCd ? state.liveQuery.indsSclsCd + ' 업종 조회' : '전체 업종 조회'} · 제공기관 원본 분류 기준`;
+  if (kakao) $('resultNotice').textContent = `출처: 카카오 Local 장소검색 · 검색어: ${state.liveQuery.query} · 수집 ${new Date(data.collected_at).toLocaleString('ko-KR')} · 검색 결과 일부이며 공식 전체 점포 수가 아닙니다. 공식 소분류 코드를 사용하지 않습니다.`;
   $('cards').innerHTML = data.items.map(c => `<article class="candidate panel"><div class="card-top"><span class="tag live">실제 API 응답</span><span class="location">${escapeHtml(c.industry_code || '분류 없음')}</span></div><h3>${escapeHtml(c.store_name)} ${escapeHtml(c.branch_name || '')}</h3><p class="location">${escapeHtml(c.address || '주소 미제공')}</p><div class="card-bottom"><span>${escapeHtml(c.industry_name || '업종 미제공')}</span><span class="location">${escapeHtml(c.floor || '층 미제공')}</span></div></article>`).join('') || '<div class="empty panel"><h3>조회된 점포가 없습니다.</h3><p>위치 또는 반경을 바꿔 다시 조회해 보세요.</p></div>';
-  $('moreStores').hidden = data.total_count == null || data.page * data.page_size >= data.total_count;
+  if (kakao) {
+    $('cards').querySelectorAll('.card-top .tag').forEach(tag => { tag.textContent = '카카오 장소검색'; });
+    $('cards').querySelectorAll('.card-top .location').forEach(label => { label.textContent = '키워드 검색'; });
+    $('cards').querySelectorAll('.card-bottom .location').forEach(label => { label.textContent = '일부 검색 결과'; });
+  }
+  $('moreStores').hidden = kakao ? !data.has_more : data.total_count == null || data.page * data.page_size >= data.total_count;
 }
 function showDetail(id) {
   const c = state.result?.candidates.find(c => c.id === id); if (!c) return;
@@ -382,7 +460,7 @@ function renderComparison() {
 }
 function exportRows() {
   if (state.mode === 'DEMO') return (state.result?.candidates || []).map(c => ({ 데이터구분: 'DEMO 가상 데이터', 후보명: c.name, 지역: c.region, 가상점수: c.score, 가상점포수: c.stores, 가상월세만원: c.rent, 출처: '가상 시뮬레이션' }));
-  return (state.live?.items || []).map(c => ({ 데이터구분: state.live.mode, 상호: c.store_name, 주소: c.address, 업종: c.industry_name, 기준시점: c.observation_period, 수집시각: state.live.collected_at, 출처: state.live.source_url }));
+  return (state.live?.items || []).map(c => ({ 데이터구분: state.live.provider === 'kakao' ? '카카오 장소검색 · 일부 검색 결과' : state.live.mode, 상호: c.store_name, 주소: c.address, 업종: c.industry_name, 기준시점: c.observation_period, 수집시각: state.live.collected_at, 출처: state.live.source_url }));
 }
 function renderReport() {
   const rows = exportRows();
@@ -417,19 +495,21 @@ async function init() {
   state.meta = await api('/api/meta');
   populateIndustries();
   $('sido').innerHTML = state.meta.regions.map(r => `<option>${escapeHtml(r.sido_name)}</option>`).join('');
-  populateDistricts(); await initMap(); drawMap();
+  populateDistricts();
+  // A slow third-party map must not block account, navigation or data controls.
+  initMap().then(drawMap).catch(() => { $('mapEngineBadge').textContent = '지도 연결 확인 필요'; $('map').innerHTML = '<div class="map-fallback">지도를 불러오지 못했습니다. 주소 검색과 점포 목록은 계속 이용할 수 있습니다.</div>'; });
   $('btnMapNormal').onclick = () => setDaumMapType(false);
   $('btnMapSkyview').onclick = () => setDaumMapType(true);
   $('btnRoadview').onclick = toggleRoadview;
   $('closeRoadview').onclick = () => { $('roadviewWrap').hidden = true; };
   $('btnDaumPostcode').onclick = openDaumPostcode;
-  $('industrySearch').oninput = e => populateIndustries(e.target.value);
+  $('industrySearch').oninput = e => { populateIndustries(e.target.value); invalidateExploreResults(); };
   $('sido').onchange = populateDistricts; $('sigungu').onchange = populateEmd;
-  const clearResults = () => { state.requestId++; state.result = null; state.live = null; state.liveQuery = null; state.compared.clear(); $('compareCount').textContent = '0'; renderLiveEmpty(); drawMap(); };
+  const clearResults = invalidateExploreResults;
   $('emd').onchange = () => { clearResults(); toast('읍·면·동 중심 좌표는 주소 검색으로 확인해 주세요.'); };
   $('radius').onchange = () => { clearResults(); updateCoordinates(); };
   $('industry').onchange = () => { syncOfficialIndustry(); clearResults(); };
-  $('officialIndustry').onchange = clearResults;
+  $('officialIndustry').onchange = () => { updateOfficialIndustryHelp(); clearResults(); };
   $('modeLive').onclick = () => setMode('LIVE'); $('modeDemo').onclick = () => setMode('DEMO');
   if ($('tryDemo')) $('tryDemo').onclick = () => setMode('DEMO');
   const defaults = [40, 25, 20, 15];
@@ -438,7 +518,8 @@ async function init() {
   document.querySelectorAll('[data-weight]').forEach(el => el.oninput = updateWeights);
   $('resetWeights').onclick = () => { document.querySelectorAll('[data-weight]').forEach((el, i) => el.value = defaults[i]); updateWeights(); };
   $('searchForm').onsubmit = e => { e.preventDefault(); analyze(); };
-  $('moreStores').onclick = () => analyze(state.live.page + 1);
+  $('moreStores').onclick = () => state.live?.provider === 'kakao' ? searchKakaoStores(state.live.page + 1) : analyze(state.live.page + 1);
+  $('searchKakaoStores').onclick = () => searchKakaoStores();
   $('placeForm').onsubmit = e => { e.preventDefault(); perform(e.submitter, async () => {
     const docs = await searchPlacesClientOrServer($('placeQuery').value, $('placeType').value);
     $('placeResults').hidden = false;
