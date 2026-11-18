@@ -30,6 +30,33 @@ test('SEMAS request, pagination, missing fields and actual response cache', asyn
   assert.equal(c.logs()[0].records_upserted, 0);
   assert(!JSON.stringify(c.status()).includes('test%2Bkey'));
 });
+test('SEMAS no-data responses are successful empty results for radius and region searches', async () => {
+  const queries = [location, { divId: 'adongCd', key: '1168064000' }];
+  const operations = ['storeListInRadius', 'storeListInDong'];
+  for (const [index, query] of queries.entries()) {
+    let calls = 0;
+    const c = createConnectors({ env: { DATA_GO_KR_SERVICE_KEY: 'test-key' }, fetchImpl: async url => {
+      calls++;
+      assert(url.pathname.endsWith('/' + operations[index]));
+      const payload = { header: { resultCode: '03', resultMsg: 'NODATA_ERROR' } };
+      return response(index === 0 ? payload : { response: payload });
+    } });
+    const empty = await c.semas(query);
+    assert.equal(empty.mode, 'LIVE');
+    assert.equal(empty.total_count, 0);
+    assert.deepEqual(empty.items, []);
+    assert.equal(empty.page, 1);
+    assert.equal(empty.page_size, 100);
+    assert.equal(c.status().find(p => p.id === 'semas').status, 'CONNECTED');
+    assert.equal(c.logs()[0].status, 'SUCCESS');
+    assert.equal(c.logs()[0].records_fetched, 0);
+    const cached = await c.semas(query);
+    assert.equal(cached.mode, 'CACHED');
+    assert.equal(cached.collected_at, empty.collected_at);
+    assert.equal(calls, 1);
+  }
+});
+
 test('HTTP 200 provider errors and XML errors never turn into success', async () => {
   const c = createConnectors({ env: { DATA_GO_KR_SERVICE_KEY: 'secret' }, fetchImpl: async () => response({ header: { resultCode: '30', resultMsg: 'secret' }, body: { items: [] } }) });
   await assert.rejects(() => c.semas(location), { code: 'PROVIDER_REJECTED' });

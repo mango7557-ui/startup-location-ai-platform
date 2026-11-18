@@ -3,6 +3,11 @@ Windows server installation and service upgrade
 EXISTING SERVER: ONE USER ACTION
 Copy this entire private package folder to your server through the authorized RDP session.
 Right-click INSTALL-SERVICE.cmd and choose "Run as administrator".
+Each run appends its result and exit code to INSTALL-RESULT.txt beside that CMD file.
+If no service or PUBLIC-LINK.txt appears, open INSTALL-RESULT.txt in the package folder.
+It identifies checks such as administrator, .NET, process identity, port ownership,
+service registration, permissions, and HTTP health. API keys, configuration contents,
+raw PowerShell/SC output, and process command lines are not recorded.
 Default installation: D:\data\startup-location-platform
 This upgrades only that application. Existing .env, members, sales records, and database
 files are preserved. Private configuration/data from the package are NOT imported during

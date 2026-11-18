@@ -4,10 +4,10 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { DatabaseSync } = require('node:sqlite');
-const { spawn } = require('node:child_process');
+const { spawn, spawnSync } = require('node:child_process');
 const net = require('node:net');
 const { digest, backupDatabases, inside } = require('../deploy/windows/operations.cjs');
-const { upgrade, verifyLegacy, commandMatches, serviceXml } = require('../deploy/windows/install-service.cjs');
+const { upgrade, verifyLegacy, commandMatches, serviceXml, powershell } = require('../deploy/windows/install-service.cjs');
 const scratch = fs.mkdtempSync(path.join(__dirname, '../.runtime/windows-service-test-'));
 test.after(() => {
   const resolved = path.resolve(scratch), expected = path.resolve(__dirname, '../.runtime') + path.sep;
@@ -96,9 +96,36 @@ test('PID ownership requires exact executable and full command, not a path subst
   const root = path.join(scratch, 'ownership'), exe = path.join(root, 'runtime/node.exe'), server = path.join(root, 'server/index.js');
   const record = { supervisorPid: 100, serverPid: 101, server };
   assert(commandMatches(`"${exe}" "${server}"`, exe, server));
+  assert(commandMatches('D:\\data\\app\\runtime\\node.exe D:\\data\\app\\server\\index.js', 'D:\\data\\app\\runtime\\node.exe', 'D:\\data\\app\\server\\index.js'));
   assert(!commandMatches(`"${exe}" "${server}" --other`, exe, server));
   assert.throws(() => verifyLegacy(root, record, [{ ProcessId: 101, ExecutablePath: exe, CommandLine: `"${exe}" "${server}.other"` }]), /another command/);
   assert.equal(verifyLegacy(root, record, [{ ProcessId: 101, ExecutablePath: exe, CommandLine: `"${exe}" "${server}"` }]).length, 1);
+});
+test('PowerShell diagnostics identify the failed check without raw command output or secrets', () => {
+  const failure = () => ({ status: 1, stdout: JSON.stringify({ installerError: { type: 'System.UnauthorizedAccessException', category: 'PermissionDenied', hresult: -2147024891 } }), stderr: 'private-key=must-not-be-printed; command arguments' });
+  assert.throws(() => powershell('check-node-processes', 'ignored', {}, failure), error => {
+    assert.match(error.message, /\[check-node-processes\]/);
+    assert.match(error.message, /UnauthorizedAccessException/);
+    assert.match(error.message, /-2147024891/);
+    assert(!error.message.includes('private-key'));
+    return true;
+  });
+  assert.throws(() => powershell('check-port-ownership', 'ignored', {}, () => ({ status: 0, stdout: 'secret-raw-output', stderr: '' })), error => {
+    assert.match(error.message, /\[check-port-ownership\]/);
+    assert(!error.message.includes('secret-raw-output'));
+    return true;
+  });
+});
+test('Windows launcher records missing-runtime failures before Node can start', { skip: process.platform !== 'win32' }, () => {
+  const folder = path.join(scratch, 'missing-runtime-package');
+  fs.mkdirSync(folder);
+  const launcher = path.join(folder, 'INSTALL-SERVICE.cmd');
+  fs.copyFileSync(path.join(__dirname, '../deploy/windows/INSTALL-SERVICE.cmd'), launcher);
+  const result = spawnSync('cmd.exe', ['/d', '/c', `"${launcher}"`], { cwd: folder, input: '\r\n', encoding: 'utf8', windowsHide: true, windowsVerbatimArguments: true });
+  assert.equal(result.status, 1, result.stderr);
+  const report = fs.readFileSync(path.join(folder, 'INSTALL-RESULT.txt'), 'utf8');
+  assert.match(report, /FAILED \[launch-node\]/);
+  assert.match(report, /Exit code: 1/);
 });
 test('backup retention only removes validated generated names and preserves unrelated directories', async () => {
   const f = fixture('retention'), directory = path.join(f.target, '.runtime/backups');

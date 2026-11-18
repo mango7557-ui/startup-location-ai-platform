@@ -7,6 +7,11 @@ const { stamp, digest, inside, verifyPackage, appEntries, copyFile, captureFiles
 const SERVICE = 'StartupLocationPlatform';
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const escapeXml = text => String(text).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+let lastStage;
+function stage(label) {
+  if (lastStage !== label && require.main === module) console.log(`[${label}]`);
+  lastStage = label;
+}
 
 function serviceXml(root) {
   const base = escapeXml(root);
@@ -57,23 +62,40 @@ function verifyLegacy(root, record, processes) {
   }
   return matches;
 }
-function powershell(script, input = {}) {
+function powershell(label, script, input = {}, runner = spawnSync) {
+  stage(label);
   const prelude = "$ErrorActionPreference='Stop'; [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false); $p = $env:STARTUP_LOCATION_INPUT | ConvertFrom-Json; ";
-  const encoded = Buffer.from(prelude + script, 'utf16le').toString('base64');
-  const result = spawnSync('powershell.exe', ['-NoLogo', '-NoProfile', '-NonInteractive', '-EncodedCommand', encoded], {
+  // Error messages can include command arguments. Emit only fixed metadata, never
+  // raw stdout/stderr, exception messages, scripts, or the process inventory.
+  const guarded = `try { ${script} } catch { @{ installerError = @{ type = $_.Exception.GetType().FullName; category = $_.CategoryInfo.Category.ToString(); hresult = $_.Exception.HResult } } | ConvertTo-Json -Compress; exit 1 }`;
+  const encoded = Buffer.from(prelude + guarded, 'utf16le').toString('base64');
+  const result = runner('powershell.exe', ['-NoLogo', '-NoProfile', '-NonInteractive', '-EncodedCommand', encoded], {
     encoding: 'utf8', windowsHide: true, env: { ...process.env, STARTUP_LOCATION_INPUT: JSON.stringify(input) }, maxBuffer: 2 * 1024 * 1024
   });
-  if (result.error || result.status !== 0) throw new Error('Windows configuration check failed. No credentials were printed. Run INSTALL-SERVICE.cmd as administrator.');
-  const output = result.stdout.replace(/^\uFEFF/, '').trim();
-  return output ? JSON.parse(output) : null;
+  let value, parsed = false;
+  try {
+    const output = String(result.stdout || '').replace(/^\uFEFF/, '').trim();
+    value = output ? JSON.parse(output) : null;
+    parsed = true;
+  } catch { }
+  if (result.error || result.status !== 0 || value?.installerError) {
+    const detail = value?.installerError;
+    const type = /^[A-Za-z][A-Za-z0-9.]{0,120}$/.test(detail?.type || '') ? detail.type : 'unavailable';
+    const category = /^[A-Za-z]{1,40}$/.test(detail?.category || '') ? detail.category : 'unavailable';
+    const hresult = Number.isInteger(detail?.hresult) ? detail.hresult : 'unavailable';
+    throw new Error(`Windows step failed [${label}]: exit=${Number.isInteger(result.status) ? result.status : 'launch-failed'}, type=${type}, category=${category}, hresult=${hresult}. No command output or credentials recorded.`);
+  }
+  if (!parsed) throw new Error(`Windows step failed [${label}]: unexpected response format. Command output was withheld.`);
+  return value;
 }
-function executable(file, args) {
+function executable(label, file, args) {
+  stage(label);
   const result = spawnSync(file, args, { encoding: 'utf8', windowsHide: true });
-  if (result.error || result.status !== 0) throw new Error(`${path.basename(file)} ${args[0]} failed (exit ${result.status}).`);
+  if (result.error || result.status !== 0) throw new Error(`Windows step failed [${label}]: ${path.basename(file)}, exit=${Number.isInteger(result.status) ? result.status : 'launch-failed'}. Command output was withheld.`);
 }
 function windowsHost(root, port) {
   const wrapper = path.join(root, 'service/platform-service.exe');
-  const query = () => powershell(`$s = Get-CimInstance Win32_Service -Filter "Name='${SERVICE}'"; if ($s) { $s | Select-Object Name,State,PathName,ProcessId,StartName | ConvertTo-Json -Compress } else { 'null' }`);
+  const query = () => powershell('check-service-registration', `$s = Get-CimInstance Win32_Service -Filter "Name='${SERVICE}'"; if ($s) { $s | Select-Object Name,State,PathName,ProcessId,StartName | ConvertTo-Json -Compress } else { 'null' }`);
   async function waitFor(state) {
     for (let n = 0; n < 45; n++) {
       const current = query();
@@ -84,39 +106,41 @@ function windowsHost(root, port) {
   }
   return {
     async inspect() {
-      const isAdmin = powershell("([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator) | ConvertTo-Json");
-      if (!isAdmin) throw new Error('Right-click INSTALL-SERVICE.cmd and choose Run as administrator.');
-      powershell("$v = (Get-ItemProperty 'HKLM:\\SOFTWARE\\Microsoft\\NET Framework Setup\\NDP\\v4\\Full').Release; if ($v -lt 394254) { throw '.NET Framework 4.6.1 or newer is required.' }; 'true'");
+      const isAdmin = powershell('check-administrator', "([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator) | ConvertTo-Json");
+      if (!isAdmin) throw new Error('[check-administrator] Right-click INSTALL-SERVICE.cmd and choose Run as administrator.');
+      const dotnet = powershell('check-dotnet-framework', "$k = 'HKLM:\\SOFTWARE\\Microsoft\\NET Framework Setup\\NDP\\v4\\Full'; if (Test-Path -LiteralPath $k) { [int](Get-ItemProperty -LiteralPath $k).Release | ConvertTo-Json } else { '0' }");
+      if (!Number.isInteger(dotnet) || dotnet < 394254) throw new Error(`[check-dotnet-framework] .NET Framework 4.6.1 or newer is required. Detected release: ${Number.isInteger(dotnet) ? dotnet : 'unknown'}.`);
       const service = query();
       if (service && (service.PathName.replace(/^"|"$/g, '').toLowerCase() !== wrapper.toLowerCase() || service.StartName.toLowerCase() !== `nt service\\${SERVICE.toLowerCase()}`)) throw new Error('Another service uses this name or account. Nothing was changed.');
       let record = null;
       try { record = JSON.parse(fs.readFileSync(path.join(root, '.runtime/process.json'), 'utf8')); } catch { }
-      const processes = powershell('Get-CimInstance Win32_Process | Select-Object ProcessId,ExecutablePath,CommandLine,@{n="CreationDate";e={$_.CreationDate.ToUniversalTime().ToString("o")}} | ConvertTo-Json -Compress') || [];
+      const inventory = powershell('check-node-processes', 'Get-CimInstance Win32_Process -Filter "Name=\'node.exe\'" | Select-Object ProcessId,ExecutablePath,CommandLine,@{n="CreationDate";e={if ($_.CreationDate) { $_.CreationDate.ToUniversalTime().ToString("o") } else { $null }}} | ConvertTo-Json -Compress');
+      const processes = inventory == null ? [] : Array.isArray(inventory) ? inventory : [inventory];
       const legacy = !service || service.State !== 'Running' ? (record ? verifyLegacy(root, record, processes) : []) : [];
-      const listeners = powershell('@(Get-NetTCPConnection -State Listen -LocalPort $p.port -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique) | ConvertTo-Json -Compress', { port });
+      const listeners = powershell('check-port-ownership', '@(Get-NetTCPConnection -ErrorAction Stop | Where-Object { $_.LocalPort -eq $p.port -and $_.OwningProcess -gt 0 } | Select-Object -ExpandProperty OwningProcess -Unique) | ConvertTo-Json -Compress', { port });
       const owners = listeners == null ? [] : Array.isArray(listeners) ? listeners : [listeners];
       for (const owner of owners) {
         const worker = processes.find(item => item.ProcessId === owner);
         const isService = service?.State === 'Running' && worker?.ExecutablePath?.toLowerCase() === path.join(root, 'runtime/node.exe').toLowerCase() && commandMatches(worker.CommandLine, path.join(root, 'runtime/node.exe'), path.join(root, 'service-worker.cjs'));
         if (!isService && !legacy.some(item => item.ProcessId === owner)) throw new Error('The site port belongs to an unverified process. Nothing was stopped.');
       }
-      return { service, legacy, wasRunning: owners.length > 0 };
+      return { service, legacy, wasRunning: owners.length > 0 || legacy.length > 0 || service?.State === 'Running' };
     },
     async stopPrevious(state) {
-      if (state.service?.State === 'Running') { executable('sc.exe', ['stop', SERVICE]); await waitFor('Stopped'); }
+      if (state.service?.State === 'Running') { executable('stop-previous-service', 'sc.exe', ['stop', SERVICE]); await waitFor('Stopped'); }
       // Check the executable, entire command, and creation time again immediately before termination.
-      for (const item of state.legacy) powershell('$q = Get-CimInstance Win32_Process -Filter ("ProcessId=" + $p.ProcessId); if ($q) { if ($q.ExecutablePath -cne $p.ExecutablePath -or $q.CommandLine -cne $p.CommandLine -or $q.CreationDate.ToUniversalTime().ToString("o") -cne $p.CreationDate) { throw "Process identity changed" }; Stop-Process -Id $q.ProcessId -ErrorAction Stop }; "true"', item);
+      for (const item of state.legacy) powershell('stop-verified-legacy-process', '$q = Get-CimInstance Win32_Process -Filter ("ProcessId=" + $p.ProcessId); if ($q) { if (!$q.CreationDate -or $q.ExecutablePath -cne $p.ExecutablePath -or $q.CommandLine -cne $p.CommandLine -or $q.CreationDate.ToUniversalTime().ToString("o") -cne $p.CreationDate) { throw "Process identity changed" }; Stop-Process -Id $q.ProcessId -ErrorAction Stop }; "true"', item);
       await pause(500);
     },
     async configure(state) {
       // WinSW also registers its own Event Log source while elevated, which the
       // least-privilege service account cannot create during its first startup.
-      if (!state.service) executable(wrapper, ['install']);
-      else executable('sc.exe', ['config', SERVICE, 'start=', 'delayed-auto']);
-      executable('sc.exe', ['failure', SERVICE, 'reset=', '3600', 'actions=', 'restart/10000/restart/30000/restart/60000']);
-      executable('sc.exe', ['failureflag', SERVICE, '1']);
+      if (!state.service) executable('install-winsw-service', wrapper, ['install']);
+      else executable('configure-auto-start', 'sc.exe', ['config', SERVICE, 'start=', 'delayed-auto']);
+      executable('configure-failure-recovery', 'sc.exe', ['failure', SERVICE, 'reset=', '3600', 'actions=', 'restart/10000/restart/30000/restart/60000']);
+      executable('configure-failure-flag', 'sc.exe', ['failureflag', SERVICE, '1']);
       // Limit changes to this application's own files. No firewall, IIS, or other service changes.
-      powershell(`$owner = [Security.Principal.WindowsIdentity]::GetCurrent().User;
+      powershell('configure-service-folder-permissions', `$owner = [Security.Principal.WindowsIdentity]::GetCurrent().User;
 function Protect-AppPath($file, $directory, $access) {
   if ($directory) { $acl = New-Object Security.AccessControl.DirectorySecurity; $inherit = [Security.AccessControl.InheritanceFlags]'ContainerInherit,ObjectInherit' }
   else { $acl = New-Object Security.AccessControl.FileSecurity; $inherit = [Security.AccessControl.InheritanceFlags]::None }
@@ -135,7 +159,7 @@ Protect-AppPath (Join-Path $p.root '.env') $false 'Read';
 Protect-AppPath (Join-Path $p.root 'PUBLIC-LINK.txt') $false 'Modify';
 'true'`, { root });
     },
-    async start() { executable('sc.exe', ['start', SERVICE]); await waitFor('Running'); },
+    async start() { executable('start-new-service', 'sc.exe', ['start', SERVICE]); await waitFor('Running'); },
     async healthy() {
       for (let n = 0; n < 30; n++) {
         try {
@@ -150,18 +174,19 @@ Protect-AppPath (Join-Path $p.root 'PUBLIC-LINK.txt') $false 'Modify';
       const current = query();
       if (!current) return;
       if (current.PathName.replace(/^"|"$/g, '').toLowerCase() !== wrapper.toLowerCase()) throw new Error('Cannot roll back a service with an unexpected executable.');
-      if (current.State !== 'Stopped') { executable('sc.exe', ['stop', SERVICE]); await waitFor('Stopped'); }
-      if (!state.service) { executable('sc.exe', ['delete', SERVICE]); await waitFor('absent'); }
+      if (current.State !== 'Stopped') { executable('rollback-stop-service', 'sc.exe', ['stop', SERVICE]); await waitFor('Stopped'); }
+      if (!state.service) { executable('rollback-delete-new-service', 'sc.exe', ['delete', SERVICE]); await waitFor('absent'); }
     },
     async restartPrevious(state) {
       if (!state.wasRunning) return;
-      if (state.service) { executable('sc.exe', ['start', SERVICE]); await waitFor('Running'); }
-      else executable(path.join(root, 'runtime/node.exe'), [path.join(root, 'run.cjs'), '--detach']);
+      if (state.service) { executable('rollback-start-previous-service', 'sc.exe', ['start', SERVICE]); await waitFor('Running'); }
+      else executable('rollback-start-legacy-app', path.join(root, 'runtime/node.exe'), [path.join(root, 'run.cjs'), '--detach']);
       await this.healthy();
     }
   };
 }
 async function upgradeUnlocked({ source, target, host }) {
+  stage('verify-package-and-paths');
   noLinks(source); noLinks(target);
   const manifest = verifyPackage(source);
   for (const file of ['.env', 'deployment.json', 'runtime/node.exe', 'server/index.js']) {
@@ -190,6 +215,7 @@ async function upgradeUnlocked({ source, target, host }) {
   fs.mkdirSync(updateRoot, { recursive: true });
   const snapshot = path.join(updateRoot, stamp());
   const codeFiles = [...copies.map(entry => entry.target), 'deployment.json', 'service/platform-service.xml', 'PUBLIC-LINK.txt'];
+  stage('backup-existing-code-and-data');
   captureFiles(target, snapshot, codeFiles);
   await backupDatabases(target, path.join(snapshot, 'databases'), { label: 'upgrade' });
   let stopped = false;
@@ -197,7 +223,9 @@ async function upgradeUnlocked({ source, target, host }) {
     stopped = true;
     await host.stopPrevious(state);
     // Capture final committed transactions after the old process stops, including its WAL.
+    stage('backup-final-committed-data');
     await backupDatabases(target, path.join(snapshot, 'databases-final'), { label: 'upgrade' });
+    stage('copy-application-files');
     for (const entry of copies) {
       const from = inside(source, entry.source), to = inside(target, entry.target);
       if (!fs.existsSync(to) || digest(from) !== digest(to)) copyFile(from, to);
@@ -207,6 +235,7 @@ async function upgradeUnlocked({ source, target, host }) {
     fs.writeFileSync(path.join(target, 'PUBLIC-LINK.txt'), 'Temporary HTTPS sharing will appear here after the service starts.\r\n');
     await host.configure(state);
     await host.start();
+    stage('check-service-http-health');
     await host.healthy();
     fs.writeFileSync(path.join(snapshot, 'SUCCESS.json'), JSON.stringify({ completedAt: new Date().toISOString(), service: SERVICE, preserved: ['.env', '.runtime/accounts.sqlite', '.runtime/card_sales.sqlite'] }));
     return { target, service: SERVICE, snapshot };
@@ -214,6 +243,7 @@ async function upgradeUnlocked({ source, target, host }) {
     if (stopped) {
       try {
         await host.stopNew(state);
+        stage('rollback-restore-code');
         restoreFiles(target, snapshot);
         await host.restartPrevious(state);
         throw new Error(`Service conversion failed; previous application restored. ${error.message}`);
@@ -226,6 +256,7 @@ async function upgradeUnlocked({ source, target, host }) {
   }
 }
 async function upgrade(options) {
+  stage('acquire-upgrade-lock');
   const lock = path.join(options.target, '.runtime/service-upgrade.lock');
   noLinks(lock);
   let descriptor;
@@ -244,8 +275,12 @@ async function upgrade(options) {
   }
 }
 async function main() {
+  stage('check-node-runtime');
   if (process.platform !== 'win32' || Number(process.versions.node.split('.')[0]) !== 24) throw new Error('Use bundled Windows Node.js 24.');
   const target = path.resolve(process.argv[2] || 'D:\\data\\startup-location-platform');
+  console.log(`Package: ${__dirname}`);
+  console.log(`Target: ${target}`);
+  stage('read-deployment-settings');
   const settings = JSON.parse(fs.readFileSync(path.join(target, 'deployment.json'), 'utf8'));
   const result = await upgrade({ source: __dirname, target, host: windowsHost(target, settings.port) });
   console.log(`Windows service installed and healthy: ${result.service}`);
@@ -254,5 +289,5 @@ async function main() {
   console.log('This URL changes after restart; it is not a fixed production domain.');
   console.log(`Upgrade backup: ${result.snapshot}`);
 }
-if (require.main === module) main().catch(error => { console.error('Installation stopped:', error.message); process.exitCode = 1; });
-module.exports = { SERVICE, serviceXml, commandMatches, verifyLegacy, upgrade };
+if (require.main === module) main().catch(error => { console.error(`Installation stopped at [${lastStage || 'startup'}]:`, error.message); process.exitCode = 1; });
+module.exports = { SERVICE, serviceXml, commandMatches, verifyLegacy, upgrade, powershell };

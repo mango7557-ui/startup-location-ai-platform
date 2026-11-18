@@ -98,6 +98,43 @@ test('selecting an industry fills its configured official code', async ({ page }
   await expect(page.locator('#officialIndustry')).toHaveValue('I21201');
   await page.locator('#officialIndustry').fill('I20101');
   await expect(page.locator('#officialIndustry')).toHaveValue('I20101');
+  await page.locator('#officialIndustry').blur();
+  await expect(page.locator('#officialIndustryHelp')).toContainText('직접 지정한 소분류: 백반/한정식 (I20101)');
+  await page.locator('#officialIndustry').fill('');
+  await page.locator('#officialIndustry').blur();
+  await expect(page.locator('#officialIndustryHelp')).toContainText('전체 업종을 조회');
+});
+
+test('corrected industry groups query their verified representative classification', async ({ page }) => {
+  const requests = [];
+  await page.route('**/api/external/semas', async route => {
+    requests.push(route.request().postDataJSON());
+    await route.fulfill({ json: { provider: 'semas', mode: 'LIVE', total_count: 0, items: [], page: 1, page_size: 100, collected_at: '2026-11-18T00:00:00Z' } });
+  });
+  await page.goto('/');
+  // Expected values come from the official smallUpjongList response, verified 2026-11-18.
+  const classifications = [
+    ['IND_MEAT', 'I20107', '돼지고기 구이/찜'],
+    ['IND_SNACK', 'I21007', '김밥/만두/분식'],
+    ['IND_FASTFOOD', 'I21003', '피자'],
+    ['IND_FLOWER', 'G21901', '꽃집'],
+    ['IND_PET', 'G22001', '애완동물/애완용품 소매업'],
+    ['IND_STUDYCAFE', 'R10202', '독서실/스터디 카페'],
+    ['IND_SCREEN_GOLF', 'R10311', '골프 연습장'],
+    ['IND_PC_KARAOKE', 'R10406', 'PC방']
+  ];
+  for (const [industry, code, name] of classifications) {
+    await page.locator('#industry').selectOption(industry);
+    await expect(page.locator('#officialIndustry')).toHaveValue(code);
+    await expect(page.locator('#officialIndustryHelp')).toContainText(`대표 소분류: ${name} (${code})`);
+    await expect(page.locator('#officialIndustryHelp')).toContainText('다른 세부 업종은 포함하지 않습니다');
+    const response = page.waitForResponse('**/api/external/semas');
+    await page.locator('#analyze').click();
+    await response;
+    await expect(page.locator('#analyze')).toBeEnabled();
+    expect(requests.at(-1).indsSclsCd).toBe(code);
+    await expect(page.locator('.candidate')).toHaveCount(0);
+  }
 });
 
 test('a stalled map SDK does not block sign in or navigation', async ({ page }) => {

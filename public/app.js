@@ -280,9 +280,17 @@ function syncOfficialIndustry() {
   const selected = state.meta?.industries.find(i => i.industry_code === $('industry').value);
   const code = selected?.semas_code;
   $('officialIndustry').value = /^[A-Z]\d{5}$/.test(code || '') ? code : '';
-  $('officialIndustryHelp').textContent = code && $('officialIndustry').value
-    ? `선택한 업종의 기본 코드 ${code}가 입력되었습니다. 제공기관의 분류와 다를 수 있으니 확인 후 수정할 수 있습니다.`
-    : '연결된 코드가 없습니다. 코드를 입력하거나 비워두면 전체 업종을 조회합니다.';
+  updateOfficialIndustryHelp();
+}
+function updateOfficialIndustryHelp() {
+  const code = $('officialIndustry').value.trim();
+  const selected = state.meta?.industries.find(i => i.industry_code === $('industry').value);
+  const classification = state.meta?.industries.find(i => i.semas_code === code);
+  $('officialIndustryHelp').textContent = !code
+    ? '코드를 비워 두면 선택한 업종과 관계없이 전체 업종을 조회합니다.'
+    : code === selected?.semas_code && selected.semas_name
+      ? `대표 소분류: ${selected.semas_name} (${code}). 이 분류의 점포만 조회하며, 선택한 업종의 다른 세부 업종은 포함하지 않습니다. 코드를 직접 수정할 수 있습니다.`
+      : `직접 지정한 소분류: ${classification?.semas_name ? `${classification.semas_name} (${code})` : code}. 이 코드에 해당하는 점포만 조회합니다.`;
 }
 function populateIndustries(query = '') {
   const previous = $('industry').value;
@@ -294,7 +302,7 @@ function populateIndustries(query = '') {
   if (filtered.some(i => i.industry_code === previous)) $('industry').value = previous;
   $('analyze').disabled = !filtered.length || busyButtons.has($('analyze'));
   syncOfficialIndustry();
-  $('industryHint').textContent = filtered.length ? `${filtered.length}개 업종 · 선택하면 기본 소분류 코드가 입력됩니다.` : '일치하는 업종이 없습니다. 검색어를 바꿔 주세요.';
+  $('industryHint').textContent = filtered.length ? `${filtered.length}개 업종 · 선택하면 대표 소분류 코드가 입력됩니다.` : '일치하는 업종이 없습니다. 검색어를 바꿔 주세요.';
 }
 function invalidateExploreResults() {
   state.requestId++; state.result = null; state.live = null; state.liveQuery = null; state.compared.clear();
@@ -501,7 +509,7 @@ async function init() {
   $('emd').onchange = () => { clearResults(); toast('읍·면·동 중심 좌표는 주소 검색으로 확인해 주세요.'); };
   $('radius').onchange = () => { clearResults(); updateCoordinates(); };
   $('industry').onchange = () => { syncOfficialIndustry(); clearResults(); };
-  $('officialIndustry').onchange = clearResults;
+  $('officialIndustry').onchange = () => { updateOfficialIndustryHelp(); clearResults(); };
   $('modeLive').onclick = () => setMode('LIVE'); $('modeDemo').onclick = () => setMode('DEMO');
   if ($('tryDemo')) $('tryDemo').onclick = () => setMode('DEMO');
   const defaults = [40, 25, 20, 15];

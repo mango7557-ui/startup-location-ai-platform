@@ -50,9 +50,11 @@ async function limitedResponseText(res, maxBytes = 8000000) {
   } finally { reader.releaseLock(); }
   return Buffer.concat(chunks).toString('utf8');
 }
-function rowsFrom(json) {
+function semasRowsFrom(json) {
   const root = json.response || json;
   const code = root.header?.resultCode ?? root.resultCode;
+  // SEMAS returns 03 (NODATA_ERROR), often without a body, for a valid empty query.
+  if (String(code) === '03') return { body: { ...root.body, totalCount: 0 }, rows: [] };
   if (code != null && !['00', '0', 'NORMAL_SERVICE'].includes(String(code))) throw new ApiError('PROVIDER_REJECTED', '제공기관이 요청을 거부했습니다. 인증키·활용 승인·요청 조건을 확인하세요.', 502);
   const body = root.body || root;
   const items = body.items?.item ?? body.items;
@@ -185,7 +187,7 @@ function createConnectors({ env = process.env, fetchImpl = (...args) => fetch(..
       params.indsSclsCd = p.indsSclsCd;
     }
     return request('semas', `https://apis.data.go.kr/B553077/api/open/sdsc2/${operation}`, params, { normalize(json) {
-      const { body, rows } = rowsFrom(json);
+      const { body, rows } = semasRowsFrom(json);
       return { total_count: number(body.totalCount), page: pageNo, page_size: numOfRows, observation_period: body.stdrYm || json.header?.stdrYm || null,
         items: rows.map(r => ({ store_id: r.bizesId, store_name: r.bizesNm, branch_name: r.brchNm || null, industry_code: r.indsSclsCd || null,
           industry_name: r.indsSclsNm || null, address: r.rdnmAdr || r.lnoAdr || null, region_code: r.adongCd || null,

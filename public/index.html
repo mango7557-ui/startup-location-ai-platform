@@ -52,7 +52,7 @@
                 <label>매장 형태<select id="storeType"><option value="GENERAL">일반 매장</option><option value="TAKEOUT">소형 / 테이크아웃</option><option value="LARGE">대형 매장</option></select></label>
                 <details><summary>평가 가중치 조정 <span>↗</span></summary><div id="weightControls"></div><button type="button" id="resetWeights" class="quiet">기본값으로 초기화</button><p class="hint">초기 제안 가중치이며 검증된 예측 모델이 아닙니다.</p></details>
               </div>
-              <label class="official-code">공식 소분류 코드 <span class="muted">선택</span><input id="officialIndustry" placeholder="예: I21201 · 제공기관 코드" pattern="[A-Z][0-9]{5}" maxlength="6"><small id="officialIndustryHelp">업종을 선택하면 기본 코드가 자동 입력됩니다. 코드는 직접 수정할 수 있습니다.</small></label>
+              <label class="official-code">공식 소분류 코드 <span class="muted">선택</span><input id="officialIndustry" placeholder="예: I21201 · 제공기관 코드" pattern="[A-Z][0-9]{5}" maxlength="6" aria-describedby="officialIndustryHelp"><small id="officialIndustryHelp">업종을 선택하면 대표 소분류 코드가 자동 입력됩니다. 이 코드에 해당하는 점포만 조회합니다.</small></label>
               <button class="primary full" id="analyze" type="submit">이 위치의 점포 조회 <span>→</span></button>
               <p id="filterFeedback" class="hint" aria-live="polite"></p>
               <div id="kakaoFallback" class="official-code" hidden><p class="hint">공식 상가 조회를 완료하지 못했습니다. 카카오 장소검색에서 주변 장소를 별도로 확인할 수 있습니다. 검색 결과는 전체 점포 현황이 아닙니다.</p><label>카카오 검색어<input id="kakaoStoreQuery" maxlength="80" placeholder="예: 카페, 한식" autocomplete="off"></label><button type="button" class="secondary full" id="searchKakaoStores">카카오 장소검색으로 보기</button></div>
